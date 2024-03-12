@@ -16,26 +16,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 // import axios from "axios";
 
 import { FcGoogle } from "react-icons/fc";
-import {
-    Eye,
-    EyeOff
-} from "lucide-react";
 
 import { useForm } from "react-hook-form";
-import { useEffect, useRef, useState } from "react";
-// import { BACKEND_URL } from "@/constants/apis";
+import { useState } from "react";
 // import { useRouter } from "next/navigation";
-// import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { Toggle } from "@/components/ui/toggle";
 import Link from "next/link";
-import { login } from "@/app/(auth)/actions/auth";
+import { login } from "@/app/(auth)/actions/credentials";
 import Logo from "@/app/(auth)/components/logo";
 import SideBanner from "@/app/(auth)/components/side-banner";
-// import { ToastAction } from "@radix-ui/react-toast";
+import { OAUTH_PROVIDERS } from "../actions/oauth";
 
 const rokkitt = Rokkitt({
     subsets: ["latin"],
@@ -47,25 +40,12 @@ const montserrat = Montserrat({
     display: "swap",
 });
 
-const loginFormSchema = z.object({
-    email: z.string().email({ message: "Adresse e-mail invalide." }),
-    password: z.string()
-    .min(8, { message: "8 caractères minimum requis." })
-    .regex(new RegExp(
-        /(?=[A-Z])/
-    ), { message: "Mot de passe doit contenir une lettre majuscule." })
-    .regex(new RegExp(
-        /(?=[a-z])/
-    ), { message: "Mot de passe doit contenir une lettre miniscule" })
-    .regex(new RegExp(
-        /(?=[0-9])/
-    ), { message: "Mot de passe doit contenir un chiffre." }),
-    persist: z.boolean().default(false),
-});
-
 enum LoginError {
     WrongCredentials = "wrong credentials",
 };
+
+import { loginFormSchema } from "@/app/(auth)/register/constants/types";
+import PasswordInput from "@/app/(auth)/components/password-input";
 
 export default function LoginPage() {
     // const router = useRouter();
@@ -79,7 +59,6 @@ export default function LoginPage() {
             persist: false,
         }
     });
-    const [isPasswordHidden, setIsPasswordHidden] = useState(true);
     const [isLoginProcessing, setIsLoginProcessing] = useState(false);
 
     function onSubmit(values: z.infer<typeof loginFormSchema>) {
@@ -131,43 +110,12 @@ export default function LoginPage() {
                                     </FormItem> 
                                 )}>
                             </FormField>
+
                             <FormField
                                 control={form.control}
                                 name="password"
                                 render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-xs">Mot de passe</FormLabel>
-                                        <FormControl>
-                                            <div className="
-                                                flex items-center 
-                                                px-1
-                                                border border-slate-100 rounded-full
-                                                focus-within:ring-2
-                                                focus-within:ring-slate-950
-                                                focus-within:ring-offset-2
-                                                bg-gray-100
-                                                ">
-                                                <Input type={isPasswordHidden ? "password" : "text"} 
-                                                    className="
-                                                    text-xs
-                                                    bg-transparent
-                                                    border-0 rounded-full focus-visible:ring-0 focus-visible:ring-offset-0"
-                                                    placeholder="Entrez votre mot de passe"
-                                                    {...field}
-                                                    disabled={isLoginProcessing}
-                                                />
-                                                <Toggle 
-                                                    className="rounded-full text-slate-500 hover:text-black 
-                                                    data-[state=on]:text-black data-[state=on]:bg-transparent
-                                                    bg-transparent hover:bg-transparent"
-                                                    size="sm" 
-                                                    onPressedChange={() => setIsPasswordHidden(!isPasswordHidden)}>
-                                                    {isPasswordHidden ? <Eye /> : <EyeOff />}
-                                                </Toggle>
-                                            </div>
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem> 
+                                    <PasswordInput field={field} disabled={isLoginProcessing} />
                                 )}>
                             </FormField>
                             <div className="flex justify-between items-center mb-3">
@@ -205,6 +153,11 @@ export default function LoginPage() {
                         hover:bg-transparent hover:border-slate-500
                         bg-white text-black "
                         disabled={isLoginProcessing}
+                        onClick={async () => {
+                            setIsLoginProcessing(true);
+                            await OAUTH_PROVIDERS.google.login();
+                            setIsLoginProcessing(false);
+                        }}
                     >
                         <div className="flex flex-row gap-x-2 items-center justify-center">
                             <FcGoogle />

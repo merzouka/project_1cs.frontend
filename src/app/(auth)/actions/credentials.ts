@@ -1,4 +1,3 @@
-
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 export function login(router: AppRouterInstance | undefined): Promise<undefined> {
