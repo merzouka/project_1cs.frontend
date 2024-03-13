@@ -52,3 +52,8 @@ export const registerSchema3 = z.object({
     dateOfBirth: z.date(),
     gender: z.enum(["male", "female"]),
 });
+
+export const registerSchema4 = z.object({
+    province: z.string(),
+    city: z.string(),
+})

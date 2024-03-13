@@ -1,5 +1,6 @@
 import csv
 import json
+import sys
 
 provinces = {} 
 with open("./worldcities.csv", "r") as worldcities_file:
@@ -33,17 +34,7 @@ for province in provinces:
         "cities": provinces[province]
     })
 
-
-print(f"""
-interface City {{
-    province: string,
-    cities: {{
-        id: string,
-        city: string,
-        population: number,
-    }}[],
-}}
-
-const cities: City[] = 
-{json.dumps(cities)}
-""")
+if sys.argv[1] == "--city":
+    print(f"""{json.dumps(cities)}""")
+elif sys.argv[1] == "--province":
+    print(f"""{json.dumps(list(map(lambda x: x["province"], cities)))}""")
