@@ -58,7 +58,7 @@ export default function CountrySelect({
                 {
                     countries.filter((country) => country.name.toLowerCase().includes(term)).map((country) => {
                         return (
-                            <SelectItem  key={`${country.code}${country.alpha2}`} value={`+${country.code}`}>
+                            <SelectItem  key={`${country.alpha2}${country.code}`} value={`+${country.code}`}>
                                 <IconCountry country={country} />
                             </SelectItem>
                         );

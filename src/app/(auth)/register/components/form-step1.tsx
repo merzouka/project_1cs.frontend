@@ -14,6 +14,7 @@ import { OAUTH_PROVIDERS } from "@/app/(auth)/actions/oauth";
 
 // schema
 import { registerSchema1 } from "@/app/(auth)/register/constants/types";
+import { useRegisterStore } from "../constants/store";
 
 // fonts
 const montserrat = Montserrat({
@@ -31,14 +32,16 @@ export default function FormStep1({ next }: { next: () => void }) {
     });
 
     const [isOauthRegsitering, setIsOauthRegsitering] = useState(false);
-    const [countryCode, setCountryCode] = useState("+1");
+    const [countryCode, setCountryCode] = useState("+213");
+    const updateRegisterStore = useRegisterStore((state) => state.updateEntries)
 
     function handleSubmit(values: z.infer<typeof registerSchema1>){
         let [code, area] = countryCode.includes("-") ? countryCode.split("-") : [countryCode, ""];
         area = area === "" ? "" : `(${area})`;
         values.phone = `${code}${area}${values.phone}`;
-        next();
+        updateRegisterStore(values);
         console.log(values);
+        next();
     }
 
     return (
@@ -98,7 +101,8 @@ export default function FormStep1({ next }: { next: () => void }) {
                 />
                 <Button 
                     type="submit" 
-                    className="w-full rounded-full mb-2 bg-black hover:bg-black/90" disabled={isOauthRegsitering}
+                    className="w-full font-bold rounded-full mb-2 bg-black hover:bg-black/90" 
+                    disabled={isOauthRegsitering}
                 >
                     Continuer
                 </Button>

@@ -5,23 +5,22 @@ import FormStep4 from "./form-step4";
 
 export default function Forms({ 
     index,
-    props 
+    next,
+    previous
     }: {
-        index: number,
-        props: { 
-            next: () => void,
-            previous: () => void, 
-        }
+        index: number;
+        next: () => void;
+        previous: () => void;
     }) {
     switch (index) {
         case 0:
-            return <FormStep1 next={props.next} />
+            return <FormStep1 next={next} />
         case 1:
-            return <FormStep2 props={props}/>
+            return <FormStep2 next={next} previous={previous}/>
         case 2:
-            return <FormStep3 props={props}/>
+            return <FormStep3 next={next} previous={previous}/>
         case 3:
-            return <FormStep4 />
+            return <FormStep4 previous={previous}/>
 
         default:
             break;

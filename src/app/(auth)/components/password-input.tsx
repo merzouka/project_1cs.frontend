@@ -14,11 +14,12 @@ import { Toggle } from "@/components/ui/toggle";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { ControllerRenderProps } from "react-hook-form";
 
 export default function PasswordInput({ 
     className,
-    field,
+    onBlur,
+    onChange,
+    value,
     disabled,
     label,
     }: {
@@ -26,7 +27,9 @@ export default function PasswordInput({
             item?: string,
             field?: string,
         };
-        field: ControllerRenderProps;
+        onBlur?: () => void;
+        onChange?: (e: any) => void;
+        value: string;
         disabled?: boolean;
         label?: string,
     }) {
@@ -46,7 +49,9 @@ export default function PasswordInput({
                         bg-transparent
                         border-0 rounded-full focus-visible:ring-0 focus-visible:ring-offset-0"
                         placeholder="Entrez votre mot de passe"
-                        {...field}
+                        onBlur={onBlur}
+                        onChange={onChange}
+                        value={value}
                         disabled={disabled}
                     />
                     <Toggle 
@@ -59,7 +64,7 @@ export default function PasswordInput({
                     </Toggle>
                 </div>
             </FormControl>
-            <FormMessage />
+            <FormMessage className="text-xs"/>
         </FormItem> 
     );
 }

@@ -6,12 +6,17 @@ import SideBanner from "@/app/(auth)/components/side-banner";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-import { Rokkitt } from "next/font/google";
+import { Montserrat, Rokkitt } from "next/font/google";
 
 import Forms from "./components/forms";
 import { useMutliStep } from "@/hooks/ui";
 
 const rokkitt = Rokkitt({
+    subsets: ["latin"],
+    display: "swap",
+});
+
+const montserrat = Montserrat({
     subsets: ["latin"],
     display: "swap",
 });
@@ -54,7 +59,10 @@ export default function RegisterPage() {
                     }
 
                     <div aria-hidden className="flex-grow min-h-0 max-h-12"></div>
-                    <p className="text-xs">
+                    <p className={cn(
+                        "text-xs",
+                        montserrat.className,
+                    )}>
                         Vous avez d&eacute;ja un compte?
                         <Button variant="link"  className="font-bold text-black text-base">
                             <Link className="text-xs" href="/login">Connectez-vous</Link>

@@ -2,6 +2,7 @@ import { z } from "zod";
 import { registerSchema3 } from "../constants/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+
 import { 
     Form,
     FormField,
@@ -20,19 +21,29 @@ import {
 import { Button } from "@/components/ui/button";
 import { SelectContent } from "@radix-ui/react-select";
 import { InputCalendar } from "@/components/ui/input-calendar";
+import { useRegisterStore } from "../constants/store";
 
-export default function FormStep3({ props }: { props: { next: () => void; previous: () => void } }) {
+export default function FormStep3({
+    next,
+    previous,
+    }: {
+        next: () => void;
+        previous: () => void;
+    }) {
 
     const form = useForm<z.infer<typeof registerSchema3>>({
         resolver: zodResolver(registerSchema3),
         defaultValues: {
-
+            firstname: "",
+            lastname: "",
         }
     });
+    const updateRegisterStore = useRegisterStore((state) => state.updateEntries);
 
     function onSubmit(values: z.infer<typeof registerSchema3>) {
-        props.next();
+        updateRegisterStore(values);
         console.log(values);
+        next();
     }
 
     return (
@@ -96,13 +107,16 @@ export default function FormStep3({ props }: { props: { next: () => void; previo
                     render={({ field }) => (
                         <FormItem className="mb-5">
                             <FormLabel>Sexe*</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <Select onValueChange={(value) => {
+                                console.log(value);
+                                field.onChange(value);
+                            }} defaultValue={field.value}>
                                 <FormControl>
                                     <SelectTrigger className="rounded-full border-slate-300">
                                         <SelectValue placeholder="Sélectionnez votre sexe"/>
                                     </SelectTrigger>
                                 </FormControl>
-                                <SelectContent className="bg-black" onFocus={() => console.log("hello")}>
+                                <SelectContent className="bg-black">
                                     <SelectItem value="male">Male</SelectItem>
                                     <SelectItem value="female">Female</SelectItem>
                                 </SelectContent>

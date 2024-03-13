@@ -3,14 +3,20 @@
 import { useState } from "react";
 
 export function useMutliStep(steps: number) {
-    const [step, setStep] = useState(2);
+    const [step, setStep] = useState(0);
 
     function next() {
-        setStep((step) => (step + 1) % steps)
+        if (step == steps - 1) {
+            return;
+        }
+        setStep((step) => step + 1);
     }
 
     function previous() {
-        setStep((step) => (step - 1 + steps) % steps)
+        if (step == 0) {
+            return;
+        }
+        setStep((step) => step - 1);
     }
 
     return { step, next, previous }

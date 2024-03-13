@@ -1,13 +1,8 @@
 import {
     Form,
-    FormItem,
-    FormControl,
     FormField,
-    FormLabel,
-    FormMessage
 } from "@/components/ui/form";
 
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 import { Montserrat } from "next/font/google";
@@ -24,8 +19,15 @@ import { registerSchema2 } from "@/app/(auth)/register/constants/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import PasswordInput from "../../components/password-input";
+import { useRegisterStore } from "../constants/store";
 
-export default function FormStep2({ ...props }: { props: { next: () => void; previous: () => void } }) {
+export default function FormStep2({
+    next,
+    previous,
+    }: {
+        next: () => void;
+        previous: () => void;
+    }) {
     const form = useForm<z.infer<typeof registerSchema2>>({
         resolver: zodResolver(registerSchema2),
         defaultValues: {
@@ -33,10 +35,12 @@ export default function FormStep2({ ...props }: { props: { next: () => void; pre
             confirm: "",
         }
     });
+    const updateRegisterStore = useRegisterStore((state) => state.updateEntries)
 
     function onSubmit(values: z.infer<typeof registerSchema2>) {
-        props.next();
+        updateRegisterStore({password: values.password});
         console.log(values);
+        next();
     }
 
     return (
@@ -47,7 +51,7 @@ export default function FormStep2({ ...props }: { props: { next: () => void; pre
                     name="password"
                     render={({ field }) => (
                         <PasswordInput 
-                            field={field} 
+                            {...field}
                             className={{
                                 field: "bg-transparent border border-slate-300",
                                 item: "mb-3"
@@ -60,7 +64,7 @@ export default function FormStep2({ ...props }: { props: { next: () => void; pre
                     name="confirm"
                     render={({ field }) => (
                         <PasswordInput 
-                            field={field} 
+                            {...field}
                             label="Confirmez mot de passe"
                             className={{
                                 field: "bg-transparent border border-slate-300",

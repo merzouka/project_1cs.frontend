@@ -10,22 +10,19 @@ import {
     FormLabel,
     FormMessage 
 } from "@/components/ui/form";
-import Image from "next/image";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-// import axios from "axios";
 
 import { FcGoogle } from "react-icons/fc";
 
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-// import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { login } from "@/app/(auth)/actions/credentials";
+import { Message, login } from "@/app/(auth)/actions/credentials";
 import Logo from "@/app/(auth)/components/logo";
 import SideBanner from "@/app/(auth)/components/side-banner";
 import { OAUTH_PROVIDERS } from "../actions/oauth";
@@ -40,16 +37,19 @@ const montserrat = Montserrat({
     display: "swap",
 });
 
-enum LoginError {
-    WrongCredentials = "wrong credentials",
-};
-
 import { loginFormSchema } from "@/app/(auth)/register/constants/types";
 import PasswordInput from "@/app/(auth)/components/password-input";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
+
+enum Error {
+    Credentials,
+    Connection
+}
 
 export default function LoginPage() {
-    // const router = useRouter();
-    // const { toast } = useToast();
+    const router = useRouter();
 
     const form = useForm<z.infer<typeof loginFormSchema>>({
         resolver: zodResolver(loginFormSchema),
@@ -60,13 +60,44 @@ export default function LoginPage() {
         }
     });
     const [isLoginProcessing, setIsLoginProcessing] = useState(false);
+    const { toast } = useToast();
+    const [error, setError] =useState<Error | undefined>(undefined);
+    switch (error) {
+        case Error.Connection:
+            toast({
+                title: "Erreur de connexion",
+                description: "Impossible de se connecter au serveur",
+                variant: "destructive",
+                action: 
+                <ToastAction altText="Actualiser" onClick={() => location.reload()}>
+                    Actualiser
+                </ToastAction>,
+            });
+            setError(undefined);
+            break;
+        case Error.Credentials:
+            toast({
+                title: "Identifiants incorrects",
+                description: "Veuillez réessayer",
+                variant: "destructive",
+            });
+            setError(undefined);
+            break;
+    }
 
-    function onSubmit(values: z.infer<typeof loginFormSchema>) {
+    async function onSubmit(values: z.infer<typeof loginFormSchema>) {
         setIsLoginProcessing(true);
-        login(undefined).then(() => {
-            setIsLoginProcessing(false);
-        })
-        console.log(values);
+        const response = await login(values);
+        setIsLoginProcessing(false);
+        if (response.type == Message.Success) {
+            router.push(`/profile/${response.value}`);
+            return;
+        }
+        if (response.value !== "") {
+            setError(Error.Connection);
+            return;
+        }
+        setError(Error.Credentials);
     }
 
     return (
@@ -115,7 +146,7 @@ export default function LoginPage() {
                                 control={form.control}
                                 name="password"
                                 render={({ field }) => (
-                                    <PasswordInput field={field} disabled={isLoginProcessing} />
+                                    <PasswordInput {...field} disabled={isLoginProcessing} />
                                 )}>
                             </FormField>
                             <div className="flex justify-between items-center mb-3">
@@ -137,13 +168,13 @@ export default function LoginPage() {
                                     )}
                                 >
                                 </FormField>
-                                <Button variant={"link"}>
+                                <Button variant={"link"} tabIndex={-1}>
                                     <Link href="/forgot-password" className="text-xs">
                                         Mot de passe oubli&eacute;?
                                     </Link>
                                 </Button>
                             </div>
-                            <Button disabled={isLoginProcessing} type="submit" className="bg-black text-white rounded-full mb-2 font-bold">
+                            <Button disabled={isLoginProcessing} type="submit" className="bg-black text-white rounded-full mb-2 font-bold hover:bg-black/70">
                                 Connexion
                             </Button>
                         </form>
@@ -153,9 +184,12 @@ export default function LoginPage() {
                         hover:bg-transparent hover:border-slate-500
                         bg-white text-black "
                         disabled={isLoginProcessing}
-                        onClick={async () => {
+                        onClick={() => {
                             setIsLoginProcessing(true);
-                            await OAUTH_PROVIDERS.google.login();
+                            toast({
+                                description: "Hello wrold!!!"
+                            })
+                            console.log("hello");
                             setIsLoginProcessing(false);
                         }}
                     >
@@ -168,7 +202,7 @@ export default function LoginPage() {
                     <div aria-hidden className="flex-grow min-h-0 max-h-12"></div>
                     <p className="text-xs">
                         Vous n'avez pas de compte? 
-                        <Button variant="link" className="font-bold text-black text-base">
+                        <Button tabIndex={-1} variant="link" className="font-bold text-black text-base">
                             <Link className="text-xs" href="/register">Inscrivez-vous</Link>
                         </Button>
                     </p>
