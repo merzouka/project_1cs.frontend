@@ -1,5 +1,6 @@
 import { 
     Form,
+    FormControl,
     FormField, 
     FormItem, 
     FormLabel,
@@ -41,13 +42,19 @@ export default function FormStep4({}) {
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Wilaya*</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Choisir votre wilaya"/>
-                                </SelectTrigger>
+                            <Select onValueChange={(value) => {
+                                console.log(value);
+                                setProvince(value);
+                                field.onChange(value);
+                            }} defaultValue={field.value}>
+                                <FormControl>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Choisir votre wilaya"/>
+                                    </SelectTrigger>
+                                </FormControl>
                                 <SelectContent>
                                     {
-                                        provinces.map((province) => (
+                                        provinces.sort().map((province) => (
                                             <SelectItem key={province} value={province} className="capitalize">
                                                 {province}
                                             </SelectItem>
@@ -65,10 +72,12 @@ export default function FormStep4({}) {
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Commune*</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Choisir votre commune"/>
-                                </SelectTrigger>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Choisir votre commune"/>
+                                    </SelectTrigger>
+                                </FormControl>
                                 <SelectContent>
                                     {
                                         !provinceCities ?

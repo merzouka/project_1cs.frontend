@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 export function useMutliStep(steps: number) {
-    const [step, setStep] = useState(3);
+    const [step, setStep] = useState(2);
 
     function next() {
         setStep((step) => (step + 1) % steps)

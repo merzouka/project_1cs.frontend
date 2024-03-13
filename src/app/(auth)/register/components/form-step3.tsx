@@ -102,7 +102,7 @@ export default function FormStep3({ props }: { props: { next: () => void; previo
                                         <SelectValue placeholder="Sélectionnez votre sexe"/>
                                     </SelectTrigger>
                                 </FormControl>
-                                <SelectContent className="bg-black">
+                                <SelectContent className="bg-black" onFocus={() => console.log("hello")}>
                                     <SelectItem value="male">Male</SelectItem>
                                     <SelectItem value="female">Female</SelectItem>
                                 </SelectContent>
