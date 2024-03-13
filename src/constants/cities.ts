@@ -1,4 +1,4 @@
-interface City {
+export interface Province {
     province: string,
     cities: {
         id: string,
@@ -7,7 +7,7 @@ interface City {
     }[],
 }
 
-export const cities: City[] = [
+export const cities: Province[] = [
     {
         "province": "Alger",
         "cities": [
