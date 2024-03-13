@@ -18,7 +18,6 @@ const rokkitt = Rokkitt({
 
 export default function RegisterPage() {
     const { step, next, previous } = useMutliStep(4);
-    console.log(step);
 
     return (
         <div className="

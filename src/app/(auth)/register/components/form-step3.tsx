@@ -15,20 +15,14 @@ import {
     Select,
     SelectTrigger,
     SelectItem,
-    SelectGroup,
     SelectValue,
 } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 import { SelectContent } from "@radix-ui/react-select";
-import { 
-    Popover,
-    PopoverTrigger,
-    PopoverContent,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar"
-import { Calendar as CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
+import { InputCalendar } from "@/components/ui/input-calendar";
 
 export default function FormStep3({ props }: { props: { next: () => void; previous: () => void } }) {
+
     const form = useForm<z.infer<typeof registerSchema3>>({
         resolver: zodResolver(registerSchema3),
         defaultValues: {
@@ -36,45 +30,42 @@ export default function FormStep3({ props }: { props: { next: () => void; previo
         }
     });
 
-    function onSubmit(values: z.infer<typeof registerSchema3) {
+    function onSubmit(values: z.infer<typeof registerSchema3>) {
         props.next();
         console.log(values);
     }
 
-    function onDateInput(date: string) {
-
-    }
-
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
                 <FormField 
                     control={form.control}
                     name="firstname"
-                    render={({ field }) => {
-                        <FormItem>
+                    render={({ field }) => (
+                        <FormItem className="mb-2">
                             <FormLabel>Nom*</FormLabel>
                             <FormControl>
                                 <Input
                                     autoFocus
-                                    className="bg-transparent border border-slate-400"
+                                    placeholder="Entrez votre nom"
+                                    className="bg-transparent border border-slate-300 rounded-full"
                                     {...field}
                                 />
                             </FormControl>
-                            <FormMessage />
+                            <FormMessage className="text-xs"/>
                         </FormItem>
-                    }}
+                    )}
                 />
                 <FormField 
                     control={form.control}
                     name="lastname"
                     render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="mb-2">
                             <FormLabel>Pr&eacute;nom*</FormLabel>
                             <FormControl>
                                 <Input
-                                    autoFocus
-                                    className="bg-transparent border border-slate-400"
+                                    className="bg-transparent border border-slate-300 rounded-full"
+                                    placeholder="Entrez votre prénom"
                                     {...field}
                                 />
                             </FormControl>
@@ -86,22 +77,14 @@ export default function FormStep3({ props }: { props: { next: () => void; previo
                     control={form.control}
                     name="dateOfBirth"
                     render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="mb-2">
                             <FormLabel>Date de naissance*</FormLabel>
-                            <Popover>
-                                <PopoverTrigger>
-                                    <div className="flex gap-x-2 items-center">
-                                        <CalendarIcon />
-                                        <Input 
-                                            placeholder={
-                                                field.value ? format(field.value, "YYYY-MM-dd") : "Sélectionnez votre date de naissance"
-                                            }
-                                            onChange={(e) => onDateInput(e.target.value)}
-                                        />
-                                    </div>
-                                </PopoverTrigger>
-                            </Popover>
                             <FormControl>
+                                <InputCalendar 
+                                    className={{ button: "border-slate-400 text-slate-300" }} 
+                                    value={field.value} 
+                                    onChange={field.onChange} 
+                                />
                             </FormControl>
                             <FormMessage className="text-xs"/>
                         </FormItem>
@@ -111,24 +94,29 @@ export default function FormStep3({ props }: { props: { next: () => void; previo
                     control={form.control}
                     name="gender"
                     render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="mb-5">
                             <FormLabel>Sexe*</FormLabel>
-                            <FormControl>
-                                <Select>
-                                    <SelectTrigger>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                    <SelectTrigger className="rounded-full border-slate-300">
                                         <SelectValue placeholder="Sélectionnez votre sexe"/>
                                     </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="male">Male</SelectItem>
-                                        <SelectItem value="female">Female</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </FormControl>
+                                </FormControl>
+                                <SelectContent className="bg-black">
+                                    <SelectItem value="male">Male</SelectItem>
+                                    <SelectItem value="female">Female</SelectItem>
+                                </SelectContent>
+                            </Select>
                             <FormMessage className="text-xs"/>
                         </FormItem>
                     )}
                 />
+                <Button type="submit" className="rounded-full bg-black hover:bg-black/70 w-full font-bold">
+                    Continuer
+                </Button>
             </form>
         </Form>
     );
 }
+
+

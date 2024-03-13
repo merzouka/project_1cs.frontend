@@ -25,7 +25,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import PasswordInput from "../../components/password-input";
 
-export default function FormStep2({ props }: { props: { next: () => void; previous: () => void } }) {
+export default function FormStep2({ ...props }: { props: { next: () => void; previous: () => void } }) {
     const form = useForm<z.infer<typeof registerSchema2>>({
         resolver: zodResolver(registerSchema2),
         defaultValues: {
