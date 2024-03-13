@@ -21,7 +21,9 @@ const phoneRegex = new RegExp(
 );
 export const registerSchema1 = z.object({
     email: z.string().email({ message: "Adresse e-mail invalide." }),
-    phone: z.string(),
+    phone: z.string({
+        required_error: "Requis",
+    }),
 });
 
 export const registerSchema2 = z.object({
@@ -49,11 +51,19 @@ export const registerSchema3 = z.object({
     lastname: z.string().regex(new RegExp(/^[a-zA-Z]+$/), {
         message: "Veuillez saisir un nom valide"
     }),
-    dateOfBirth: z.date(),
-    gender: z.enum(["male", "female"]),
+    dateOfBirth: z.date({
+        required_error: "Requis",
+    }),
+    gender: z.enum(["male", "female"], {
+        required_error: "Requis",
+    }),
 });
 
 export const registerSchema4 = z.object({
-    province: z.string(),
-    city: z.string(),
+    province: z.string({
+        required_error: "Requis",
+    }),
+    city: z.string({
+        required_error: "Requis",
+    }),
 })

@@ -39,7 +39,6 @@ export default function FormStep2({
 
     function onSubmit(values: z.infer<typeof registerSchema2>) {
         updateRegisterStore({password: values.password});
-        console.log(values);
         next();
     }
 

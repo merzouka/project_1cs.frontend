@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import QueryProvider from "@/components/providers/query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
-const inter = Inter({ 
+const montserrat = Montserrat({ 
     subsets: ["latin"],
     variable: "--font-sans",
 });
@@ -24,7 +24,7 @@ export default function RootLayout({
         <html lang="en">
             <body className={cn(
                 "min-h-screen font-sans antialiased",
-                inter.variable
+                montserrat.variable
             )}>
                 <QueryProvider>
                     {children}

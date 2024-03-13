@@ -26,6 +26,7 @@ import { useRegisterStore } from "../constants/store";
 import { Message, register } from "@/app/(auth)/actions/credentials";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
 
 export default function FormStep4({
     previous
@@ -47,13 +48,17 @@ export default function FormStep4({
     const router = useRouter();
     const { toast } = useToast();
     const [error, setError] = useState(false);
+
+    const [selected, setSelected] = useState({
+        province: false,
+        city: false,
+    });
     if (error) {
         toast({
             title: "Erreur de connexion",
             description: "Nous ne pouvons pas créer votre compte",
             variant: "destructive",
         });
-        console.log("error");
         setError(false);
     }
 
@@ -61,7 +66,6 @@ export default function FormStep4({
         updateRegisterStore(values);
         setIsRegisterProcess(true);
         const fields = {...entries, ...values};
-        console.log(fields)
         const response = await register(fields);
         setIsRegisterProcess(false);
         if (response.type == Message.Success) {
@@ -83,13 +87,17 @@ export default function FormStep4({
                             <Select 
                                 onValueChange={(value) => {
                                     setProvince(value);
+                                    setSelected({...selected, province: true})
                                     field.onChange(value);
                                 }} 
                                 defaultValue={field.value}
                                 disabled={isRegisterProcessing}
                             >
                                 <FormControl>
-                                    <SelectTrigger className="rounded-full text-gray-500">
+                                    <SelectTrigger className={cn(
+                                        "rounded-full text-gray-500",
+                                        selected.province && "text-black"
+                                    )}>
                                         <SelectValue placeholder="Sélectionneé votre wilaya"/>
                                     </SelectTrigger>
                                 </FormControl>
@@ -114,12 +122,18 @@ export default function FormStep4({
                         <FormItem className="mb-5">
                             <FormLabel>Commune*</FormLabel>
                             <Select 
-                                onValueChange={field.onChange} 
+                                onValueChange={(value) => {
+                                    setSelected({...selected, city: true});
+                                    field.onChange(value);
+                                }} 
                                 defaultValue={field.value}
                                 disabled={isRegisterProcessing}
                             >
                                 <FormControl>
-                                    <SelectTrigger className="rounded-full text-gray-500">
+                                    <SelectTrigger className={cn(
+                                        "rounded-full text-gray-500",
+                                        selected.city && "text-black"
+                                    )}>
                                         <SelectValue placeholder="Sélectionnez votre commune"/>
                                     </SelectTrigger>
                                 </FormControl>

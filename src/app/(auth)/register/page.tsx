@@ -64,7 +64,7 @@ export default function RegisterPage() {
                         montserrat.className,
                     )}>
                         Vous avez d&eacute;ja un compte?
-                        <Button variant="link"  className="font-bold text-black text-base">
+                        <Button tabIndex={-1} variant="link"  className="font-bold text-black text-base">
                             <Link className="text-xs" href="/login">Connectez-vous</Link>
                         </Button>
                     </p>

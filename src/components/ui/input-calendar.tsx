@@ -24,7 +24,7 @@ export function InputCalendar({
         disabled?: boolean;
         className?: {
             button?: string;
-            input?: string;
+            search?: string;
             calendar?: string;
         };
     }) {

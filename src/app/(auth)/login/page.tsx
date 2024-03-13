@@ -189,7 +189,6 @@ export default function LoginPage() {
                             toast({
                                 description: "Hello wrold!!!"
                             })
-                            console.log("hello");
                             setIsLoginProcessing(false);
                         }}
                     >
@@ -201,7 +200,7 @@ export default function LoginPage() {
 
                     <div aria-hidden className="flex-grow min-h-0 max-h-12"></div>
                     <p className="text-xs">
-                        Vous n'avez pas de compte? 
+                        Vous n&apos;avez pas de compte? 
                         <Button tabIndex={-1} variant="link" className="font-bold text-black text-base">
                             <Link className="text-xs" href="/register">Inscrivez-vous</Link>
                         </Button>

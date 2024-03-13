@@ -27,7 +27,7 @@ interface RegisterRequestBody {
 }
 
 export async function login(values: z.infer<typeof loginFormSchema>): Promise<Response> {
-    const response = await axios.post(`${BACKEND_URL}/api/auth/login`, values)
+    const response = await axios.post(`${BACKEND_URL}${AUTH_ENDPOINT}/login`, values)
         .then((response) => {
             const id = response.data.id;
             return {

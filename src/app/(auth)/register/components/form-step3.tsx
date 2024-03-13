@@ -17,11 +17,13 @@ import {
     SelectTrigger,
     SelectItem,
     SelectValue,
+    SelectContent
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { SelectContent } from "@radix-ui/react-select";
 import { InputCalendar } from "@/components/ui/input-calendar";
 import { useRegisterStore } from "../constants/store";
+import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 export default function FormStep3({
     next,
@@ -39,10 +41,10 @@ export default function FormStep3({
         }
     });
     const updateRegisterStore = useRegisterStore((state) => state.updateEntries);
+    const [selected, setSelected] = useState(false);
 
     function onSubmit(values: z.infer<typeof registerSchema3>) {
         updateRegisterStore(values);
-        console.log(values);
         next();
     }
 
@@ -108,15 +110,18 @@ export default function FormStep3({
                         <FormItem className="mb-5">
                             <FormLabel>Sexe*</FormLabel>
                             <Select onValueChange={(value) => {
-                                console.log(value);
+                                setSelected(true);
                                 field.onChange(value);
                             }} defaultValue={field.value}>
                                 <FormControl>
-                                    <SelectTrigger className="rounded-full border-slate-300">
+                                    <SelectTrigger className={cn(
+                                        "rounded-full border-slate-300 text-gray-500",
+                                        selected && "text-black"
+                                    )}>
                                         <SelectValue placeholder="Sélectionnez votre sexe"/>
                                     </SelectTrigger>
                                 </FormControl>
-                                <SelectContent className="bg-black">
+                                <SelectContent>
                                     <SelectItem value="male">Male</SelectItem>
                                     <SelectItem value="female">Female</SelectItem>
                                 </SelectContent>

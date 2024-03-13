@@ -40,7 +40,6 @@ export default function FormStep1({ next }: { next: () => void }) {
         area = area === "" ? "" : `(${area})`;
         values.phone = `${code}${area}${values.phone}`;
         updateRegisterStore(values);
-        console.log(values);
         next();
     }
 
@@ -119,7 +118,7 @@ export default function FormStep1({ next }: { next: () => void }) {
             >
                 <div className="flex flex-row gap-x-2 items-center justify-center">
                     <FcGoogle />
-                    <p>S'inscrire Avec Google</p>
+                    <p>S&apos;inscrire Avec Google</p>
                 </div>
             </Button>
         </Form>
