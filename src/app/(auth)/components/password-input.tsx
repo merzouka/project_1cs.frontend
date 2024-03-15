@@ -41,11 +41,11 @@ export default function PasswordInput({
             <FormControl>
                 <div className={cn(
                     "flex items-center px-1 border border-slate-100 rounded-full focus-within:ring-2 focus-within:ring-slate-950 focus-within:ring-offset-2 bg-gray-100",
+                    "w-full",
                     className?.field
                 )}>
                     <Input type={isPasswordHidden ? "password" : "text"} 
                         className="
-                        text-xs
                         bg-transparent
                         border-0 rounded-full focus-visible:ring-0 focus-visible:ring-offset-0"
                         placeholder="Entrez votre mot de passe"

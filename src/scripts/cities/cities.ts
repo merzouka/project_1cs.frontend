@@ -1,5 +1,5 @@
 
-interface City {
+interface Province {
     province: string,
     cities: {
         id: string,
@@ -8,7 +8,7 @@ interface City {
     }[],
 }
 
-const cities: City[] = [
+const cities: Province[] = [
     {
         "province": "Alger",
         "cities": [

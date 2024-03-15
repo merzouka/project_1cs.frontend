@@ -67,3 +67,21 @@ export const registerSchema4 = z.object({
         required_error: "Requis",
     }),
 })
+
+export const passwordResetSchema = z.object({
+    password: z.string()
+    .min(8, { message: "8 caractères minimum requis." })
+    .regex(new RegExp(
+        /(?=[A-Z])/
+    ), { message: "Mot de passe doit contenir une lettre majuscule." })
+    .regex(new RegExp(
+        /(?=[a-z])/
+    ), { message: "Mot de passe doit contenir une lettre miniscule" })
+    .regex(new RegExp(
+        /(?=[0-9])/
+    ), { message: "Mot de passe doit contenir un chiffre." }),
+    confirm: z.string(),
+}).refine((data) => data.confirm == data.password, {
+    path: ["confirm"],
+    message: "La confirmation doit correspondre au mot de passe.",
+});

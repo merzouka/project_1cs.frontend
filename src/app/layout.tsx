@@ -23,7 +23,7 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={cn(
-                "min-h-screen font-sans antialiased",
+                "min-h-dvh font-sans antialiased",
                 montserrat.variable
             )}>
                 <QueryProvider>

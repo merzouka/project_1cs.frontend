@@ -22,11 +22,13 @@ import {
 import { Province, cities } from "@/constants/cities";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useRegisterStore } from "../constants/store";
+import { useRegisterStore } from "@/app/(auth)/register/constants/store";
 import { Message, register } from "@/app/(auth)/actions/credentials";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
+import { Toaster } from "@/components/ui/toaster";
+import { motion } from "framer-motion";
 
 export default function FormStep4({
     previous
@@ -77,90 +79,98 @@ export default function FormStep4({
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
-                <FormField 
-                    control={form.control}
-                    name="province"
-                    render={({ field }) => (
-                        <FormItem className="mb-2">
-                            <FormLabel>Wilaya*</FormLabel>
-                            <Select 
-                                onValueChange={(value) => {
-                                    setProvince(value);
-                                    setSelected({...selected, province: true})
-                                    field.onChange(value);
-                                }} 
-                                defaultValue={field.value}
-                                disabled={isRegisterProcessing}
-                            >
-                                <FormControl>
-                                    <SelectTrigger className={cn(
-                                        "rounded-full text-gray-500",
-                                        selected.province && "text-black"
-                                    )}>
-                                        <SelectValue placeholder="Sélectionneé votre wilaya"/>
-                                    </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    {
-                                        provinces.sort().map((province) => (
-                                            <SelectItem key={province} value={province} className="capitalize">
-                                                {province}
-                                            </SelectItem>
-                                        ))
-                                    }
-                                </SelectContent>
-                            </Select>
-                            <FormMessage className="text-xs"/>
-                        </FormItem>
-                    )}
-                />
-                <FormField 
-                    control={form.control}
-                    name="city"
-                    render={({ field }) => (
-                        <FormItem className="mb-5">
-                            <FormLabel>Commune*</FormLabel>
-                            <Select 
-                                onValueChange={(value) => {
-                                    setSelected({...selected, city: true});
-                                    field.onChange(value);
-                                }} 
-                                defaultValue={field.value}
-                                disabled={isRegisterProcessing}
-                            >
-                                <FormControl>
-                                    <SelectTrigger className={cn(
-                                        "rounded-full text-gray-500",
-                                        selected.city && "text-black"
-                                    )}>
-                                        <SelectValue placeholder="Sélectionnez votre commune"/>
-                                    </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    {
-                                        !provinceCities ?
-                                        <p>Sélectionnez une wilaya</p>:
-                                        provinceCities.cities.map((city) => (
-                                            <SelectItem key={city.id} value={city.city}>
-                                                    {city.city}
-                                            </SelectItem>
-                                        ))
-                                    }
-                                </SelectContent>
-                            </Select>
-                            <FormMessage className="text-xs"/>
-                        </FormItem>
-                    )}
-                />
-                <Button 
-                    disabled={isRegisterProcessing}
-                    type="submit" 
-                    className="bg-black hover:bg-black/70 rounded-full font-bold w-full"
-                >
-                    Créer compte
-                </Button>
-            </form>
+            <motion.div
+                key={4}
+                initial={{opacity: 0, x: 200}}
+                animate={{opacity: 1, x: 0}}
+                className="w-full"
+            >
+                <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
+                    <FormField 
+                        control={form.control}
+                        name="province"
+                        render={({ field }) => (
+                            <FormItem className="mb-2">
+                                <FormLabel>Wilaya*</FormLabel>
+                                <Select 
+                                    onValueChange={(value) => {
+                                        setProvince(provinces.find((province) => `${province.number}` == value)?.name);
+                                        setSelected({...selected, province: true})
+                                        field.onChange(value);
+                                    }} 
+                                    defaultValue={field.value}
+                                    disabled={isRegisterProcessing}
+                                >
+                                    <FormControl>
+                                        <SelectTrigger className={cn(
+                                            "rounded-full text-gray-500",
+                                            selected.province && "text-black"
+                                        )}>
+                                            <SelectValue placeholder="Sélectionneé votre wilaya"/>
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {
+                                            provinces.sort().map((province) => (
+                                                <SelectItem key={province.number} value={`${province.number}`} className="capitalize">
+                                                    {province.name}
+                                                </SelectItem>
+                                            ))
+                                        }
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage className="text-xs"/>
+                            </FormItem>
+                        )}
+                    />
+                    <FormField 
+                        control={form.control}
+                        name="city"
+                        render={({ field }) => (
+                            <FormItem className="mb-5">
+                                <FormLabel>Commune*</FormLabel>
+                                <Select 
+                                    onValueChange={(value) => {
+                                        setSelected({...selected, city: true});
+                                        field.onChange(value);
+                                    }} 
+                                    defaultValue={field.value}
+                                    disabled={isRegisterProcessing}
+                                >
+                                    <FormControl>
+                                        <SelectTrigger className={cn(
+                                            "rounded-full text-gray-500",
+                                            selected.city && "text-black"
+                                        )}>
+                                            <SelectValue placeholder="Sélectionnez votre commune"/>
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {
+                                            !provinceCities ?
+                                                <p>Sélectionnez une wilaya</p>:
+                                                provinceCities.cities.map((city) => (
+                                                    <SelectItem key={city.id} value={city.city}>
+                                                        {city.city}
+                                                    </SelectItem>
+                                                ))
+                                        }
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage className="text-xs"/>
+                            </FormItem>
+                        )}
+                    />
+                    <Button 
+                        disabled={isRegisterProcessing}
+                        type="submit" 
+                        className="bg-black hover:bg-black/70 rounded-full font-bold w-full"
+                    >
+                        Créer compte
+                    </Button>
+                </form>
+            </motion.div>
+            <Toaster />
         </Form>
     );
 }

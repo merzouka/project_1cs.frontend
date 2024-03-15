@@ -22,12 +22,13 @@ export function InputCalendar({
         value: Date;
         onChange: ((value: Date | undefined) => void);
         disabled?: boolean;
-        className?: {
+        className: {
             button?: string;
             search?: string;
             calendar?: string;
         };
     }) {
+    console.log(className);
     const dateRef = useRef<HTMLInputElement>(null);
     const [date, setDate] = useState(new Date());
     const [dateInput, setDateInput] = useState<string | undefined>(undefined);

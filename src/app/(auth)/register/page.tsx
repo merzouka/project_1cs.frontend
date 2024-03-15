@@ -1,22 +1,17 @@
 "use client";
-import Link from "next/link";
 
-import Logo from "@/app/(auth)/components/logo";
+import Logo from "@/components/ui/logo";
 import SideBanner from "@/app/(auth)/components/side-banner";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 
-import { Montserrat, Rokkitt } from "next/font/google";
+import { Rokkitt } from "next/font/google";
 
 import Forms from "./components/forms";
 import { useMutliStep } from "@/hooks/ui";
+import BottomMessage from "../components/bottom-message";
+import { AnimatePresence, motion } from "framer-motion";
 
 const rokkitt = Rokkitt({
-    subsets: ["latin"],
-    display: "swap",
-});
-
-const montserrat = Montserrat({
     subsets: ["latin"],
     display: "swap",
 });
@@ -33,42 +28,59 @@ export default function RegisterPage() {
             <div className="
                 flex justify-center items-center
                 h-full w-full
-            ">
-                <div className="flex flex-col justify-center items-center h-full">
+                ">
+                <div className="flex flex-col items-center justify-center h-full">
                     <Logo />
-                    <div aria-hidden className="flex-grow min-h-0 max-h-12"></div>
-                    <div className="flex flex-col gap-y-4 items-center justify-center">
-                        <p className={cn(
-                            "text-3xl font-bold",
-                            rokkitt.className
-                        )}>
-                            {
-                                step === 0 || step === 1 ?  "Créer un compte": "Vos informations"
-                            }
-                        </p>
+                    <div className="flex-grow max-h-12"></div>
+                    <AnimatePresence custom="wait" initial={false}>
+                        {
+                            step === 0 || step === 1 ?
+                                <motion.p className={cn(
+                                    "text-3xl font-bold",
+                                    rokkitt.className
+                                )}
+                                    key="create-account-header"
+                                    initial={{opacity: 0, x: -200}}
+                                    animate={{opacity: 1, x: 0}}
+                                    exit={{opacity: 0, x: -200}}
+                                >
+                                    {"Créer un compte"}
+                                </motion.p>:
+                                <motion.p className={cn(
+                                    "text-3xl font-bold",
+                                    rokkitt.className
+                                )}
+                                    key="info-header"
+                                    initial={{opacity: 0, x: 200}}
+                                    animate={{opacity: 1, x: 0}}
+                                    exit={{opacity: 0, x: -200}}
+                                >
+                                    {"Vos informations"}
+                                </motion.p>
+                        }
                         {
                             step === 2 &&
-                                <p className="text-gray-400 max-w-[38ch] text-center text-sm">
+                                <motion.p 
+                                    key="information"
+                                    className="text-gray-400 max-w-[38ch] text-center text-sm"
+                                    initial={{opacity: 0, x: 200}}
+                                    animate={{opacity: 1, x: 0}}
+                                    exit={{opacity: 0, x: -200}}
+                                >
                                     Entrez les détails nécessaires pour continuer.
-                                </p>
+                                </motion.p>
                         }
-                    </div>
-                    <div aria-hidden className="flex-grow min-h-0 max-h-10"></div>
-                    {
+                    </AnimatePresence>
+                    <div className="flex-grow max-h-10"></div>
+                    <AnimatePresence custom="wait" initial={false}>
                         <Forms index={step} next={next} previous={previous} />
-                    }
-
-                    <div aria-hidden className="flex-grow min-h-0 max-h-12"></div>
-                    <p className={cn(
-                        "text-xs",
-                        montserrat.className,
-                    )}>
-                        Vous avez d&eacute;ja un compte?
-                        <Button tabIndex={-1} variant="link"  className="font-bold text-black text-base">
-                            <Link className="text-xs" href="/login">Connectez-vous</Link>
-                        </Button>
-                    </p>
-                    <div aria-hidden className="flex-grow min-h-0 max-h-8"></div>
+                    </AnimatePresence>
+                    <div className="flex-grow max-h-12"></div>
+                    <BottomMessage 
+                        prompt="Vous avez déja un compte?"
+                        action="Connectez-vous"
+                    />
+                    <div className="flex-grow max-h-8"></div>
                 </div>
             </div>
             <SideBanner />
