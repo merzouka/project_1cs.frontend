@@ -1,5 +1,5 @@
 "use client";
-import { Inter, Rokkitt } from "next/font/google";
+import { Rokkitt } from "next/font/google";
 
 import { 
     Form,
@@ -22,21 +22,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Message, login } from "@/app/(auth)/actions/credentials";
-import Logo from "@/components/ui/logo";
-import SideBanner from "@/app/(auth)/components/side-banner";
-import { OAUTH_PROVIDERS } from "../actions/oauth";
+import { OAUTH_PROVIDERS } from "@/app/(auth)/actions/oauth";
 
 const rokkitt = Rokkitt({
     subsets: ["latin"],
     display: "swap",
 });
 
-const inter = Inter({
-    subsets: ["latin"],
-    display: "swap",
-})
-
-import { loginFormSchema } from "@/app/(auth)/register/constants/types";
+import { loginFormSchema } from "@/app/(auth)/constants/schemas";
 import PasswordInput from "@/app/(auth)/components/password-input";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
@@ -85,8 +78,8 @@ export default function LoginPage() {
     }
 
     return (
-        <div>
-            <div className="flex flex-col justify-center items-center h-full">
+        <>
+            <div className="flex flex-col justify-center items-center h-full lg:w-6/12">
                 <div className="flex flex-col gap-y-2 items-center justify-center">
                     <p className={cn(
                         "text-5xl font-bold",
@@ -104,10 +97,10 @@ export default function LoginPage() {
                             name="email"
                             render={({ field }) => (
                                 <FormItem className="mb-5">
-                                    <FormLabel className="text-xs">Email</FormLabel>
+                                    <FormLabel className="">Email</FormLabel>
                                     <FormControl>
                                         <Input autoFocus type="text" placeholder="Entrez votre email"
-                                            className="rounded-full text-xs bg-gray-100 border-0"
+                                            className="rounded-full bg-gray-100 border-0"
                                             {...field}
                                             disabled={isLoginProcessing}
                                         />
@@ -158,7 +151,6 @@ export default function LoginPage() {
                             type="submit" 
                             className={cn(
                                 "bg-black text-white rounded-full mb-2 font-bold hover:bg-black/70",
-                                inter.className
                             )}
                         >
                             Connexion
@@ -185,12 +177,13 @@ export default function LoginPage() {
                 <div className="flex-grow max-h-12"></div>
                 <BottomMessage 
                     prompt={"Vous n'avez pas de compte?"} 
+                    link="/register"
                     action={"Inscrivez-vous"} 
                 />
                 <div className="flex-grow max-h-8"></div>
             </div>
             <Toaster />
-        </div>
+        </>
     );
 }
 

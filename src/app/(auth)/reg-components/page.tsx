@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { Rokkitt } from "next/font/google";
 
 import Forms from "./components/forms";
-import { useMutliStep } from "@/hooks/ui";
+import { useMultiStep } from "@/hooks/ui";
 import BottomMessage from "../components/bottom-message";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -17,7 +17,7 @@ const rokkitt = Rokkitt({
 });
 
 export default function RegisterPage() {
-    const { step, next, previous } = useMutliStep(4);
+    const { step, next, previous } = useMultiStep(4);
 
     return (
         <div className="
@@ -77,6 +77,7 @@ export default function RegisterPage() {
                     </AnimatePresence>
                     <div className="flex-grow max-h-12"></div>
                     <BottomMessage 
+                        link="/login"
                         prompt="Vous avez déja un compte?"
                         action="Connectez-vous"
                     />

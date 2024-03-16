@@ -12,7 +12,7 @@ import { FcGoogle } from "react-icons/fc";
 import { OAUTH_PROVIDERS } from "@/app/(auth)/actions/oauth";
 
 // schema
-import { registerSchema1 } from "@/app/(auth)/register/constants/types";
+import { registerSchema1 } from "@/app/(auth)/constants/schemas";
 import { useRegisterStore } from "../constants/store";
 
 import { motion } from "framer-motion";

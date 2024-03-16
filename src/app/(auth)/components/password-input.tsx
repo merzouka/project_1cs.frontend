@@ -37,7 +37,7 @@ export default function PasswordInput({
 
     return (
         <FormItem className={className?.item}>
-            <FormLabel className="text-xs">{label || "Mot de passe"}</FormLabel>
+            <FormLabel className="">{label || "Mot de passe"}</FormLabel>
             <FormControl>
                 <div className={cn(
                     "flex items-center px-1 border border-slate-100 rounded-full focus-within:ring-2 focus-within:ring-slate-950 focus-within:ring-offset-2 bg-gray-100",

@@ -8,11 +8,11 @@ import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 
 // schema
-import { registerSchema2 } from "@/app/(auth)/register/constants/types";
+import { registerSchema2 } from "@/app/(auth)/constants/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import PasswordInput from "@/app/(auth)/components/password-input";
-import { useRegisterStore } from "@/app/(auth)/register/constants/store";
+import { useRegisterStore } from "@/app/(auth)/constants/register-store";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 

@@ -5,10 +5,12 @@ import Link from "next/link";
 export default function BottomMessage({
     action,
     prompt,
+    link,
     className,
     }: {
         action: string;
         prompt: string;
+        link: string;
         className?: {
             wrapper?: string,
             button?: string,
@@ -30,7 +32,7 @@ export default function BottomMessage({
                 )}>
                 <Link className={cn(
                     "text-xs" 
-                )} href="/register">
+                )} href={link}>
                     {action}
                 </Link>
             </Button>

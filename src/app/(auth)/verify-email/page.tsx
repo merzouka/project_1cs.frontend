@@ -3,7 +3,6 @@ import { Toaster } from "@/components/ui/toaster";
 import SideBanner from "@/app/(auth)/components/side-banner";
 import Logo from "@/components/ui/logo";
 import { useUserStore } from "@/stores/user-store";
-// import { useRouter } from "next/navigation";
 import { 
     Form,
     FormControl,
@@ -21,17 +20,17 @@ import { Inter } from "next/font/google";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
-import { AUTH_ENDPOINT, BACKEND_URL } from "@/constants/apis";
+import { getUrl, endpoints } from "@/constants/api";
 import { useToast } from "@/components/ui/use-toast";
 import { BsPatchCheck } from "react-icons/bs";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
+import { useRegisterStore } from "../constants/register-store";
 
 // fonts
 const inter = Inter({
     subsets: ["latin"],
 });
-
 
 const verifyEmailSchema = z.object({
     code: z.string({ required_error: "Veuillez saisir votre code" }),
@@ -44,7 +43,7 @@ export default function VerifyEmailPage() {
     //     router.push("/login");
     // }
 
-    const email = useUserStore((state) => state.email) || "youness@gmail.com";
+    const { email } = useRegisterStore((state) => state.entries);
     const form = useForm<z.infer<typeof verifyEmailSchema>>({
         resolver: zodResolver(verifyEmailSchema),
         defaultValues: {
@@ -58,7 +57,7 @@ export default function VerifyEmailPage() {
         queryFn: async () => {
             setSendingEmail(false);
             try {
-                const response = await axios.post(`${BACKEND_URL}${AUTH_ENDPOINT}/send-email`, { id: id });
+                const response = await axios.post(getUrl(endpoints.verificationEmail), { email: email});
                 toast({
                     description: "Un email de vérification vous a été envoyé.",
                 })
@@ -85,10 +84,10 @@ export default function VerifyEmailPage() {
         queryFn: async () => {
             setSendingOTP(false);
             try {
-                const response = await axios.post(`${BACKEND_URL}${AUTH_ENDPOINT}/verify-otp`, { id: id, code: code })
+                const response = await axios.post(getUrl(endpoints.otpVerification), { email: email, code: code })
                 return response;
             } catch (error) {
-                if (error instanceof AxiosError && OTPError?.response) {
+                if (error instanceof AxiosError && error?.response) {
                     toast({
                         title: "Erreur",
                         description: "Le code que vous avez fourni est incorrect.",

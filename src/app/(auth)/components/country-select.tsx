@@ -34,7 +34,10 @@ export default function CountrySelect({
 
     return (
         <Select disabled={disabled} onValueChange={onChange} defaultValue={defaultValue}>
-            <SelectTrigger className={className?.trigger}>
+            <SelectTrigger className={cn(
+                className?.trigger,
+                "focus-visible:ring focus-visible:ring-blue-300 focus-visible:ring-offset-0"
+            )}>
                 <SelectValue placeholder={
                     <IconCountry 
                         country={{
