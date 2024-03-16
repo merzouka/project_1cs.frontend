@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import CountrySelect from "../../components/country-select";
-import { Montserrat } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -15,12 +14,6 @@ import { OAUTH_PROVIDERS } from "@/app/(auth)/actions/oauth";
 // schema
 import { registerSchema1 } from "@/app/(auth)/register/constants/types";
 import { useRegisterStore } from "../constants/store";
-
-// fonts
-const montserrat = Montserrat({
-    subsets: ["latin"],
-    display: "swap",
-});
 
 import { motion } from "framer-motion";
 
@@ -56,7 +49,6 @@ export default function FormStep1({ next }: { next: () => void }) {
             >
                 <form onSubmit={form.handleSubmit(handleSubmit)} className={cn(
                     "w-full",
-                    montserrat.className
                 )}>
                     <FormField
                         control={form.control}
@@ -109,7 +101,9 @@ export default function FormStep1({ next }: { next: () => void }) {
                     />
                     <Button 
                         type="submit" 
-                        className="w-full font-bold rounded-full mb-2 bg-black hover:bg-black/90" 
+                        className={cn(
+                            "w-full font-bold rounded-full mb-2 bg-black hover:bg-black/90",
+                        )}
                         disabled={isOauthRegsitering}
                     >
                         Continuer

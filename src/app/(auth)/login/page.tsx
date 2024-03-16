@@ -1,6 +1,5 @@
 "use client";
-import { Rokkitt } from "next/font/google";
-import { Montserrat } from "next/font/google";
+import { Inter, Rokkitt } from "next/font/google";
 
 import { 
     Form,
@@ -32,10 +31,10 @@ const rokkitt = Rokkitt({
     display: "swap",
 });
 
-const montserrat = Montserrat({
+const inter = Inter({
     subsets: ["latin"],
     display: "swap",
-});
+})
 
 import { loginFormSchema } from "@/app/(auth)/register/constants/types";
 import PasswordInput from "@/app/(auth)/components/password-input";
@@ -87,113 +86,108 @@ export default function LoginPage() {
 
     return (
         <div>
-            <div className={cn(
-                "grid grid-cols-1 lg:grid-cols-2 | min-h-dvh | p-1 md:p-3",
-                montserrat.className
-            )}>
-                <SideBanner />
-                <div className="flex flex-col justify-center items-center
-                    w-full h-full
-                    px-8">
-                    <div className="flex flex-col justify-center items-center h-full">
-                        <Logo />
-                        <div className="flex-grow max-h-12"></div>
-                        <div className="flex flex-col gap-y-2 items-center justify-center">
-                            <p className={cn(
-                                "text-5xl font-bold",
-                                rokkitt.className
-                            )}>Bienvenue</p>
-                            <p className="text-gray-400 text-center text-xs max-w-[40ch]">
-                                Entrez votre adresse e-mail et votre mot de passe pour accéder à votre compte
-                            </p>
-                        </div>
-                        <div className="flex-grow max-h-10"></div>
-                        <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col w-full">
-                                <FormField
-                                    control={form.control}
-                                    name="email"
-                                    render={({ field }) => (
-                                        <FormItem className="mb-5">
-                                            <FormLabel className="text-xs">Email</FormLabel>
-                                            <FormControl>
-                                                <Input autoFocus type="text" placeholder="Entrez votre email"
-                                                    className="rounded-full text-xs bg-gray-100 border-0"
-                                                    {...field}
-                                                    disabled={isLoginProcessing}
-                                                />
-                                            </FormControl>
-                                            <FormMessage className="text-sm" />
-                                        </FormItem> 
-                                    )}>
-                                </FormField>
-
-                                <FormField
-                                    control={form.control}
-                                    name="password"
-                                    render={({ field }) => (
-                                        <PasswordInput 
-                                            onChange={field.onChange}
-                                            onBlur={field.onBlur}
-                                            value={field.value}
-                                            disabled={isLoginProcessing} />
-                                    )}>
-                                </FormField>
-                                <div className="flex justify-between items-center mb-3">
-                                    <FormField
-                                        control={form.control}    
-                                        name="persist"
-                                        render={({ field }) => (
-                                            <FormItem className="space-y-0 flex flex-row gap-x-2 items-center justify-center">
-                                                <FormControl>
-                                                    <Checkbox 
-                                                        className="border-slate-300 rounded-[5px]"
-                                                        checked={field.value} 
-                                                        onCheckedChange={field.onChange}
-                                                        disabled={isLoginProcessing}
-                                                    />
-                                                </FormControl>
-                                                <FormLabel className="m-0 text-xs">Se souvenir de moi</FormLabel>
-                                            </FormItem> 
-                                        )}
-                                    >
-                                    </FormField>
-                                    <Button variant={"link"} tabIndex={-1}>
-                                        <Link href="/forgot-password" className="text-xs">
-                                            Mot de passe oubli&eacute;?
-                                        </Link>
-                                    </Button>
-                                </div>
-                                <Button disabled={isLoginProcessing} type="submit" className="bg-black text-white rounded-full mb-2 font-bold hover:bg-black/70">
-                                    Connexion
-                                </Button>
-                            </form>
-                        </Form>
-                        <Button className="flex justify-center
-                            w-full border rounded-full
-                            hover:bg-transparent hover:border-slate-500
-                            bg-white text-black "
-                            disabled={isLoginProcessing}
-                            onClick={() => {
-                                setIsLoginProcessing(true);
-                                OAUTH_PROVIDERS.google.login();
-                                setIsLoginProcessing(false);
-                            }}
-                        >
-                            <div className="flex flex-row gap-x-2 items-center justify-center">
-                                <FcGoogle />
-                                <p>Connexion Avec Google</p>
-                            </div>
-                        </Button>
-
-                        <div className="flex-grow max-h-12"></div>
-                        <BottomMessage 
-                            prompt={"Vous n'avez pas de compte?"} 
-                            action={"Inscrivez-vous"} 
-                        />
-                        <div className="flex-grow max-h-8"></div>
-                    </div>
+            <div className="flex flex-col justify-center items-center h-full">
+                <div className="flex flex-col gap-y-2 items-center justify-center">
+                    <p className={cn(
+                        "text-5xl font-bold",
+                        rokkitt.className
+                    )}>Bienvenue</p>
+                    <p className="text-gray-400 text-center text-xs max-w-[40ch]">
+                        Entrez votre adresse e-mail et votre mot de passe pour accéder à votre compte
+                    </p>
                 </div>
+                <div className="flex-grow max-h-10"></div>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col w-full">
+                        <FormField
+                            control={form.control}
+                            name="email"
+                            render={({ field }) => (
+                                <FormItem className="mb-5">
+                                    <FormLabel className="text-xs">Email</FormLabel>
+                                    <FormControl>
+                                        <Input autoFocus type="text" placeholder="Entrez votre email"
+                                            className="rounded-full text-xs bg-gray-100 border-0"
+                                            {...field}
+                                            disabled={isLoginProcessing}
+                                        />
+                                    </FormControl>
+                                    <FormMessage className="text-sm" />
+                                </FormItem> 
+                            )}>
+                        </FormField>
+
+                        <FormField
+                            control={form.control}
+                            name="password"
+                            render={({ field }) => (
+                                <PasswordInput 
+                                    onChange={field.onChange}
+                                    onBlur={field.onBlur}
+                                    value={field.value}
+                                    disabled={isLoginProcessing} />
+                            )}>
+                        </FormField>
+                        <div className="flex justify-between items-center mb-3">
+                            <FormField
+                                control={form.control}    
+                                name="persist"
+                                render={({ field }) => (
+                                    <FormItem className="space-y-0 flex flex-row gap-x-2 items-center justify-center">
+                                        <FormControl>
+                                            <Checkbox 
+                                                className="border-slate-300 rounded-[5px]"
+                                                checked={field.value} 
+                                                onCheckedChange={field.onChange}
+                                                disabled={isLoginProcessing}
+                                            />
+                                        </FormControl>
+                                        <FormLabel className="m-0 text-xs">Se souvenir de moi</FormLabel>
+                                    </FormItem> 
+                                )}
+                            >
+                            </FormField>
+                            <Button variant={"link"} tabIndex={-1}>
+                                <Link href="/forgot-password" className="text-xs">
+                                    Mot de passe oubli&eacute;?
+                                </Link>
+                            </Button>
+                        </div>
+                        <Button 
+                            disabled={isLoginProcessing} 
+                            type="submit" 
+                            className={cn(
+                                "bg-black text-white rounded-full mb-2 font-bold hover:bg-black/70",
+                                inter.className
+                            )}
+                        >
+                            Connexion
+                        </Button>
+                    </form>
+                </Form>
+                <Button className="flex justify-center
+                    w-full border rounded-full
+                    hover:bg-transparent hover:border-slate-500
+                    bg-white text-black "
+                    disabled={isLoginProcessing}
+                    onClick={() => {
+                        setIsLoginProcessing(true);
+                        OAUTH_PROVIDERS.google.login();
+                        setIsLoginProcessing(false);
+                    }}
+                >
+                    <div className="flex flex-row gap-x-2 items-center justify-center">
+                        <FcGoogle />
+                        <p>Connexion Avec Google</p>
+                    </div>
+                </Button>
+
+                <div className="flex-grow max-h-12"></div>
+                <BottomMessage 
+                    prompt={"Vous n'avez pas de compte?"} 
+                    action={"Inscrivez-vous"} 
+                />
+                <div className="flex-grow max-h-8"></div>
             </div>
             <Toaster />
         </div>

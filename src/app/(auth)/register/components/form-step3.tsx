@@ -138,7 +138,9 @@ export default function FormStep3({
                             </FormItem>
                         )}
                     />
-                    <Button type="submit" className="rounded-full bg-black hover:bg-black/70 w-full font-bold">
+                    <Button type="submit" className={cn(
+                        "rounded-full bg-black hover:bg-black/70 w-full font-bold",
+                    )}>
                         Continuer
                     </Button>
                 </form>

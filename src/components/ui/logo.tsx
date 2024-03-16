@@ -26,14 +26,16 @@ const variants = {
         height: 222,
     },
 }
-interface LogoVariant {
-    size?: "xs" | "small" | "medium" | "large" | "xl"
+interface LogoProps {
+    size?: "xs" | "small" | "medium" | "large" | "xl",
+    className?: string,
 }
 
-export default function Logo({ size }: LogoVariant) {
+export default function Logo({ size, className }: LogoProps) {
     return (
 
         <Image
+            className={className}
             src="/logo.svg" 
             alt="our logo" 
             width={variants[size || "default"].width}

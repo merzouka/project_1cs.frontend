@@ -164,7 +164,9 @@ export default function FormStep4({
                     <Button 
                         disabled={isRegisterProcessing}
                         type="submit" 
-                        className="bg-black hover:bg-black/70 rounded-full font-bold w-full"
+                        className={cn(
+                            "bg-black hover:bg-black/70 rounded-full font-bold w-full",
+                        )}
                     >
                         Créer compte
                     </Button>

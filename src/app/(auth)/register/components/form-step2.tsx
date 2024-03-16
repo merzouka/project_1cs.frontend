@@ -14,6 +14,7 @@ import { z } from "zod";
 import PasswordInput from "@/app/(auth)/components/password-input";
 import { useRegisterStore } from "@/app/(auth)/register/constants/store";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 export default function FormStep2({
     next,
@@ -75,7 +76,9 @@ export default function FormStep2({
                     />
                     <Button 
                         type="submit" 
-                        className="rounded-full w-full font-bold bg-black hover:bg-black/90"
+                        className={cn(
+                            "rounded-full w-full font-bold bg-black hover:bg-black/90",
+                        )}
                     >
                         Continuer
                     </Button>
