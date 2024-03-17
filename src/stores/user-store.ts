@@ -1,19 +1,17 @@
 import { create } from "zustand";
 
-interface State {
+interface User {
     id: number | string | undefined;
     email: string;
 }
 
 interface Actions {
-    setId: (id: number | string) => void;
-    setEmail: (email: string) => void;
+    setUser: (user: User) => void;
 }
 
 
-export const useUserStore = create<State & Actions>((set) => ({
+export const useUserStore = create<User & Actions>((set) => ({
     id: undefined,
     email: "",
-    setId: (id) => set({id : id}),
-    setEmail: (email) => set({email: email})
+    setUser: (user) => set({...user}),
 }));

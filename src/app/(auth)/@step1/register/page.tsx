@@ -28,6 +28,10 @@ import { motion } from "framer-motion";
 
 // fonts
 import { Rokkitt } from "next/font/google";
+import { useQuery } from "@tanstack/react-query";
+import axios, { AxiosError } from "axios";
+import { endpoints, getUrl } from "@/constants/api";
+import { useToast } from "@/components/ui/use-toast";
 const rokkitt = Rokkitt({
     subsets: ["latin"],
     display: "swap",
@@ -48,18 +52,50 @@ export default function Step() {
     const [countryCode, setCountryCode] = useState("+213");
 
     const { next } = useMultiStepRegister();
-    function handleSubmit(values: z.infer<typeof registerSchema1>){
+    const { toast } = useToast();
+    const [sendingUniquenessVerification, setSendingUniquenessVerification] = useState(false);
+    const { isLoading: isVerifyingUniqueEmail } = useQuery({
+        queryKey: ["unique email"],
+        queryFn: async () => {
+            try {
+                setSendingUniquenessVerification(false);
+                const response = axios.post(getUrl(endpoints.emailUnique), { email: entries.email });
+                next();
+                return response;
+            } catch (error) {
+                if (error instanceof AxiosError && error.response) {
+                    toast({
+                        title: "Email déjà utilisé",
+                        description: "Essayez d'utiliser une autre adresse e-mail.",
+                        variant: "destructive",
+                    })
+                    throw new Error("duplicate email");
+                } else {
+                    toast({
+                        title: "Erreur de connexion",
+                        description: "Nous nous pouvons pas connecter au serveur",
+                        variant: "destructive",
+                    });
+                    throw new Error("connection error");
+                }
+            }
+        },
+        enabled: sendingUniquenessVerification,
+        retry: false,
+    });
+    function onSubmit(values: z.infer<typeof registerSchema1>){
         let [code, area] = countryCode.includes("-") ? countryCode.split("-") : [countryCode, ""];
         area = area === "" ? "" : `(${area})`;
         values.phone = `${code}${area}-${values.phone}`;
         updateRegisterStore(values);
-        next();
+        setSendingUniquenessVerification(true);
     }
 
     return (
         <>
             <motion.p className={cn(
                 "text-3xl font-bold",
+                "text-center",
                 rokkitt.className
             )}
                 key="step 1 title"
@@ -76,10 +112,10 @@ export default function Step() {
                     initial={{opacity: 0, x: -200}}
                     animate={{opacity: 1, x: 0}}
                     exit={{opacity: 0, x: -200}}
-                    className="md:w-11/12 lg:w-6/12"
+                    className=""
                 >
-                    <form onSubmit={form.handleSubmit(handleSubmit)} className={cn(
-                        "w-full",
+                    <form onSubmit={form.handleSubmit(onSubmit)} className={cn(
+                        "w-full md:w-80 lg:w-[22rem]",
                     )}>
                         <FormField
                             control={form.control}
@@ -91,7 +127,7 @@ export default function Step() {
                                         <Input autoFocus type="text" placeholder="Entrez votre email"
                                             className="rounded-full bg-gray-100 border-0 font-medium"
                                             {...field}
-                                            disabled={isOauthRegsitering}
+                                            disabled={isOauthRegsitering || isVerifyingUniqueEmail}
                                         />
                                     </FormControl>
                                     <FormMessage className="text-xs" />
@@ -114,7 +150,7 @@ export default function Step() {
                                         <CountrySelect className={{
                                             trigger: "rounded-l-full focus:ring-0 focus:ring-offset-0 bg-transparent border-0 w-24 pe-0", 
                                         }} 
-                                            disabled={isOauthRegsitering}
+                                            disabled={isOauthRegsitering || isVerifyingUniqueEmail}
                                             onChange={setCountryCode} 
                                         />
                                         <Input
@@ -123,7 +159,7 @@ export default function Step() {
                                             focus-visible:ring-0 focus-visible:ring-offset-0 font-medium"
                                             placeholder="Entrez le numéro de téléphone"
                                             {...field}
-                                            disabled={isOauthRegsitering}
+                                            disabled={isOauthRegsitering || isVerifyingUniqueEmail}
                                         />
                                     </div>
                                     <FormMessage className="text-xs" />
@@ -135,7 +171,7 @@ export default function Step() {
                             className={cn(
                                 "w-full font-bold rounded-full mb-2 bg-black hover:bg-black/90",
                             )}
-                            disabled={isOauthRegsitering}
+                            disabled={isOauthRegsitering || isVerifyingUniqueEmail}
                         >
                             Continuer
                         </Button>

@@ -2,8 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 // hooks
-import { usePathname, useSelectedLayoutSegment } from "next/navigation";
-import { useState } from "react";
+import { useSelectedLayoutSegment } from "next/navigation";
 
 // components
 import SideBanner from "./components/side-banner";
@@ -13,7 +12,6 @@ import { Button } from "@/components/ui/button";
 // icons
 import { FaArrowLeft } from "react-icons/fa";
 import { useMultiStepRegister } from "./hooks/use-mutli-step-register";
-import { DirectionContext } from "./constants/contexts";
 import BottomMessage from "./components/bottom-message";
 
 function getActiveStep(step: number, ...steps: React.ReactNode[]) {
@@ -32,12 +30,11 @@ export default function AuthLayout({
         step6: React.ReactNode,
     }) {
     const loginSegment = useSelectedLayoutSegment("login");
-    const registerSteps = 4
+    const registerSteps = 6 
     const { step, previous } = useMultiStepRegister(registerSteps);
-    const [direction, setDirection] = useState("forward");
+    console.log(loginSegment);
 
     return (
-        <DirectionContext.Provider value={direction}>
             <div className="grid grid-cols-1 lg:grid-cols-2 place-items-center | 
                 p-1 lg:p-3 h-dvh">
                 <AnimatePresence custom="wait" initial={false}>
@@ -53,10 +50,30 @@ export default function AuthLayout({
                                 <SideBanner />
                             </motion.div>
                     }
-                    <main className="flex flex-col justify-center items-center w-full h-full">
+                    <main className="flex flex-col justify-center items-center w-full lg:w-fit h-full relative">
                         <Logo className="" />
                         <div aria-hidden className="flex-grow-[1]"></div>
                         <AnimatePresence custom="wait" initial={false}>
+                            {
+                                step > 3 &&
+                                    <motion.div
+                                        initial={{opacity: 0}}
+                                        animate={{opacity: 1}}
+                                        exit={{opacity: 0}}
+                                    >
+                                        <Button 
+                                            className="
+                                            absolute top-0 md:top-3 left-0
+                                            focus-visible:ring focus-visible:ring-slate-900 
+                                            focus-visible:ring-offset-2 focus-visible::ring-offset-black
+                                            rounded-full p-3 w-10 h-10 lg:w-15 lg:h-15 
+                                            bg-transparent hover:bg-white hover:shadow-md" 
+                                            onClick={() => previous()} 
+                                        >
+                                            <FaArrowLeft className="text-black w-12 h-12"/>
+                                        </Button>
+                                    </motion.div>
+                            }
                             {
                                 loginSegment === "children" ?
                                     <motion.div
@@ -74,20 +91,8 @@ export default function AuthLayout({
                                         initial={{opacity: 0}}
                                         animate={{opacity: 1}}
                                         exit={{opacity: 0}}
-                                        className="w-full h-full flex flex-col justify-center items-center relative"
+                                        className="w-full h-full flex flex-col justify-center items-center px-4 lg:px-0"
                                     >
-                                        {
-                                            step > 2 &&
-                                                <Button 
-                                                    className="
-                                                    absolute top-0 right-0
-                                                    rounded-full p-3 w-10 h-10 lg:w-15 lg:h-15 
-                                                    bg-transparent hover:bg-white hover:shadow-md" 
-                                                    onClick={() => previous} 
-                                                >
-                                                    <FaArrowLeft />
-                                                </Button>
-                                        }
                                         <AnimatePresence custom="wait" initial={false}>
                                             {getActiveStep(
                                                 step,
@@ -124,6 +129,5 @@ export default function AuthLayout({
                     }
                 </AnimatePresence>
             </div>
-        </DirectionContext.Provider>
 );
 }

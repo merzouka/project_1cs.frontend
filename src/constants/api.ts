@@ -7,6 +7,7 @@ export const endpoints = {
     register: "auth/register",
     verificationEmail: "auth/verification-email",
     otpVerification: "auth/verify-otp",
+    emailUnique: "auth/email-unique",
 }
 
 export function getUrl(endpoint: string) {

@@ -21,7 +21,6 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Message, login } from "@/app/(auth)/actions/credentials";
 import { OAUTH_PROVIDERS } from "@/app/(auth)/actions/oauth";
 
 const rokkitt = Rokkitt({
@@ -37,6 +36,9 @@ import { useUserStore } from "@/stores/user-store";
 
 import BottomMessage from "@/app/(auth)/components/bottom-message";
 import { Toaster } from "@/components/ui/toaster";
+import { useQuery } from "@tanstack/react-query";
+import axios, { AxiosError } from "axios";
+import { endpoints, getUrl } from "@/constants/api";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -49,37 +51,46 @@ export default function LoginPage() {
             persist: false,
         }
     });
-    const [isLoginProcessing, setIsLoginProcessing] = useState(false);
+    const [isLoginEnabled, setIsLoginEnabled] = useState(false);
     const { toast } = useToast();
 
-    const setUserId = useUserStore((state) => state.setId);
+    const setUser = useUserStore((state) => state.setUser);
+    const [entries, setEntries] = useState({});
+    const { isLoading } = useQuery({
+        queryKey: ["login"],
+        queryFn: async () => {
+            try {
+                setIsLoginEnabled(false);
+                const response = await axios.post(getUrl(endpoints.login), entries);
+                setUser(response.data);
+                router.push(`/profile/${response.data.id}`);
+                return response;
+            } catch (error) {
+                if (error instanceof AxiosError && error.response) {
+                    toast({
+                        title: "Identifiants incorrects",
+                        description: "Veuillez réessayer",
+                        variant: "destructive",
+                    });
+                } else {
+                    toast({
+                        title: "Erreur de connexion",
+                        description: "Nous ne pouvons pas connecter au serveur",
+                        variant: "destructive",
+                    });
+                }
+            }
+        },
+        enabled: isLoginEnabled,
+        retry: false,
+    });
     async function onSubmit(values: z.infer<typeof loginFormSchema>) {
-        setIsLoginProcessing(true);
-        const response = await login(values);
-        setIsLoginProcessing(false);
-        if (response.type == Message.Success) {
-            setUserId(response.value);
-            router.push(`/profile/${response.value}`);
-            return;
-        }
-        if (response.value === "") {
-            toast({
-                title: "Erreur de connexion",
-                description: "Nous ne pouvons pas connecter au serveur",
-                variant: "destructive",
-            });
-            return;
-        }
-        toast({
-            title: "Identifiants incorrects",
-            description: "Veuillez réessayer",
-            variant: "destructive",
-        });
+        setEntries({...values});
     }
 
     return (
         <>
-            <div className="flex flex-col justify-center items-center h-full lg:w-6/12">
+            <div className="flex flex-col justify-center items-center h-full w-full md:w-80 lg:w-[22rem] px-4 lg:px-0">
                 <div className="flex flex-col gap-y-2 items-center justify-center">
                     <p className={cn(
                         "text-5xl font-bold",
@@ -102,7 +113,7 @@ export default function LoginPage() {
                                         <Input autoFocus type="text" placeholder="Entrez votre email"
                                             className="rounded-full bg-gray-100 border-0"
                                             {...field}
-                                            disabled={isLoginProcessing}
+                                            disabled={isLoading}
                                         />
                                     </FormControl>
                                     <FormMessage className="text-sm" />
@@ -118,7 +129,7 @@ export default function LoginPage() {
                                     onChange={field.onChange}
                                     onBlur={field.onBlur}
                                     value={field.value}
-                                    disabled={isLoginProcessing} />
+                                    disabled={isLoading} />
                             )}>
                         </FormField>
                         <div className="flex justify-between items-center mb-3">
@@ -132,7 +143,7 @@ export default function LoginPage() {
                                                 className="border-slate-300 rounded-[5px]"
                                                 checked={field.value} 
                                                 onCheckedChange={field.onChange}
-                                                disabled={isLoginProcessing}
+                                                disabled={isLoading}
                                             />
                                         </FormControl>
                                         <FormLabel className="m-0 text-xs">Se souvenir de moi</FormLabel>
@@ -147,7 +158,7 @@ export default function LoginPage() {
                             </Button>
                         </div>
                         <Button 
-                            disabled={isLoginProcessing} 
+                            disabled={isLoading} 
                             type="submit" 
                             className={cn(
                                 "bg-black text-white rounded-full mb-2 font-bold hover:bg-black/70",
@@ -161,11 +172,11 @@ export default function LoginPage() {
                     w-full border rounded-full
                     hover:bg-transparent hover:border-slate-500
                     bg-white text-black "
-                    disabled={isLoginProcessing}
+                    disabled={isLoading}
                     onClick={() => {
-                        setIsLoginProcessing(true);
+                        setIsLoginEnabled(true);
                         OAUTH_PROVIDERS.google.login();
-                        setIsLoginProcessing(false);
+                        setIsLoginEnabled(false);
                     }}
                 >
                     <div className="flex flex-row gap-x-2 items-center justify-center">

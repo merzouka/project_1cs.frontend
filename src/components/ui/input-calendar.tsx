@@ -28,7 +28,6 @@ export function InputCalendar({
             calendar?: string;
         };
     }) {
-    console.log(className);
     const dateRef = useRef<HTMLInputElement>(null);
     const [date, setDate] = useState(new Date());
     const [dateInput, setDateInput] = useState<string | undefined>(undefined);

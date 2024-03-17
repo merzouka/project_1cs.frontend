@@ -37,30 +37,21 @@ export default function Step() {
     });
     const updateRegisterStore = useRegisterStore((state) => state.updateEntries)
 
-    const { next } = useMultiStepRegister();
+    const { next, direction } = useMultiStepRegister();
     function onSubmit(values: z.infer<typeof registerSchema2>) {
         updateRegisterStore({password: values.password});
         next();
     }
+    const initial = direction == "forward"? {opacity: 0, x: 200} : {opacity: 0, x: -200};
     return (
         <>
             <motion.p className={cn(
-                "text-3xl font-bold mb-3",
-                rokkitt.className
-            )}
-                key="info-header"
-                initial={{opacity: 0, x: 200}}
-                animate={{opacity: 1, x: 0}}
-                exit={{opacity: 0, x: -200}}
-            >
-                {"Vos informations"}
-            </motion.p>
-            <motion.p className={cn(
                 "text-3xl font-bold",
+                "text-center",
                 rokkitt.className
             )}
                 key="create-account-header"
-                initial={{opacity: 0, x: -200}}
+                initial={initial}
                 animate={{opacity: 1, x: 0}}
                 exit={{opacity: 0, x: -200}}
             >
@@ -70,12 +61,12 @@ export default function Step() {
             <Form {...form}>
                 <motion.div
                     key={2}
-                    initial={{opacity: 0, x: 200}}
+                    initial={initial}
                     animate={{opacity: 1, x: 0}}
                     exit={{opacity: 0, x: -200}}
-                    className="w-full lg:w-7/12 flex items-center justify-center"
+                    className="w-full flex items-center justify-center md:w-80 lg:w-[22rem]"
                 >
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="w-full flex items-center justify-center">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
                         <FormField 
                             control={form.control}
                             name="password"
