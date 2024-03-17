@@ -3,6 +3,7 @@ import Image from "next/image";
 export default function SideBanner() {
     return (
         <div className="
+            z-[99]
             hidden lg:block rounded-lg relative |
             h-full w-full
             ">

@@ -110,7 +110,7 @@ export default function LoginPage() {
                                 <FormItem className="mb-5">
                                     <FormLabel className="">Email</FormLabel>
                                     <FormControl>
-                                        <Input autoFocus type="text" placeholder="Entrez votre email"
+                                        <Input type="text" placeholder="Entrez votre email"
                                             className="rounded-full bg-gray-100 border-0"
                                             {...field}
                                             disabled={isLoading}

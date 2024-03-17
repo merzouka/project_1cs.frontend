@@ -124,7 +124,7 @@ export default function Step() {
                                 <FormItem className="mb-3">
                                     <FormLabel>Email</FormLabel>
                                     <FormControl>
-                                        <Input autoFocus type="text" placeholder="Entrez votre email"
+                                        <Input type="text" placeholder="Entrez votre email"
                                             className="rounded-full bg-gray-100 border-0 font-medium"
                                             {...field}
                                             disabled={isOauthRegsitering || isVerifyingUniqueEmail}
