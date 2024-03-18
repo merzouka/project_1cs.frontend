@@ -1,4 +1,7 @@
 "use client";
+// animations
+import { slideInRightExitLeft } from "@/constants/animations";
+
 // hooks
 import { useState } from "react";
 import { MultiStepKeys, useMultiStep } from "@/app/(auth)/hooks/use-mutli-step-register";
@@ -38,7 +41,6 @@ const rokkitt = Rokkitt({
 });
 
 export default function Step() {
-
     const updateRegisterStore = useRegisterStore((state) => state.updateEntries);
     const entries = useRegisterStore((state) => state.entries);
     const form = useForm<z.infer<typeof registerSchema1>>({
@@ -59,9 +61,9 @@ export default function Step() {
         queryKey: ["unique email"],
         queryFn: async () => {
             try {
+                next();
                 setSendingUniquenessVerification(false);
                 const response = axios.post(getUrl(endpoints.emailUnique), { email: entries.email });
-                next();
                 return response;
             } catch (error) {
                 if (error instanceof AxiosError && error.response) {
@@ -95,24 +97,20 @@ export default function Step() {
     return (
         <>
             <motion.p className={cn(
-                "text-3xl font-bold",
+                "text-4xl font-bold",
                 "text-center",
                 rokkitt.className
             )}
-                key="step 1 title"
-                initial={{opacity: 0, x: -200}}
-                animate={{opacity: 1, x: 0}}
-                exit={{opacity: 0, x: -200}}
+                key="step-1-header"
+                {...slideInRightExitLeft}
             >
                 {"Créer un compte"}
             </motion.p>
             <div className="flex-grow max-h-10"></div>
             <Form {...form}>
                 <motion.div
-                    key="step 1 form"
-                    initial={{opacity: 0, x: -200}}
-                    animate={{opacity: 1, x: 0}}
-                    exit={{opacity: 0, x: -200}}
+                    key="step-1-form"
+                    {...slideInRightExitLeft}
                     className=""
                 >
                     <form onSubmit={form.handleSubmit(onSubmit)} className={cn(
@@ -189,7 +187,7 @@ export default function Step() {
                     >
                         <div className="flex flex-row gap-x-2 items-center justify-center">
                             <FcGoogle />
-                            <p>S&apos;inscrire Avec Google</p>
+                            <p>{"S'inscrire Avec Google"}</p>
                         </div>
                     </Button>
 

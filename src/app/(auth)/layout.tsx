@@ -14,6 +14,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import { MultiStepKeys, useMultiStep } from "./hooks/use-mutli-step-register";
 import BottomMessage from "./components/bottom-message";
 import { cn } from "@/lib/utils";
+import { fade } from "@/constants/animations";
 
 function getActiveStep(step: number, ...steps: React.ReactNode[]) {
     return steps[step];
@@ -26,7 +27,7 @@ function isLeft(pathname: string) {
 }
 
 export default function AuthLayout({
-    login, step1, step2, step3, step4, step5, step6, resetPassword, resetEmail, resetEmailSent
+    login, step1, step2, step3, step4, step5, step6, resetPassword, resetEmail, resetEmailSent, resetSuccess
     }: {
         login: React.ReactNode,
         step1: React.ReactNode,
@@ -38,6 +39,7 @@ export default function AuthLayout({
         resetPassword: React.ReactNode,
         resetEmail: React.ReactNode,
         resetEmailSent: React.ReactNode,
+        resetSuccess: React.ReactNode,
     }) {
     const pathname = usePathname();
     const registerSteps = 6 
@@ -48,17 +50,9 @@ export default function AuthLayout({
     const { step: resetEmailStep, setMax: setResetEmailMax } = useMultiStep(MultiStepKeys.resetEmail);
     setResetEmailMax(resetEmailSteps);
 
-    const animation = {
-        initial: {
-            opacity: 0,
-        },
-        animate: {
-            opacity: 1,
-        },
-        transition: {
-            duration: 0.5,
-        }
-    }
+    const resetPasswordSteps = 2
+    const { step: resetPasswordStep, setMax: setResetPasswordMax } = useMultiStep(MultiStepKeys.resetPassword);
+    setResetPasswordMax(resetPasswordSteps);
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 place-items-center | 
@@ -66,8 +60,7 @@ export default function AuthLayout({
             <AnimatePresence custom="wait" initial={false}>
                 <LayoutGroup>
                     <motion.div
-                        key="side banner"
-                        {...animation}
+                        key="side-banner"
                         className={cn(
                             "hidden lg:flex w-full h-full justify-center align-center col-span-1 row-start-1 row-span-1",
                         )}
@@ -80,9 +73,9 @@ export default function AuthLayout({
                     {
                         pathname.includes("reset-password-email") &&
                             <motion.main 
-                                key="reset password email"
-                                {...animation}
-                                className="flex flex-col justify-center items-center w-full lg:w-fit h-full relative lg:col-start-2 col-start-1 col-span-1 row-start-1 row-span-1"
+                                key="reset-password-email"
+                                {...fade}
+                                className="flex flex-col justify-center items-center w-full px-4 lg:px-0 h-full relative lg:col-start-2 col-start-1 col-span-1 row-start-1 row-span-1"
                             >
                                 <Logo />
                                 <div aria-hidden className="flex-grow-[1]"></div>
@@ -97,10 +90,29 @@ export default function AuthLayout({
                             </motion.main>
                     }
                     {
+                        (pathname.includes("reset-password") && !pathname.includes("reset-password-email")) &&
+                            <motion.main 
+                                key="reset-password"
+                                {...fade}
+                                className="flex flex-col justify-center items-center w-full px-4 lg:px-0 h-full relative lg:col-start-2 col-start-1 col-span-1 row-start-1 row-span-1"
+                            >
+                                <Logo />
+                                <div aria-hidden className="flex-grow-[1]"></div>
+                                <AnimatePresence custom="wait" initial={false}>
+                                    {getActiveStep(
+                                        resetPasswordStep,
+                                        resetPassword,
+                                        resetSuccess,
+                                    )}
+                                </AnimatePresence>
+                                <div aria-hidden className="grow-[2]"></div>
+                            </motion.main>
+                    }
+                    {
                         pathname.includes("login") &&
                             <motion.main 
                                 key="login"
-                                {...animation}
+                                {...fade}
                                 className="flex flex-col justify-center items-center w-full lg:w-fit h-full relative lg:col-start-2 col-start-1 col-span-1 row-start-1 row-span-1"
                             >
                                 <Logo />
@@ -115,17 +127,18 @@ export default function AuthLayout({
                         pathname.includes("register") &&
                             <motion.main 
                                 key="register"
-                                {...animation}
+                                {...fade}
                                 className="flex flex-col justify-center items-center w-full lg:w-fit h-full relative col-start-1 col-span-1 row-start-1 row-span-1"
                             >
                                 <AnimatePresence custom="wait" initial={false}>
                                     {
                                         registerStep > 3 &&
                                             <motion.div
-                                                key="register back button"
-                                                {...animation}
+                                                key="register-back-button"
+                                                {...fade}
                                             >
                                                 <Button 
+                                                    tabIndex={0}
                                                     className="
                                                     absolute top-0 md:top-3 left-0
                                                     focus-visible:ring focus-visible:ring-slate-900 

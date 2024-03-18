@@ -36,7 +36,7 @@ export interface Register {
         firstname: string,
         lastname: string,
         dateOfBirth: Date,
-        gender: string,
+        gender: "male" | "female" | undefined,
         province: string,
         city: string,
     }
@@ -54,7 +54,7 @@ export const useRegisterStore = create<Register & Actions>((set) => ({
         firstname: "",
         lastname: "",
         dateOfBirth: new Date(),
-        gender: "",
+        gender: undefined,
         province: "",
         city: "",
     },

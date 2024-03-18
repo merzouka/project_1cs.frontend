@@ -22,7 +22,7 @@ export function InputCalendar({
         value: Date;
         onChange: ((value: Date | undefined) => void);
         disabled?: boolean;
-        className: {
+        className?: {
             button?: string;
             search?: string;
             calendar?: string;
@@ -30,7 +30,7 @@ export function InputCalendar({
     }) {
     const dateRef = useRef<HTMLInputElement>(null);
     const [date, setDate] = useState(new Date());
-    const [dateInput, setDateInput] = useState<string | undefined>(undefined);
+    const [dateInput, setDateInput] = useState<string | undefined>(format(value, "yyyy-MM-dd"));
     const [month, setMonth] = useState(new Date());
     const onDateInput = useDebouncedCallback(
         (value: string) => {
@@ -50,7 +50,7 @@ export function InputCalendar({
                     variant={"outline"}
                     className={cn(
                         "flex gap-x-1 justify-between items-center w-full rounded-full pe-4 ",
-                        "bg-transparent hover:bg-transparent hover:border-slate-800",
+                        "bg-transparent border-slate-300 hover:bg-transparent hover:border-slate-800",
                         !value && "text-gray-400 font-normal",
                         className?.button,
                     )}

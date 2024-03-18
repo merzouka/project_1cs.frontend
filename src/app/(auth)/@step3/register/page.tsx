@@ -1,4 +1,7 @@
 "use client";
+// animation
+import { slideInRightExitLeft } from "@/constants/animations";
+
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { BsPatchCheck } from "react-icons/bs";
@@ -13,10 +16,8 @@ export default function Step() {
 
     return (
         <motion.div 
-            key="step 3 success"
-            initial={{opacity: 0, x: 200}}
-            animate={{opacity: 1, x: 0}}
-            exit={{opacity: 0, x: -200}}
+            key="step-3-main"
+            {...slideInRightExitLeft}
         >
             <div className="flex flex-col items-center justify-between">
                 <BsPatchCheck className="text-slate-800 mb-8 border border-slate-200 rounded-full p-3 w-12 h-12" />

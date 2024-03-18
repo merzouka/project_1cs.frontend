@@ -8,13 +8,14 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { getUrl, endpoints } from "@/constants/api";
 import { useEmailStore } from "@/app/(auth)/constants/email-store";
+import { slideInRightExitLeft } from "@/constants/animations";
+import { Spinner } from "@/components/custom/spinner";
 
 export default function ResetEmailSentPage() {
     const email = useEmailStore((state) => state.email);
     const { toast } = useToast()
-    // #TODO set to true
-    const [sendingEmail, setSendingEmail] = useState(false);
-    const { isLoading: isEmailLoading } = useQuery({
+    const [sendingEmail, setSendingEmail] = useState(true);
+    const { isLoading: isEmailLoading, isError: isEmailError, isSuccess: isEmailSuccess } = useQuery({
         queryKey: ["verfication email"],
         queryFn: async () => {
             setSendingEmail(false);
@@ -26,7 +27,7 @@ export default function ResetEmailSentPage() {
                 return response;
             } catch (error) {
                 toast({
-                    title: "Erreur",
+                    title: "Erreur de connexion",
                     description: "L'e-mail n'a pas pu être envoyé.",
                     variant: "destructive",
                 });
@@ -39,30 +40,51 @@ export default function ResetEmailSentPage() {
     return (
         <>
             <motion.div
-                key="step 2 title"
-                initial={{opacity: 0, x: 200}}
-                animate={{opacity: 1, x: 0}}
-                exit={{opacity: 0, x: -200}}
+                key="reset-email-sent-header"
+                {...slideInRightExitLeft}
                 className="flex flex-col items-center justify-center"
             >
-                <p className="text-3xl lg:text-4xl font-bold max-w-[20ch] text-center mb-2 lg:mb-4">
-                    {"Vérifiez votre boite de réception"}
-                </p>
-                <p className="text-gray-500 flex flex-col justify-center items-center mb-2 lg:mb-10">
-                    <span className="text-center">{"Nous avons envoyés un code de verification à"}</span>
-                    <span>{`${email}`}</span>
-                </p>
+                {
+                    isEmailSuccess &&
+                        <>
+                            <p className="text-3xl lg:text-4xl font-bold max-w-[20ch] text-center mb-2 lg:mb-4">
+                                {"Vérifiez votre boite de réception"}
+                            </p>
+                            <p className="text-gray-500 flex flex-col justify-center items-center mb-2 lg:mb-10">
+                                <span className="text-center">{"Nous avons envoyés un code de verification à"}</span>
+                                <span>{`${email}`}</span>
+                            </p>
+                        </>
+                }
+                {
+                    isEmailError &&
+                        <>
+                            <p className="text-3xl lg:text-4xl font-bold max-w-[20ch] text-center mb-2 lg:mb-4">
+                                {"Erreur"}
+                            </p>
+                            <p className="text-gray-500 flex flex-col justify-center items-center mb-2 lg:mb-10">
+                                <span className="text-center">{"Veuillez Réesseyer"}</span>
+                                <span>{`${email}`}</span>
+                            </p>
+                        </>
+                }
+                {
+                    isEmailLoading &&
+                        <>
+                            <Spinner size="md" text="show" direction="row" className="mb-2 lg:mb-5 text-gray-400">
+                                {"Chargement..."}
+                            </Spinner>
+                        </>
+                }
             </motion.div>
             <motion.div
-                key="step 2 resend email"
-                initial={{opacity: 0, x: 200}}
-                animate={{opacity: 1, x: 0}}
-                exit={{opacity: 0, x: -200}}
+                key="reset-email-sent-main"
+                {...slideInRightExitLeft}
                 className="flex items-center justify-center w-full"
             >
                 <Button disabled={isEmailLoading} 
                     onClick={() => setSendingEmail(true)}
-                    className="rounded-full w-full bg-black hover:bg-black/70 font-bold max-w-96">
+                    className="rounded-full w-full hover:bg-black hover:text-white bg-transparent text-black border-2 border-black font-bold max-w-96">
                     {"Renvoyer"}
                 </Button>
             </motion.div>

@@ -30,6 +30,7 @@ import { MultiStepKeys, useMultiStep } from "@/app/(auth)/hooks/use-mutli-step-r
 
 // fonts
 import { Rokkitt } from "next/font/google";
+import { slideInLeftExitRight, slideInRightExitLeft } from "@/constants/animations";
 const rokkitt = Rokkitt({
     subsets: ["latin"],
     display: "swap",
@@ -37,11 +38,14 @@ const rokkitt = Rokkitt({
 });
 
 export default function Step() {
+    const entries = useRegisterStore((state) => state.entries);
     const form = useForm<z.infer<typeof registerSchema3>>({
         resolver: zodResolver(registerSchema3),
         defaultValues: {
-            firstname: "",
-            lastname: "",
+            firstname: entries?.firstname || "",
+            lastname: entries?.lastname || "",
+            dateOfBirth: entries?.dateOfBirth || undefined,
+            gender: entries?.gender || undefined,
         }
     });
     const updateRegisterStore = useRegisterStore((state) => state.updateEntries);
@@ -52,8 +56,7 @@ export default function Step() {
         updateRegisterStore(values);
         next();
     }
-    const initial = direction == "forward" ? {opacity: 0, x: 200} : {opacity: 0, x: -200};
-    const exit = direction == "forward" ? {opacity: 0, x: -200} : {opacity: 0, x: 200};
+    const animation = direction == "forward" ? slideInRightExitLeft : slideInLeftExitRight;
     return (
         <>
             <motion.p className={cn(
@@ -61,29 +64,23 @@ export default function Step() {
                 "text-center",
                 rokkitt.className
             )}
-                key="info-header"
-                initial={initial}
-                animate={{opacity: 1, x: 0}}
-                exit={exit}
+                key="step-5-header"
+                {...animation}
             >
                 {"Vos informations"}
             </motion.p>
             <motion.p 
-                key="information"
+                key="step-5-subheader"
                 className="text-gray-400 max-w-[38ch] text-center text-sm"
-                initial={initial}
-                animate={{opacity: 1, x: 0}}
-                exit={exit}
+                {...animation}
             >
                 {"Entrez les détails nécessaires pour continuer."}
             </motion.p>
             <div className="flex-grow max-h-6"></div>
             <Form {...form}>
                 <motion.div
-                    key={3}
-                    initial={initial}
-                    animate={{opacity: 1, x: 0}}
-                    exit={exit}
+                    key="step-5-form"
+                    {...animation}
                     className="w-full flex items-center justify-center" 
                 >
                     <form onSubmit={form.handleSubmit(onSubmit)} className="w-full md:w-80 lg:w-[22rem]">
@@ -130,7 +127,7 @@ export default function Step() {
                                     <FormLabel>Date de naissance*</FormLabel>
                                     <FormControl>
                                         <InputCalendar 
-                                            className={{ button: "bg-black", }}
+                                            className={{ button: "bg-black" }} 
                                             value={field.value} 
                                             onChange={field.onChange} 
                                         />

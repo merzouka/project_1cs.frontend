@@ -36,6 +36,7 @@ import { endpoints, getUrl } from "@/constants/api";
 // fonts
 import { Rokkitt } from "next/font/google";
 import { MultiStepKeys, useMultiStep } from "@/app/(auth)/hooks/use-mutli-step-register";
+import { slideInRightExitLeft, slideInRightExitRight } from "@/constants/animations";
 const rokkitt = Rokkitt({
     subsets: ["latin"],
     display: "swap",
@@ -43,17 +44,17 @@ const rokkitt = Rokkitt({
 });
 
 export default function Step() {
+    const entries = useRegisterStore((state) => state.entries);
     const form = useForm<z.infer<typeof registerSchema4>>({
         resolver: zodResolver(registerSchema4),
         defaultValues: {
-            province: "",
-            city: "",
+            province: entries?.province || "",
+            city: entries?.city || "",
         }
     });
     const [province, setProvince] = useState<string | undefined>(undefined);
     const provinceCities = province && cities.find((city: Province) => city.province === province);
     const updateRegisterStore = useRegisterStore((state) => state.updateEntries);
-    const entries = useRegisterStore((state) => state.entries);
     const [isRegisterProcessing, setIsRegisterProcess] = useState(false);
     const router = useRouter();
     const { toast } = useToast();
@@ -89,7 +90,7 @@ export default function Step() {
     }
 
     const { direction } = useMultiStep(MultiStepKeys.register);
-    const exit = direction == "forward" ? {opacity: 0, x: -200} : {opacity: 0, x: 200};
+    const animation = direction == "forward" ? slideInRightExitLeft : slideInRightExitRight;
     return (
         <>
             <motion.p className={cn(
@@ -97,20 +98,16 @@ export default function Step() {
                 "text-center",
                 rokkitt.className
             )}
-                key="info-header"
-                initial={{opacity: 0, x: 200}}
-                animate={{opacity: 1, x: 0}}
-                exit={exit}
+                key="step-6-header"
+                {...animation}
             >
                 {"Vos informations"}
             </motion.p>
             <div className="flex-grow max-h-10"></div>
             <Form {...form}>
                 <motion.div
-                    key={4}
-                    initial={{opacity: 0, x: 200}}
-                    animate={{opacity: 1, x: 0}}
-                    exit={exit}
+                    key="step-6-form"
+                    {...animation}
                     className="w-full flex items-center justify-center"
                 >
                     <form onSubmit={form.handleSubmit(onSubmit)} className="w-full md:w-80 lg:w-[22rem]">
@@ -196,7 +193,7 @@ export default function Step() {
                                 "bg-black hover:bg-black/70 rounded-full font-bold w-full",
                             )}
                         >
-                            Créer compte
+                            {"Créer compte"}
                         </Button>
                     </form>
                 </motion.div>

@@ -16,9 +16,6 @@ interface Actions {
     setStep: (key: string, step: number) => void;
     setMax: (key: string, max: number) => void;
     setDirection: (key: string, direction: "forward" | "backward") => void;
-    getMax: (key: string) => number;
-    getStep: (key: string) => number;
-    getDirection: (key: string) => "forward" | "backward";
 }
 
 function getUpdatedTrackers(key: string, tracker: Object, trackers: Tracker[]): Tracker[] {
@@ -40,10 +37,10 @@ function getUpdatedTrackers(key: string, tracker: Object, trackers: Tracker[]): 
 
 const useMultiStepStore = create<State & Actions>((set, get) => ({
     trackers: [{
-        key: MultiStepKeys.resetEmail,
-        direction: "forward",
+        key: MultiStepKeys.register,
         max: 2,
-        step: 0,
+        step: 4,
+        direction: "forward",
     }],
     setStep: (key, step) => set((state) => ({ trackers: getUpdatedTrackers(key, { step: step }, state.trackers) })),
     setMax: (key, max) => {
@@ -52,39 +49,49 @@ const useMultiStepStore = create<State & Actions>((set, get) => ({
         }
     },
     setDirection: (key, direction) => set((state) => ({ trackers: getUpdatedTrackers(key, { direction: direction }, state.trackers) })),
-    getMax: (key) => get().trackers.find((tracker) => tracker.key == key)?.max || 0,
-    getStep: (key) => get().trackers.find((tracker) => tracker.key == key)?.step || 0,
-    getDirection: (key) => get().trackers.find((tracker) => tracker.key == key)?.direction || "forward",
 }));
+
+function getMax(key: string, trackers: Tracker[]) {
+    return trackers.find((tracker) => tracker.key == key)?.max || 0;
+}
+
+function getStep(key: string, trackers: Tracker[]) {
+    return trackers.find((tracker) => tracker.key == key)?.step || 0;
+}
+
+function getDirection(key: string, trackers: Tracker[]) {
+    return trackers.find((tracker) => tracker.key == key)?.direction || "forward";
+}
 
 export function useMultiStep(key: string) {
     const setMax = useMultiStepStore((state) => state.setMax);
-    const getMax = useMultiStepStore((state) => state.getMax);
-    const getStep = useMultiStepStore((state) => state.getStep);
     const setStep = useMultiStepStore((state) => state.setStep);
-    const getDirection = useMultiStepStore((state) => state.getDirection);
     const setDirection = useMultiStepStore((state) => state.setDirection);
+    const trackers = useMultiStepStore((state) => state.trackers);
+    const step = getStep(key, trackers);
+    const max = getMax(key, trackers);
+    const direction = getDirection(key, trackers);
 
     function next() {
-        if (getStep(key) < getMax(key) - 1) {
+        if (step < max - 1) {
             setDirection(key, "forward");
-            setStep(key, getStep(key) + 1);
+            setStep(key, step + 1);
         }
     }
 
     function previous() {
-        if (getStep(key) > 0) {
+        if (step > 0) {
             setDirection(key, "backward");
-            setStep(key, getStep(key) - 1);
+            setStep(key, step - 1);
         }
     }
 
     return { 
-        step: getStep(key),
+        step: step,
         next,
         previous,
-        max: getMax(key),
-        direction: getDirection(key),
+        max: max,
+        direction: direction,
         setMax: (max: number) => setMax(key, max),
     };
 }

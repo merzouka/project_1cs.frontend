@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils";
 // fonts
 import { Rokkitt } from "next/font/google";
 import Link from "next/link";
+import { fade, slideInRightExitLeft } from "@/constants/animations";
 const rokkitt = Rokkitt({
     subsets: ["latin"],
     display: "swap",
@@ -54,19 +55,15 @@ export default function ResetEmailPage() {
                 "text-center",
                 rokkitt.className
             )}
-                key="reset password email header"
-                initial={{opacity: 0, x: 200}}
-                animate={{opacity: 1, x: 0}}
-                exit={{opacity: 0, x: -200}}
+                key="reset-password-email-header"
+                {...slideInRightExitLeft}
             >
                 {"Mot de passe oublié?"}
             </motion.div>
             <Form {...form}>
                 <motion.div
-                    key="reset password form"
-                    initial={{opacity: 0, x: 200}}
-                    animate={{opacity: 1, x: 0}}
-                    exit={{opacity: 0, x: -200}}
+                    key="reset-password-email-form"
+                    {...slideInRightExitLeft}
                     className="w-full flex flex-col items-center justify-center md:w-80 lg:w-[22rem]"
                 >
                     <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col jusitfy-center items-center w-full">
@@ -96,9 +93,7 @@ export default function ResetEmailPage() {
                     </form>
                     <motion.div 
                         className="w-full h-full flex justify-center items-center"
-                        initial={{opacity: 0}}
-                        animate={{opacity: 1}}
-                        exit={{opacity: 0}}
+                        {...fade}
                     >
                         <Link href="/login" className="w-full h-full">
                             <Button 

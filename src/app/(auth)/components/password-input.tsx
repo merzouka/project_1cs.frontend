@@ -22,6 +22,7 @@ export default function PasswordInput({
     value,
     disabled,
     label,
+    placeholder,
     }: {
         className?: {
             item?: string,
@@ -32,6 +33,7 @@ export default function PasswordInput({
         value: string;
         disabled?: boolean;
         label?: string,
+        placeholder?: string,
     }) {
     const [isPasswordHidden, setIsPasswordHidden] = useState(true);
 
@@ -48,7 +50,7 @@ export default function PasswordInput({
                         className="
                         bg-transparent
                         border-0 rounded-full focus-visible:ring-0 focus-visible:ring-offset-0"
-                        placeholder="Entrez votre mot de passe"
+                        placeholder={placeholder || "Entrez votre mot de passe"}
                         onBlur={onBlur}
                         onChange={onChange}
                         value={value}

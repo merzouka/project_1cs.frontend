@@ -1,4 +1,8 @@
 "use client";
+
+// animations
+import { slideInRightExitLeft, slideInLeftExitLeft } from "@/constants/animations";
+
 import {
     Form,
     FormField,
@@ -28,21 +32,22 @@ const rokkitt = Rokkitt({
 });
 
 export default function Step() {
+    const entries = useRegisterStore((state) => state.entries);
     const form = useForm<z.infer<typeof registerSchema2>>({
         resolver: zodResolver(registerSchema2),
         defaultValues: {
-            password: "",
+            password: entries.password || "",
             confirm: "",
         }
     });
-    const updateRegisterStore = useRegisterStore((state) => state.updateEntries)
 
     const { next, direction } = useMultiStep(MultiStepKeys.register);
+    const updateRegisterStore = useRegisterStore((state) => state.updateEntries)
     function onSubmit(values: z.infer<typeof registerSchema2>) {
         updateRegisterStore({password: values.password});
         next();
     }
-    const initial = direction == "forward"? {opacity: 0, x: 200} : {opacity: 0, x: -200};
+    const animation = direction == "forward" ? slideInRightExitLeft : slideInLeftExitLeft;
     return (
         <>
             <motion.p className={cn(
@@ -50,20 +55,16 @@ export default function Step() {
                 "text-center",
                 rokkitt.className
             )}
-                key="create-account-header"
-                initial={initial}
-                animate={{opacity: 1, x: 0}}
-                exit={{opacity: 0, x: -200}}
+                key="step-4-header"
+                {...animation}
             >
                 {"Saisissez votre mot de passe."}
             </motion.p>
             <div className="flex-grow max-h-10"></div>
             <Form {...form}>
                 <motion.div
-                    key={2}
-                    initial={initial}
-                    animate={{opacity: 1, x: 0}}
-                    exit={{opacity: 0, x: -200}}
+                    key="step-4-form"
+                    {...animation}
                     className="w-full flex items-center justify-center md:w-80 lg:w-[22rem]"
                 >
                     <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
@@ -91,6 +92,7 @@ export default function Step() {
                                     value={field.value}
                                     disabled={field.disabled}
                                     label="Confirmez mot de passe"
+                                    placeholder="Ré-entrez le mot de passe"
                                     className={{
                                         field: "bg-transparent border border-slate-300",
                                         item: "mb-5",

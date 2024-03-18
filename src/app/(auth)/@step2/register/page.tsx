@@ -1,4 +1,8 @@
 "use client";
+
+// animations
+import { slideInRightExitLeft } from "@/constants/animations";
+
 // hooks
 import { MultiStepKeys, useMultiStep } from "@/app/(auth)/hooks/use-mutli-step-register";
 import { useForm } from "react-hook-form";
@@ -8,6 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useRegisterStore } from "@/app/(auth)/constants/register-store";
 
 // components
+import { Spinner } from "@/components/custom/spinner";
 import { Toaster } from "@/components/ui/toaster";
 import { 
     Form,
@@ -47,9 +52,8 @@ export default function Step() {
     });
 
     const { toast } = useToast();
-    // #TODO make true
-    const [sendingEmail, setSendingEmail] = useState(false);
-    const { isLoading: isEmailLoading, isError: isEmailError } = useQuery({
+    const [sendingEmail, setSendingEmail] = useState(true);
+    const { isLoading: isEmailLoading, isError: isEmailError, isSuccess: isEmailSuccess } = useQuery({
         queryKey: ["verfication email"],
         queryFn: async () => {
             setSendingEmail(false);
@@ -80,8 +84,8 @@ export default function Step() {
         queryFn: async () => {
             setSendingOTP(false);
             try {
-                next();
                 const response = await axios.post(getUrl(endpoints.otpVerification), { email: email, code: code })
+                next();
                 return response;
             } catch (error) {
                 if (error instanceof AxiosError && error?.response) {
@@ -113,25 +117,46 @@ export default function Step() {
     return (
         <>
             <motion.div
-                key="step 2 title"
-                initial={{opacity: 0, x: 200}}
-                animate={{opacity: 1, x: 0}}
-                exit={{opacity: 0, x: -200}}
+                key="step-2-header"
+                {...slideInRightExitLeft}
                 className="flex flex-col items-center justify-center"
             >
-                <p className="text-3xl lg:text-4xl font-bold max-w-[20ch] text-center mb-2 lg:mb-4">
-                    {"Vérifiez votre boite de réception"}
-                </p>
-                <p className="text-gray-500 flex flex-col justify-center items-center mb-2 lg:mb-10">
-                    <span className="text-center">{"Nous avons envoyés un code de verification à"}</span>
-                    <span>{`${email}`}</span>
-                </p>
+                {
+                    isEmailSuccess &&
+                        <>
+                            <p className="text-3xl lg:text-4xl font-bold max-w-[20ch] text-center mb-2 lg:mb-4">
+                                {"Vérifiez votre boite de réception"}
+                            </p>
+                            <p className="text-gray-500 flex flex-col justify-center items-center mb-2 lg:mb-10">
+                                <span className="text-center">{"Nous avons envoyés un code de verification à"}</span>
+                                <span>{`${email}`}</span>
+                            </p>
+                        </>
+                }
+                {
+                    isEmailError &&
+                        <>
+                            <p className="text-3xl lg:text-4xl font-bold max-w-[20ch] text-center mb-2 lg:mb-4">
+                                {"Erreur"}
+                            </p>
+                            <p className="text-gray-500 flex flex-col justify-center items-center mb-2 lg:mb-10">
+                                <span className="text-center">{"Veuillez Réesseyer"}</span>
+                                <span>{`${email}`}</span>
+                            </p>
+                        </>
+                }
+                {
+                    isEmailLoading &&
+                        <>
+                            <Spinner size="md" text="show" direction="row" className="mb-2 lg:mb-5 text-gray-400">
+                                {"Chargement..."}
+                            </Spinner>
+                        </>
+                }
             </motion.div>
             <motion.div
-                key="step 2 form"
-                initial={{opacity: 0, x: 200}}
-                animate={{opacity: 1, x: 0}}
-                exit={{opacity: 0, x: -200}}
+                key="step-2-form"
+                {...slideInRightExitLeft}
                 className="flex flex-col items-center justify-center"
             >
                 <Form {...form}>
@@ -180,10 +205,8 @@ export default function Step() {
                 </Form>
             </motion.div>
             <motion.div
-                key="step 2 resend email"
-                initial={{opacity: 0, x: 200}}
-                animate={{opacity: 1, x: 0}}
-                exit={{opacity: 0, x: -200}}
+                key="step-2-resend-email"
+                {...slideInRightExitLeft}
                 className="flex flex-col items-center justify-center"
             >
                 <p className="flex flex-wrap justify-center items-center text-xs">

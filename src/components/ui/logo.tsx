@@ -2,28 +2,28 @@ import Image from "next/image";
 
 const variants = {
     default: {
-        width: 159,
-        height: 126,
+        width: 98,
+        height: 90,
     },
     xs: {
-        width: 63,
-        height: 50,
+        width: 49,
+        height: 45,
     },
     small: {
-        width: 79,
-        height: 63,
+        width: 78,
+        height: 72,
     },
     medium: {
-        width: 159,
-        height: 126,
+        width: 98,
+        height: 90,
     },
     large: {
-        width: 206,
-        height: 159,
+        width: 117,
+        height: 108,
     },
     xl: {
-        width: 288,
-        height: 222,
+        width: 147,
+        height: 135,
     },
 }
 interface LogoProps {

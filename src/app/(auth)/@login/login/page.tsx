@@ -74,13 +74,14 @@ export default function LoginPage() {
                         description: "Veuillez réessayer",
                         variant: "destructive",
                     });
-                } else {
-                    toast({
-                        title: "Erreur de connexion",
-                        description: "Nous ne pouvons pas connecter au serveur",
-                        variant: "destructive",
-                    });
+                    throw new Error("credentials error");
                 }
+                toast({
+                    title: "Erreur de connexion",
+                    description: "Nous ne pouvons pas connecter au serveur",
+                    variant: "destructive",
+                });
+                throw new Error("connection error");
             }
         },
         enabled: isLoginEnabled,
@@ -91,6 +92,7 @@ export default function LoginPage() {
     const setStoreEmail = useEmailStore((state) => state.setEmail);
     async function onSubmit(values: z.infer<typeof loginFormSchema>) {
         setEntries({...values});
+        setIsLoginEnabled(true);
     }
 
     return (
@@ -102,7 +104,7 @@ export default function LoginPage() {
                         rokkitt.className
                     )}>Bienvenue</p>
                     <p className="text-gray-400 text-center text-xs max-w-[40ch]">
-                        Entrez votre adresse e-mail et votre mot de passe pour accéder à votre compte
+                        {"Entrez votre adresse e-mail et votre mot de passe pour accéder à votre compte"}
                     </p>
                 </div>
                 <div className="flex-grow max-h-10"></div>
@@ -158,7 +160,7 @@ export default function LoginPage() {
                             >
                             </FormField>
                             <Button variant={"link"} tabIndex={-1} onClick={() => { setStoreEmail(email); console.log(email); }}>
-                                <Link href="/reset-password" className="text-xs">
+                                <Link href="/reset-password-email" className="text-xs">
                                     {"Mot de passe oublié?"}
                                 </Link>
                             </Button>
