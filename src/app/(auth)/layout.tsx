@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 
 // icons
 import { FaArrowLeft } from "react-icons/fa";
-import { useMultiStepRegister } from "./hooks/use-mutli-step-register";
+import { MultiStepKeys, useMultiStep } from "./hooks/use-mutli-step-register";
 import BottomMessage from "./components/bottom-message";
 import { cn } from "@/lib/utils";
 
@@ -19,8 +19,14 @@ function getActiveStep(step: number, ...steps: React.ReactNode[]) {
     return steps[step];
 }
 
+function isLeft(pathname: string) {
+    return pathname.includes("login") ||
+        pathname.includes("reset-password-email") ||
+        pathname.includes("reset-password");
+}
+
 export default function AuthLayout({
-    login, step1, step2, step3, step4, step5, step6
+    login, step1, step2, step3, step4, step5, step6, resetPassword, resetEmail, resetEmailSent
     }: {
         login: React.ReactNode,
         step1: React.ReactNode,
@@ -29,10 +35,18 @@ export default function AuthLayout({
         step4: React.ReactNode,
         step5: React.ReactNode,
         step6: React.ReactNode,
+        resetPassword: React.ReactNode,
+        resetEmail: React.ReactNode,
+        resetEmailSent: React.ReactNode,
     }) {
     const pathname = usePathname();
     const registerSteps = 6 
-    const { step, previous } = useMultiStepRegister(registerSteps);
+    const { step: registerStep, previous, setMax: setRegisterMax } = useMultiStep(MultiStepKeys.register);
+    setRegisterMax(registerSteps);
+
+    const resetEmailSteps = 2
+    const { step: resetEmailStep, setMax: setResetEmailMax } = useMultiStep(MultiStepKeys.resetEmail);
+    setResetEmailMax(resetEmailSteps);
 
     const animation = {
         initial: {
@@ -41,9 +55,6 @@ export default function AuthLayout({
         animate: {
             opacity: 1,
         },
-        // exit: {
-        //     opacity: 0,
-        // },
         transition: {
             duration: 0.5,
         }
@@ -51,27 +62,46 @@ export default function AuthLayout({
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 place-items-center | 
-            p-1 lg:p-3 h-dvh">
+            p-2 lg:p-3 h-dvh">
             <AnimatePresence custom="wait" initial={false}>
                 <LayoutGroup>
                     <motion.div
                         key="side banner"
                         {...animation}
                         className={cn(
-                            "w-full h-full flex justify-center align-center col-span-1 row-start-1 row-span-1",
+                            "hidden lg:flex w-full h-full justify-center align-center col-span-1 row-start-1 row-span-1",
                         )}
-                        style={{gridColumn: pathname.includes("login") ? "1 / 2" : "2 / 3"}}
+                        style={{gridColumn: isLeft(pathname) ? "1 / 2" : "2 / 3"}}
                         transition={{ duration: 0.2 }}
                         layout
                     >
                         <SideBanner />
                     </motion.div>
                     {
-                        pathname.includes("login") ?
+                        pathname.includes("reset-password-email") &&
+                            <motion.main 
+                                key="reset password email"
+                                {...animation}
+                                className="flex flex-col justify-center items-center w-full lg:w-fit h-full relative lg:col-start-2 col-start-1 col-span-1 row-start-1 row-span-1"
+                            >
+                                <Logo />
+                                <div aria-hidden className="flex-grow-[1]"></div>
+                                <AnimatePresence custom="wait" initial={false}>
+                                    {getActiveStep(
+                                        resetEmailStep,
+                                        resetEmail,
+                                        resetEmailSent,
+                                    )}
+                                </AnimatePresence>
+                                <div aria-hidden className="grow-[2]"></div>
+                            </motion.main>
+                    }
+                    {
+                        pathname.includes("login") &&
                             <motion.main 
                                 key="login"
                                 {...animation}
-                                className="flex flex-col justify-center items-center w-full lg:w-fit h-full relative col-start-2 col-span-1 row-start-1 row-span-1"
+                                className="flex flex-col justify-center items-center w-full lg:w-fit h-full relative lg:col-start-2 col-start-1 col-span-1 row-start-1 row-span-1"
                             >
                                 <Logo />
                                 <div aria-hidden className="flex-grow-[1]"></div>
@@ -80,7 +110,9 @@ export default function AuthLayout({
                                 </div>
                                 <div aria-hidden className="grow-[2]"></div>
                             </motion.main>
-                            :
+                    }
+                    {
+                        pathname.includes("register") &&
                             <motion.main 
                                 key="register"
                                 {...animation}
@@ -88,7 +120,7 @@ export default function AuthLayout({
                             >
                                 <AnimatePresence custom="wait" initial={false}>
                                     {
-                                        (!pathname.includes("login") && step > 3) &&
+                                        registerStep > 3 &&
                                             <motion.div
                                                 key="register back button"
                                                 {...animation}
@@ -112,7 +144,7 @@ export default function AuthLayout({
                                 <div className="w-full h-full flex flex-col justify-center items-center px-4 lg:px-0">
                                     <AnimatePresence custom="wait" initial={false}>
                                         {getActiveStep(
-                                            step,
+                                            registerStep,
                                             step1,
                                             step2,
                                             step3,
@@ -131,7 +163,6 @@ export default function AuthLayout({
                                 <div aria-hidden className="grow-[2]"></div>
                             </motion.main>
                     }
-
                 </LayoutGroup>
             </AnimatePresence>
         </div>

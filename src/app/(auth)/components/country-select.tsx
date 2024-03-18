@@ -1,19 +1,15 @@
 "use client";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
+import { Select, SelectContent, SelectTrigger } from "@/components/ui/select";
 import { SelectValue } from "@/components/ui/select";
-import ReactCountryFlag from "react-country-flag";
-import { Country, countries } from "@/constants/countries";
+import { countries } from "@/constants/countries";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { Suspense, lazy, useState } from "react";
 import { useDebouncedCallback } from 'use-debounce';
 import { cn } from "@/lib/utils";
+import { IconCountry } from "./countries-list";
+import { Loader } from "lucide-react";
 
-import { Montserrat } from "next/font/google";
-
-const montserrat = Montserrat({
-    subsets: ["latin"],
-    display: "swap",
-});
+const Countries = lazy(() => import("./countries-list"));
 
 export default function CountrySelect({ 
     onChange,
@@ -33,7 +29,7 @@ export default function CountrySelect({
     const onValueChange = useDebouncedCallback((value: string) => setTerm(value), 900);
 
     return (
-        <Select disabled={disabled} onValueChange={onChange} defaultValue={defaultValue}>
+        <Select disabled={disabled} onValueChange={(value) => {if (onChange) onChange(`+${countries[Number(value)].code}`)}} defaultValue={defaultValue}>
             <SelectTrigger className={cn(
                 className?.trigger,
                 "focus-visible:ring focus-visible:ring-blue-300 focus-visible:ring-offset-0"
@@ -58,40 +54,15 @@ export default function CountrySelect({
                     onChange={(e) => onValueChange(e.target.value)} 
                     placeholder="Search..." defaultValue={term}
                 />
-                {
-                    countries.filter((country) => country.name.toLowerCase().includes(term)).map((country) => {
-                        return (
-                            <SelectItem  key={`${country.alpha2}${country.code}`} value={`+${country.code}`}>
-                                <IconCountry country={country} />
-                            </SelectItem>
-                        );
-                    })
-                }
+                <Suspense fallback={
+                    <div className="flex justify-center items-center">
+                        <Loader className="w-10 h-10 lg:w-15 lg:h-15 animate-spin m-2"/>
+                    </div>
+                }>
+                    <Countries term={term}/>
+                </Suspense>
             </SelectContent>
         </Select>
     );
 }
 
-function IconCountry({ country }: { country: Country }) {
-    return (
-        <div className={cn(
-            "flex justify-center items-center gap-x-2",
-            montserrat.className
-        )}>
-            <ReactCountryFlag countryCode={country.alpha2}/>
-            <p className="text-[0.81rem]">{`+${country.code}`}</p>
-        </div>
-    );
-}
-
-function TextCountry({ country }: { country: Country }) {
-    return (
-        <div className={cn(
-            "flex justify-center items-center gap-x-2",
-            montserrat.className
-        )}>
-            <p>{country.alpha2}</p>
-            <p className="text-xs">{`+${country.code}`}</p>
-        </div>
-    );
-}

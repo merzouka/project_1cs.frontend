@@ -16,9 +16,9 @@ export const loginFormSchema = z.object({
     persist: z.boolean().default(false),
 });
 
-const phoneRegex = new RegExp(
-  /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/
-);
+// const phoneRegex = new RegExp(
+//   /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/
+// );
 export const registerSchema1 = z.object({
     email: z.string().email({ message: "Adresse e-mail invalide." }),
     phone: z.string({
@@ -66,9 +66,9 @@ export const registerSchema4 = z.object({
     city: z.string({
         required_error: "Requis",
     }),
-})
+});
 
-export const passwordResetSchema = z.object({
+export const resetPasswordSchema = z.object({
     password: z.string()
     .min(8, { message: "8 caractères minimum requis." })
     .regex(new RegExp(
@@ -84,4 +84,8 @@ export const passwordResetSchema = z.object({
 }).refine((data) => data.confirm == data.password, {
     path: ["confirm"],
     message: "La confirmation doit correspondre au mot de passe.",
+});
+
+export const resetPasswordEmailSchema = z.object({
+    email: z.string().email({ message: "Veuillez saisir une adresse e-mail valide." }),
 });

@@ -16,7 +16,7 @@ import PasswordInput from "@/app/(auth)/components/password-input";
 import { useRegisterStore } from "@/app/(auth)/constants/register-store";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { useMultiStepRegister } from "@/app/(auth)/hooks/use-mutli-step-register";
+import { MultiStepKeys, useMultiStep } from "@/app/(auth)/hooks/use-mutli-step-register";
 
 
 // fonts
@@ -37,7 +37,7 @@ export default function Step() {
     });
     const updateRegisterStore = useRegisterStore((state) => state.updateEntries)
 
-    const { next, direction } = useMultiStepRegister();
+    const { next, direction } = useMultiStep(MultiStepKeys.register);
     function onSubmit(values: z.infer<typeof registerSchema2>) {
         updateRegisterStore({password: values.password});
         next();
@@ -72,7 +72,9 @@ export default function Step() {
                             name="password"
                             render={({ field }) => (
                                 <PasswordInput 
-                                    {...field}
+                                    onChange={field.onChange}
+                                    value={field.value}
+                                    disabled={field.disabled}
                                     className={{
                                         field: "bg-transparent border border-slate-300",
                                         item: "mb-3"
@@ -85,7 +87,9 @@ export default function Step() {
                             name="confirm"
                             render={({ field }) => (
                                 <PasswordInput 
-                                    {...field}
+                                    onChange={field.onChange}
+                                    value={field.value}
+                                    disabled={field.disabled}
                                     label="Confirmez mot de passe"
                                     className={{
                                         field: "bg-transparent border border-slate-300",

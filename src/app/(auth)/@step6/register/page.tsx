@@ -35,7 +35,7 @@ import { endpoints, getUrl } from "@/constants/api";
 
 // fonts
 import { Rokkitt } from "next/font/google";
-import { useMultiStepRegister } from "@/app/(auth)/hooks/use-mutli-step-register";
+import { MultiStepKeys, useMultiStep } from "@/app/(auth)/hooks/use-mutli-step-register";
 const rokkitt = Rokkitt({
     subsets: ["latin"],
     display: "swap",
@@ -88,7 +88,7 @@ export default function Step() {
         setIsRegisterProcess(true);
     }
 
-    const { direction } = useMultiStepRegister();
+    const { direction } = useMultiStep(MultiStepKeys.register);
     const exit = direction == "forward" ? {opacity: 0, x: -200} : {opacity: 0, x: 200};
     return (
         <>

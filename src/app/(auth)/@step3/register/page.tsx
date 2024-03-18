@@ -7,9 +7,9 @@ import { BsPatchCheck } from "react-icons/bs";
 import { cn } from "@/lib/utils";
 // hooks
 
-import { useMultiStepRegister } from "@/app/(auth)/hooks/use-mutli-step-register";
+import { MultiStepKeys, useMultiStep } from "@/app/(auth)/hooks/use-mutli-step-register";
 export default function Step() {
-    const { next } = useMultiStepRegister();
+    const { next } = useMultiStep(MultiStepKeys.register);
 
     return (
         <motion.div 

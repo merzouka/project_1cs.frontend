@@ -1,6 +1,6 @@
 "use client";
 // hooks
-import { useMultiStepRegister } from "@/app/(auth)/hooks/use-mutli-step-register";
+import { MultiStepKeys, useMultiStep } from "@/app/(auth)/hooks/use-mutli-step-register";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
@@ -46,6 +46,8 @@ export default function Step() {
         }
     });
 
+    const { toast } = useToast();
+    // #TODO make true
     const [sendingEmail, setSendingEmail] = useState(false);
     const { isLoading: isEmailLoading, isError: isEmailError } = useQuery({
         queryKey: ["verfication email"],
@@ -55,7 +57,7 @@ export default function Step() {
                 const response = await axios.post(getUrl(endpoints.verificationEmail), { email: email});
                 toast({
                     description: "Un email de vérification vous a été envoyé.",
-                })
+                });
                 return response;
             } catch (error) {
                 toast({
@@ -70,7 +72,6 @@ export default function Step() {
         retry: false,
     });
 
-    const { toast } = useToast();
 
     const [sendingOTP, setSendingOTP] = useState(false);
     const [code, setCode] = useState("");
@@ -79,8 +80,8 @@ export default function Step() {
         queryFn: async () => {
             setSendingOTP(false);
             try {
-                const response = await axios.post(getUrl(endpoints.otpVerification), { email: email, code: code })
                 next();
+                const response = await axios.post(getUrl(endpoints.otpVerification), { email: email, code: code })
                 return response;
             } catch (error) {
                 if (error instanceof AxiosError && error?.response) {
@@ -103,7 +104,7 @@ export default function Step() {
         retry: false,
     });
 
-    const { next } = useMultiStepRegister();
+    const { next } = useMultiStep(MultiStepKeys.register);
     function onSubmit(values: z.infer<typeof verifyEmailSchema>) {
         setCode(values.code);
         setSendingOTP(true);
@@ -187,7 +188,7 @@ export default function Step() {
             >
                 <p className="flex flex-wrap justify-center items-center text-xs">
                     {"Vous n'avez pas reçu un e-mail?"}
-                    <Button variant="link" size="sm" onClick={() => setSendingEmail(true)} 
+                    <Button variant="link" size="sm" onClick={() => setSendingEmail(true)} disabled={sendingEmail}
                         className="font-bold focus-visible:ring-blue-400 p-1 ms-5 my-2 h-5 rounded-none text-xs">
                         Cliquez pour renvoyer
                     </Button>

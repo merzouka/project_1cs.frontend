@@ -6,7 +6,6 @@ import {
     FormField,
 } from "@/components/ui/form";
 
-import { Rokkitt } from "next/font/google";
 import { useForm } from "react-hook-form";
 
 // schema
@@ -17,7 +16,7 @@ import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
-import { passwordResetSchema } from "@/app/(auth)/constants/schemas";
+import { resetPasswordSchema } from "@/app/(auth)/constants/schemas";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
@@ -26,6 +25,7 @@ import { endpoints, getUrl } from "@/constants/api";
 import { motion } from "framer-motion";
 
 // fonts
+import { Rokkitt } from "next/font/google";
 const rokkitt = Rokkitt({
     subsets: ["latin"],
     display: "swap",
@@ -41,8 +41,8 @@ function matchesError(matching: string, matched: ResetError) {
 }
 
 export default function ResetPasswordPage() {
-    const form = useForm<z.infer<typeof passwordResetSchema>>({
-        resolver: zodResolver(passwordResetSchema),
+    const form = useForm<z.infer<typeof resetPasswordSchema>>({
+        resolver: zodResolver(resetPasswordSchema),
         defaultValues: {
             password: "",
             confirm: "",
@@ -96,7 +96,7 @@ export default function ResetPasswordPage() {
 
     const [body, setBody] = useState({});
     const [formDisabled, setFormDisabled] = useState(false);
-    async function onSubmit(values: z.infer<typeof passwordResetSchema>) {
+    async function onSubmit(values: z.infer<typeof resetPasswordSchema>) {
         if (!resetId || !email) {
             toast({
                 title: "Adresse invalide",
@@ -121,7 +121,7 @@ export default function ResetPasswordPage() {
                 "text-center",
                 rokkitt.className
             )}
-                key="create-account-header"
+                key="reset password header"
                 initial={{opacity: 0, x: 200}}
                 animate={{opacity: 1, x: 0}}
                 exit={{opacity: 0, x: -200}}
@@ -131,7 +131,7 @@ export default function ResetPasswordPage() {
             <div className="flex-grow max-h-10"></div>
             <Form {...form}>
                 <motion.div
-                    key={2}
+                    key="reset password form"
                     initial={{opacity: 0, x: 200}}
                     animate={{opacity: 1, x: 0}}
                     exit={{opacity: 0, x: -200}}
@@ -143,8 +143,9 @@ export default function ResetPasswordPage() {
                             name="password"
                             render={({ field }) => (
                                 <PasswordInput 
-                                    {...field}
-                                            disabled={formDisabled || isLoading}
+                                    onChange={field.onChange}
+                                    value={field.value}
+                                    disabled={formDisabled || isLoading}
                                     className={{
                                         field: "bg-transparent border border-slate-300",
                                         item: "mb-3"
@@ -157,8 +158,9 @@ export default function ResetPasswordPage() {
                             name="confirm"
                             render={({ field }) => (
                                 <PasswordInput 
-                                    {...field}
-                                            disabled={formDisabled || isLoading}
+                                    onChange={field.onChange}
+                                    value={field.value}
+                                    disabled={formDisabled || isLoading}
                                     label="Confirmez mot de passe"
                                     className={{
                                         field: "bg-transparent border border-slate-300",

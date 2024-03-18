@@ -1,53 +1,96 @@
 "use client";
 import { create } from "zustand";
 
-
-interface State {
+interface Tracker {
+    key: string,
     step: number;
     max: number;
     direction: "forward" | "backward",
 }
 
-interface Actions {
-    setStep: (step: number) => void;
-    setMax: (max: number) => void;
-    setDirection: (direction: "forward" | "backward") => void;
+interface State {
+    trackers: Tracker[],
 }
 
-const useRegisterStepStore = create<State & Actions>((set) => ({
-    step: 0,
-    max: 0,
-    direction: "forward",
-    setStep: (step) => set({ step: step }),
-    setMax: (max) => set({ max: max }),
-    setDirection: (direction) => set({ direction: direction }),
+interface Actions {
+    setStep: (key: string, step: number) => void;
+    setMax: (key: string, max: number) => void;
+    setDirection: (key: string, direction: "forward" | "backward") => void;
+    getMax: (key: string) => number;
+    getStep: (key: string) => number;
+    getDirection: (key: string) => "forward" | "backward";
+}
+
+function getUpdatedTrackers(key: string, tracker: Object, trackers: Tracker[]): Tracker[] {
+    const oldTracker = trackers.find((tracker) => tracker.key == key);
+    if (!oldTracker) {
+        return [...trackers, {
+            key: key,
+            direction: "forward",
+            step: 0,
+            max: 0,
+            ...tracker
+        }];
+    }
+    const oldTrackerIndex = trackers.findIndex((tracker) => tracker.key == key);
+    const newTrackers = [...trackers];
+    newTrackers[oldTrackerIndex] = {...oldTracker, ...tracker};
+    return newTrackers;
+}
+
+const useMultiStepStore = create<State & Actions>((set, get) => ({
+    trackers: [{
+        key: MultiStepKeys.resetEmail,
+        direction: "forward",
+        max: 2,
+        step: 0,
+    }],
+    setStep: (key, step) => set((state) => ({ trackers: getUpdatedTrackers(key, { step: step }, state.trackers) })),
+    setMax: (key, max) => {
+        if(!get().trackers.find((tracker) => tracker.key == key)?.max) {
+            set((state) => ({ trackers: getUpdatedTrackers(key, { max: max }, state.trackers) }))
+        }
+    },
+    setDirection: (key, direction) => set((state) => ({ trackers: getUpdatedTrackers(key, { direction: direction }, state.trackers) })),
+    getMax: (key) => get().trackers.find((tracker) => tracker.key == key)?.max || 0,
+    getStep: (key) => get().trackers.find((tracker) => tracker.key == key)?.step || 0,
+    getDirection: (key) => get().trackers.find((tracker) => tracker.key == key)?.direction || "forward",
 }));
 
-export function useMultiStepRegister(stepMax?: number) {
-    const setMax = useRegisterStepStore((state) => state.setMax);
-    const max = useRegisterStepStore((state) => state.max);
-    const step = useRegisterStepStore((state) => state.step);
-    const setStep = useRegisterStepStore((state) => state.setStep);
-    const direction = useRegisterStepStore((state) => state.direction);
-    const setDirection = useRegisterStepStore((state) => state.setDirection);
-
-    if (stepMax) {
-        setMax(stepMax);
-    }
+export function useMultiStep(key: string) {
+    const setMax = useMultiStepStore((state) => state.setMax);
+    const getMax = useMultiStepStore((state) => state.getMax);
+    const getStep = useMultiStepStore((state) => state.getStep);
+    const setStep = useMultiStepStore((state) => state.setStep);
+    const getDirection = useMultiStepStore((state) => state.getDirection);
+    const setDirection = useMultiStepStore((state) => state.setDirection);
 
     function next() {
-        if (step < max) {
-            setDirection("forward");
-            setStep(step + 1);
+        if (getStep(key) < getMax(key) - 1) {
+            setDirection(key, "forward");
+            setStep(key, getStep(key) + 1);
         }
     }
 
     function previous() {
-        if (step > 0) {
-            setDirection("backward");
-            setStep(step - 1);
+        if (getStep(key) > 0) {
+            setDirection(key, "backward");
+            setStep(key, getStep(key) - 1);
         }
     }
 
-    return { step, next, previous, max, direction };
+    return { 
+        step: getStep(key),
+        next,
+        previous,
+        max: getMax(key),
+        direction: getDirection(key),
+        setMax: (max: number) => setMax(key, max),
+    };
+}
+
+export enum MultiStepKeys {
+    register = "register",
+    resetEmail = "resetEmail",
+    resetPassword = "resetPassword",
 }

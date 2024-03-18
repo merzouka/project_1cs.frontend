@@ -1,7 +1,7 @@
 "use client";
 // hooks
 import { useState } from "react";
-import { useMultiStepRegister } from "@/app/(auth)/hooks/use-mutli-step-register";
+import { MultiStepKeys, useMultiStep } from "@/app/(auth)/hooks/use-mutli-step-register";
 import { useForm } from "react-hook-form";
 
 import { z } from "zod";
@@ -38,7 +38,8 @@ const rokkitt = Rokkitt({
 });
 
 export default function Step() {
-    const updateRegisterStore = useRegisterStore((state) => state.updateEntries)
+
+    const updateRegisterStore = useRegisterStore((state) => state.updateEntries);
     const entries = useRegisterStore((state) => state.entries);
     const form = useForm<z.infer<typeof registerSchema1>>({
         resolver: zodResolver(registerSchema1),
@@ -51,7 +52,7 @@ export default function Step() {
     const [isOauthRegsitering, setIsOauthRegsitering] = useState(false);
     const [countryCode, setCountryCode] = useState("+213");
 
-    const { next } = useMultiStepRegister();
+    const { next } = useMultiStep(MultiStepKeys.register);
     const { toast } = useToast();
     const [sendingUniquenessVerification, setSendingUniquenessVerification] = useState(false);
     const { isLoading: isVerifyingUniqueEmail } = useQuery({

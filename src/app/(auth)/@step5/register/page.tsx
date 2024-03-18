@@ -26,7 +26,7 @@ import { useRegisterStore } from "@/app/(auth)/constants/register-store";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { useMultiStepRegister } from "@/app/(auth)/hooks/use-mutli-step-register";
+import { MultiStepKeys, useMultiStep } from "@/app/(auth)/hooks/use-mutli-step-register";
 
 // fonts
 import { Rokkitt } from "next/font/google";
@@ -47,7 +47,7 @@ export default function Step() {
     const updateRegisterStore = useRegisterStore((state) => state.updateEntries);
     const [selected, setSelected] = useState(false);
 
-    const { next, direction } = useMultiStepRegister();
+    const { next, direction } = useMultiStep(MultiStepKeys.register);
     function onSubmit(values: z.infer<typeof registerSchema3>) {
         updateRegisterStore(values);
         next();

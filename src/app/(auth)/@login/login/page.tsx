@@ -39,6 +39,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { endpoints, getUrl } from "@/constants/api";
+import { useEmailStore } from "../../constants/email-store";
+import { useDebouncedCallback } from "use-debounce";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -84,6 +86,9 @@ export default function LoginPage() {
         enabled: isLoginEnabled,
         retry: false,
     });
+    const [email, setEmail] = useState("");
+    const setEmailCallback = useDebouncedCallback((email: string) => setEmail(email), 200);
+    const setStoreEmail = useEmailStore((state) => state.setEmail);
     async function onSubmit(values: z.infer<typeof loginFormSchema>) {
         setEntries({...values});
     }
@@ -113,6 +118,7 @@ export default function LoginPage() {
                                         <Input type="text" placeholder="Entrez votre email"
                                             className="rounded-full bg-gray-100 border-0"
                                             {...field}
+                                            onChange={(e) => { setEmailCallback(e.target.value); field.onChange(e.target.value); }}
                                             disabled={isLoading}
                                         />
                                     </FormControl>
@@ -151,9 +157,9 @@ export default function LoginPage() {
                                 )}
                             >
                             </FormField>
-                            <Button variant={"link"} tabIndex={-1}>
-                                <Link href="/forgot-password" className="text-xs">
-                                    Mot de passe oubli&eacute;?
+                            <Button variant={"link"} tabIndex={-1} onClick={() => { setStoreEmail(email); console.log(email); }}>
+                                <Link href="/reset-password" className="text-xs">
+                                    {"Mot de passe oublié?"}
                                 </Link>
                             </Button>
                         </div>
