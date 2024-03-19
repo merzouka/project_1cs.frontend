@@ -61,7 +61,7 @@ export default function ResetPasswordPage() {
         queryFn: async () => {
             try {
                 setResettingPassword(false);
-                const response = axios.post(getUrl(endpoints.resetPassword), body);
+                const response = axios.patch(getUrl(endpoints.resetPassword), body);
                 next();
                 return response;
             } catch (error) {

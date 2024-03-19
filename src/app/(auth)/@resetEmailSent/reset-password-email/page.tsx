@@ -20,7 +20,7 @@ export default function ResetEmailSentPage() {
         queryFn: async () => {
             setSendingEmail(false);
             try {
-                const response = await axios.post(getUrl(endpoints.verificationEmail), { email: email});
+                const response = await axios.post(getUrl(endpoints.resetPasswordEmail), { email: email});
                 toast({
                     description: "Un email de vérification vous a été envoyé.",
                 });
