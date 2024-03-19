@@ -26,15 +26,12 @@ import { IoMdCloseCircleOutline } from "react-icons/io";
 import { motion } from "framer-motion";
 
 // fonts
-import { Rokkitt } from "next/font/google";
+import { rokkitt } from "@/constants/fonts";
+
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { MultiStepKeys, useMultiStep } from "../../hooks/use-mutli-step-register";
 import { slideInRightExitLeft, fade } from "@/constants/animations";
-const rokkitt = Rokkitt({
-    subsets: ["latin"],
-    display: "swap",
-});
 
 enum ResetError {
     DuplicatePassword = "duplicate",
@@ -61,7 +58,7 @@ export default function ResetPasswordPage() {
         queryFn: async () => {
             try {
                 setResettingPassword(false);
-                const response = axios.patch(getUrl(endpoints.resetPassword), body);
+                const response = await axios.patch(getUrl(endpoints.resetPassword), body);
                 next();
                 return response;
             } catch (error) {

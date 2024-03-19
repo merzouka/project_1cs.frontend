@@ -33,10 +33,7 @@ import axios, { AxiosError } from "axios";
 import { getUrl, endpoints } from "@/constants/api";
 
 // fonts
-import { Inter } from "next/font/google";
-const inter = Inter({
-    subsets: ["latin"],
-});
+import { inter } from "@/constants/fonts";
 
 const verifyEmailSchema = z.object({
     code: z.string({ required_error: "Veuillez saisir votre code" }),

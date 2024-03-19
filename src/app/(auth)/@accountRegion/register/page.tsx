@@ -34,14 +34,10 @@ import axios from "axios";
 import { endpoints, getUrl } from "@/constants/api";
 
 // fonts
-import { Rokkitt } from "next/font/google";
+import { rokkitt } from "@/constants/fonts";
+
 import { MultiStepKeys, useMultiStep } from "@/app/(auth)/hooks/use-mutli-step-register";
 import { slideInRightExitLeft, slideInRightExitRight } from "@/constants/animations";
-const rokkitt = Rokkitt({
-    subsets: ["latin"],
-    display: "swap",
-    weight: ["400", "700"],
-});
 
 export default function Step() {
     const entries = useRegisterStore((state) => state.entries);

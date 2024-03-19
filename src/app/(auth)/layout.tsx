@@ -27,22 +27,22 @@ function isLeft(pathname: string) {
 }
 
 export default function AuthLayout({
-    login, step1, step2, step3, step4, step5, step6, resetPassword, resetEmail, resetEmailSent, resetSuccess
+    login, 
+    accountIdentifiers, accountPassword, accountInfo, accountRegion,
+    resetPassword, resetEmail, resetEmailSent, resetSuccess
     }: {
         login: React.ReactNode,
-        step1: React.ReactNode,
-        step2: React.ReactNode,
-        step3: React.ReactNode
-        step4: React.ReactNode,
-        step5: React.ReactNode,
-        step6: React.ReactNode,
+        accountIdentifiers: React.ReactNode,
+        accountPassword: React.ReactNode,
+        accountInfo: React.ReactNode,
+        accountRegion: React.ReactNode,
         resetPassword: React.ReactNode,
         resetEmail: React.ReactNode,
         resetEmailSent: React.ReactNode,
         resetSuccess: React.ReactNode,
     }) {
     const pathname = usePathname();
-    const registerSteps = 6 
+    const registerSteps = 4;
     const { step: registerStep, previous, setMax: setRegisterMax } = useMultiStep(MultiStepKeys.register);
     setRegisterMax(registerSteps);
 
@@ -132,7 +132,7 @@ export default function AuthLayout({
                             >
                                 <AnimatePresence custom="wait" initial={false}>
                                     {
-                                        registerStep > 3 &&
+                                        registerStep > 0 &&
                                             <motion.div
                                                 key="register-back-button"
                                                 {...fade}
@@ -158,12 +158,10 @@ export default function AuthLayout({
                                     <AnimatePresence custom="wait" initial={false}>
                                         {getActiveStep(
                                             registerStep,
-                                            step1,
-                                            step2,
-                                            step3,
-                                            step4,
-                                            step5,
-                                            step6
+                                            accountIdentifiers,
+                                            accountPassword,
+                                            accountInfo,
+                                            accountRegion
                                         )}
                                     </AnimatePresence>
                                     <div className="grow max-h-12"></div>

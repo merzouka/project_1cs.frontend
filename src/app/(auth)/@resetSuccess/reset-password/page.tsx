@@ -6,13 +6,9 @@ import { motion } from "framer-motion";
 import { slideInRightExitLeft } from "@/constants/animations";
 
 // fonts
-import { Rokkitt } from "next/font/google";
+import { rokkitt } from "@/constants/fonts";
+
 import Link from "next/link";
-const rokkitt = Rokkitt({
-    subsets: ["latin"],
-    display: "swap",
-    weight: ["400", "700"],
-})
 
 export default function ResetSuccessPage() {
     return (

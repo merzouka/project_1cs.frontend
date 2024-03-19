@@ -24,12 +24,7 @@ import { MultiStepKeys, useMultiStep } from "@/app/(auth)/hooks/use-mutli-step-r
 
 
 // fonts
-import { Rokkitt } from "next/font/google";
-const rokkitt = Rokkitt({
-    subsets: ["latin"],
-    display: "swap",
-    weight: ["400", "700"],
-});
+import { rokkitt } from "@/constants/fonts";
 
 export default function Step() {
     const entries = useRegisterStore((state) => state.entries);

@@ -1,5 +1,6 @@
 "use client";
-import { Rokkitt } from "next/font/google";
+// fonts
+import { rokkitt } from "@/constants/fonts"; 
 
 import { 
     Form,
@@ -22,11 +23,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { OAUTH_PROVIDERS } from "@/app/(auth)/actions/oauth";
-
-const rokkitt = Rokkitt({
-    subsets: ["latin"],
-    display: "swap",
-});
 
 import { loginFormSchema } from "@/app/(auth)/constants/schemas";
 import PasswordInput from "@/app/(auth)/components/password-input";

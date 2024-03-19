@@ -28,14 +28,10 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { MultiStepKeys, useMultiStep } from "@/app/(auth)/hooks/use-mutli-step-register";
 
-// fonts
-import { Rokkitt } from "next/font/google";
+// animations
 import { slideInLeftExitRight, slideInRightExitLeft } from "@/constants/animations";
-const rokkitt = Rokkitt({
-    subsets: ["latin"],
-    display: "swap",
-    weight: ["400", "700"],
-});
+// fonts
+import { rokkitt } from "@/constants/fonts";
 
 export default function Step() {
     const entries = useRegisterStore((state) => state.entries);

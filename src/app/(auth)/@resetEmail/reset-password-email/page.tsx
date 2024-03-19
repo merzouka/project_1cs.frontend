@@ -21,13 +21,9 @@ import { MultiStepKeys, useMultiStep } from "@/app/(auth)/hooks/use-mutli-step-r
 import { cn } from "@/lib/utils";
 
 // fonts
-import { Rokkitt } from "next/font/google";
 import Link from "next/link";
 import { fade, slideInRightExitLeft } from "@/constants/animations";
-const rokkitt = Rokkitt({
-    subsets: ["latin"],
-    display: "swap",
-});
+import { rokkitt } from "@/constants/fonts";
 
 export default function ResetEmailPage() {
     const email = useEmailStore((state) => state.email);
