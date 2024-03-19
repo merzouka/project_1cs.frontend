@@ -16,7 +16,7 @@ export default function Step() {
 
     return (
         <motion.div 
-            key="step-3-main"
+            key="email-verified-main"
             {...slideInRightExitLeft}
         >
             <div className="flex flex-col items-center justify-between">

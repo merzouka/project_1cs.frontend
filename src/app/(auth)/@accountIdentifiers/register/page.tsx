@@ -63,7 +63,7 @@ export default function Step() {
                 "text-center",
                 rokkitt.className
             )}
-                key="step-1-header"
+                key="account-identifiers-header"
                 {...slideInRightExitLeft}
             >
                 {"Créer un compte"}
@@ -71,7 +71,7 @@ export default function Step() {
             <div className="flex-grow max-h-10"></div>
             <Form {...form}>
                 <motion.div
-                    key="step-1-form"
+                    key="account-identifiers-form"
                     {...slideInRightExitLeft}
                     className=""
                 >

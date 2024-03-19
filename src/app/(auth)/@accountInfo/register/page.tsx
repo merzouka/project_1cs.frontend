@@ -60,13 +60,13 @@ export default function Step() {
                 "text-center",
                 rokkitt.className
             )}
-                key="step-5-header"
+                key="account-info-header"
                 {...animation}
             >
                 {"Vos informations"}
             </motion.p>
             <motion.p 
-                key="step-5-subheader"
+                key="account-info-subheader"
                 className="text-gray-400 max-w-[38ch] text-center text-sm"
                 {...animation}
             >
@@ -75,7 +75,7 @@ export default function Step() {
             <div className="flex-grow max-h-6"></div>
             <Form {...form}>
                 <motion.div
-                    key="step-5-form"
+                    key="account-info-form"
                     {...animation}
                     className="w-full flex items-center justify-center" 
                 >

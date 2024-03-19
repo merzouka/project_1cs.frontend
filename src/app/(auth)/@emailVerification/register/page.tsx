@@ -114,7 +114,7 @@ export default function Step() {
     return (
         <>
             <motion.div
-                key="step-2-header"
+                key="email-verification-header"
                 {...slideInRightExitLeft}
                 className="flex flex-col items-center justify-center"
             >
@@ -152,7 +152,7 @@ export default function Step() {
                 }
             </motion.div>
             <motion.div
-                key="step-2-form"
+                key="email-verification-form"
                 {...slideInRightExitLeft}
                 className="flex flex-col items-center justify-center"
             >
@@ -202,7 +202,7 @@ export default function Step() {
                 </Form>
             </motion.div>
             <motion.div
-                key="step-2-resend-email"
+                key="email-verification-resend-email"
                 {...slideInRightExitLeft}
                 className="flex flex-col items-center justify-center"
             >

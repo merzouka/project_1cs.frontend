@@ -50,7 +50,7 @@ export default function Step() {
                 "text-center",
                 rokkitt.className
             )}
-                key="step-4-header"
+                key="account-password-header"
                 {...animation}
             >
                 {"Saisissez votre mot de passe."}
@@ -58,7 +58,7 @@ export default function Step() {
             <div className="flex-grow max-h-10"></div>
             <Form {...form}>
                 <motion.div
-                    key="step-4-form"
+                    key="account-password-form"
                     {...animation}
                     className="w-full flex items-center justify-center md:w-80 lg:w-[22rem]"
                 >
