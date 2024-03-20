@@ -24,7 +24,7 @@ export default function ResetEmailSentPage() {
                 toast({
                     description: "Un email de vérification vous a été envoyé.",
                 });
-                return response;
+                return JSON.parse(response.data);
             } catch (error) {
                 toast({
                     title: "Erreur de connexion",

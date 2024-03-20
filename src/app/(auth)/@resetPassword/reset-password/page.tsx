@@ -60,7 +60,7 @@ export default function ResetPasswordPage() {
                 setResettingPassword(false);
                 const response = await axios.patch(getUrl(endpoints.resetPassword), body);
                 next();
-                return response;
+                return JSON.parse(response.data);
             } catch (error) {
                 if (error instanceof AxiosError && error.response) {
                     if (matchesError(error.response.data, ResetError.DuplicatePassword)) {

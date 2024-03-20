@@ -88,6 +88,7 @@ export function useMultiStep(key: string) {
         max: max,
         direction: direction,
         setMax: (max: number) => setMax(key, max),
+        setStep: (step: number) => setStep(key, step),
     };
 }
 

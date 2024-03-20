@@ -1,4 +1,5 @@
 import Image from "next/image";
+import kaaba from "@/../../public/auth/kaaba.jpg";
 
 export default function SideBanner() {
     return (
@@ -8,7 +9,7 @@ export default function SideBanner() {
             h-full w-full
             ">
             <Image className="object-cover object-center rounded-2xl" fill
-                src="/auth/kaaba.jpg" 
+                src={kaaba}
                 alt="an image of the kaaba" 
             />
         </div>

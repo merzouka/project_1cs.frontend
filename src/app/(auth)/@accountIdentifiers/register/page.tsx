@@ -1,6 +1,6 @@
 "use client";
 // animations
-import { slideInRightExitLeft } from "@/constants/animations";
+import { slideInLeftExitRight, slideInRightExitLeft } from "@/constants/animations";
 
 // hooks
 import { useState } from "react";
@@ -47,7 +47,7 @@ export default function Step() {
     const [isOauthRegsitering, setIsOauthRegsitering] = useState(false);
     const [countryCode, setCountryCode] = useState("+213");
 
-    const { next } = useMultiStep(MultiStepKeys.register);
+    const { next, direction } = useMultiStep(MultiStepKeys.register);
     function onSubmit(values: z.infer<typeof registerSchema1>){
         let [code, area] = countryCode.includes("-") ? countryCode.split("-") : [countryCode, ""];
         area = area === "" ? "" : `(${area})`;
@@ -56,6 +56,7 @@ export default function Step() {
         next();
     }
 
+    const animation = direction == "forward" ? slideInRightExitLeft : slideInLeftExitRight;
     return (
         <>
             <motion.p className={cn(
@@ -64,7 +65,7 @@ export default function Step() {
                 rokkitt.className
             )}
                 key="account-identifiers-header"
-                {...slideInRightExitLeft}
+                {...animation}
             >
                 {"Créer un compte"}
             </motion.p>
@@ -72,7 +73,7 @@ export default function Step() {
             <Form {...form}>
                 <motion.div
                     key="account-identifiers-form"
-                    {...slideInRightExitLeft}
+                    {...animation}
                     className=""
                 >
                     <form onSubmit={form.handleSubmit(onSubmit)} className={cn(
@@ -86,7 +87,7 @@ export default function Step() {
                                     <FormLabel>Email</FormLabel>
                                     <FormControl>
                                         <Input type="text" placeholder="Entrez votre email"
-                                            className="rounded-full bg-gray-100 border-0 font-medium"
+                                            className="rounded-full bg-gray-100 border-0"
                                             {...field}
                                             disabled={isOauthRegsitering}
                                         />
@@ -117,7 +118,7 @@ export default function Step() {
                                         <Input
                                             type="text"
                                             className="rounded-r-full flex-grow bg-transparent border-0
-                                            focus-visible:ring-0 focus-visible:ring-offset-0 font-medium"
+                                            focus-visible:ring-0 focus-visible:ring-offset-0"
                                             placeholder="Entrez le numéro de téléphone"
                                             {...field}
                                             disabled={isOauthRegsitering}

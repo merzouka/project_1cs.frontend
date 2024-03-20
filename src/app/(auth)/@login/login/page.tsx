@@ -59,10 +59,11 @@ export default function LoginPage() {
         queryFn: async () => {
             try {
                 setIsLoginEnabled(false);
-                const response = await axios.post(getUrl(endpoints.login), entries);
-                setUser(response.data);
-                router.push(`/profile/${response.data.id}`);
-                return response;
+                const response = await axios.post(getUrl(endpoints.login), entries)
+                const data = JSON.parse(response.data);
+                setUser(data.data);
+                router.push(`/profile/${data.id}`);
+                return data;
             } catch (error) {
                 if (error instanceof AxiosError && error.response) {
                     toast({
@@ -155,7 +156,7 @@ export default function LoginPage() {
                                 )}
                             >
                             </FormField>
-                            <Button variant={"link"} tabIndex={-1} onClick={() => { setStoreEmail(email); console.log(email); }}>
+                            <Button variant={"link"} tabIndex={-1} onClick={() => setStoreEmail(email)} type="button">
                                 <Link href="/reset-password-email" className="text-xs">
                                     {"Mot de passe oublié?"}
                                 </Link>

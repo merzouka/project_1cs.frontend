@@ -59,7 +59,7 @@ export default function Step() {
                 toast({
                     description: "Un email de vérification vous a été envoyé.",
                 });
-                return response;
+                return JSON.parse(response.data);
             } catch (error) {
                 toast({
                     title: "Erreur",
@@ -83,7 +83,7 @@ export default function Step() {
             try {
                 const response = await axios.post(getUrl(endpoints.otpVerification), { email: email, code: code })
                 next();
-                return response;
+                return JSON.parse(response.data);
             } catch (error) {
                 if (error instanceof AxiosError && error?.response) {
                     toast({

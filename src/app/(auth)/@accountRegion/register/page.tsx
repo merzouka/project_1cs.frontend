@@ -30,7 +30,7 @@ import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/toaster";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { endpoints, getUrl } from "@/constants/api";
 
 // fonts
@@ -38,6 +38,7 @@ import { rokkitt } from "@/constants/fonts";
 
 import { MultiStepKeys, useMultiStep } from "@/app/(auth)/hooks/use-mutli-step-register";
 import { slideInRightExitLeft, slideInRightExitRight } from "@/constants/animations";
+import { format } from "date-fns";
 
 export default function Step() {
     const entries = useRegisterStore((state) => state.entries);
@@ -60,15 +61,35 @@ export default function Step() {
         city: false,
     });
 
+    const { setStep } = useMultiStep(MultiStepKeys.register);
     const { isLoading } = useQuery({
         queryKey: ["register"],
         queryFn: async () => {
             try {
                 setIsRegisterProcess(false);
-                const response = await axios.post(getUrl(endpoints.register), entries);
+                const response = await axios.post(getUrl(endpoints.register), {
+                    email: entries.email,
+                    phone: entries.password,
+                    password: entries.password,
+                    firstName: entries.firstname,
+                    lastName: entries.lastname,
+                    dateOfBirth: format(entries.dateOfBirth, "yyyy-MM-dd"),
+                    gender: entries.gender,
+                    province: Number(entries.province),
+                    city: entries.city,
+                });
                 router.push("/login");
-                return response;
+                return JSON.parse(response.data);
             } catch (error) {
+                if (error instanceof AxiosError && error.response) {
+                    toast({
+                        title: "Adresse e-mail déjà utilisée",
+                        description: "Essayez d'utiliser une autre adresse e-mail.",
+                        variant: "destructive",
+                    });
+                    setStep(0);
+                    throw new Error("duplicate email");
+                }
                 toast({
                     title: "Erreur de connexion",
                     description: "Nous ne pouvons pas créer votre compte",
