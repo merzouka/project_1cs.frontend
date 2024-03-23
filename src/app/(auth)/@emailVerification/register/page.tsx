@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useRegisterStore } from "@/app/(auth)/constants/register-store";
+import { useRegisterStore } from "@/app/(auth)/stores/register-store";
 
 // components
 import { Spinner } from "@/components/custom/spinner";

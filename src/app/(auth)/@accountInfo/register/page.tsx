@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { InputCalendar } from "@/components/ui/input-calendar";
-import { useRegisterStore } from "@/app/(auth)/constants/register-store";
+import { useRegisterStore } from "@/app/(auth)/stores/register-store";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { motion } from "framer-motion";

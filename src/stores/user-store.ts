@@ -1,17 +1,30 @@
 import { create } from "zustand";
 
-interface User {
+export enum Role {
+    default,
+}
+
+interface UserInfo {
     id: number | string | undefined;
     email: string;
+    roles: Role[];
+}
+
+interface User {
+    user: UserInfo
+
 }
 
 interface Actions {
-    setUser: (user: User) => void;
+    setUser: (user: UserInfo) => void;
 }
 
 
 export const useUserStore = create<User & Actions>((set) => ({
-    id: undefined,
-    email: "",
-    setUser: (user) => set({...user}),
+    user: {
+        id: undefined,
+        email: "",
+        roles: [],
+    },
+    setUser: (user) => set({ user: {...user} }),
 }));

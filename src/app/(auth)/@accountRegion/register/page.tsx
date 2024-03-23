@@ -23,7 +23,7 @@ import {
 import { Province, cities } from "@/constants/cities";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useRegisterStore } from "@/app/(auth)/constants/register-store";
+import { useRegisterStore } from "@/app/(auth)/stores/register-store";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
@@ -39,6 +39,7 @@ import { rokkitt } from "@/constants/fonts";
 import { MultiStepKeys, useMultiStep } from "@/app/(auth)/hooks/use-mutli-step-register";
 import { slideInRightExitLeft, slideInRightExitRight } from "@/constants/animations";
 import { format } from "date-fns";
+import { useErrorStore } from "../../stores/register-error-store";
 
 export default function Step() {
     const entries = useRegisterStore((state) => state.entries);
@@ -62,10 +63,14 @@ export default function Step() {
     });
 
     const { setStep } = useMultiStep(MultiStepKeys.register);
+    const setEmailError = useErrorStore((state) => state.setErrors);
     const { isLoading } = useQuery({
         queryKey: ["register"],
         queryFn: async () => {
             try {
+                throw new Error("hello world");
+                /* 
+                 *
                 setIsRegisterProcess(false);
                 const response = await axios.post(getUrl(endpoints.register), {
                     email: entries.email,
@@ -80,15 +85,16 @@ export default function Step() {
                 });
                 router.push("/login");
                 return JSON.parse(response.data);
+                 * */
             } catch (error) {
-                if (error instanceof AxiosError && error.response) {
-                    toast({
-                        title: "Adresse e-mail déjà utilisée",
-                        description: "Essayez d'utiliser une autre adresse e-mail.",
-                        variant: "destructive",
-                    });
+                // #TODO move back to if statement
+                    setEmailError({ email: "Adresse e-mail déjà utilisée" })
                     setStep(0);
                     throw new Error("duplicate email");
+                /*
+                 *
+                 *
+                if (error instanceof AxiosError && error.response) {
                 }
                 toast({
                     title: "Erreur de connexion",
@@ -96,6 +102,7 @@ export default function Step() {
                     variant: "destructive",
                 });
                 throw new Error("connection error");
+                 */
             }
         },
         enabled: isRegisterProcessing,
