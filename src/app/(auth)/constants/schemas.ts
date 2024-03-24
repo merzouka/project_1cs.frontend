@@ -53,7 +53,7 @@ export const registerSchema3 = z.object({
     }),
     dateOfBirth: z.date({
         required_error: "Requis",
-    }),
+    }).optional(),
     gender: z.enum(["male", "female"], {
         required_error: "Requis",
     }),

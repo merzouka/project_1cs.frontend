@@ -24,7 +24,7 @@ export interface RegisterStep3 {
 }
 
 export interface RegisterStep4 {
-    province: string,
+    province: number,
     city: string,
 }
 
@@ -35,9 +35,9 @@ export interface Register {
         password: string,
         firstname: string,
         lastname: string,
-        dateOfBirth: Date,
+        dateOfBirth: Date | undefined,
         gender: "male" | "female" | undefined,
-        province: string,
+        province: number | undefined,
         city: string,
     }
 }
@@ -53,9 +53,9 @@ export const useRegisterStore = create<Register & Actions>((set) => ({
         password: "",
         firstname: "",
         lastname: "",
-        dateOfBirth: new Date(),
+        dateOfBirth: undefined,
         gender: undefined,
-        province: "",
+        province: undefined,
         city: "",
     },
     updateEntries: (values: RegisterStep1 | RegisterStep2 | RegisterStep3 | RegisterStep4) =>

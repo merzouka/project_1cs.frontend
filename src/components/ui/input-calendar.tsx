@@ -17,27 +17,24 @@ export function InputCalendar({
     value,
     onChange,
     disabled,
-    className,
+    styles,
     }: {
-        value: Date;
+        value: Date | undefined;
         onChange: ((value: Date | undefined) => void);
         disabled?: boolean;
-        className?: {
+        styles?: {
             button?: string;
             search?: string;
             calendar?: string;
         };
     }) {
     const dateRef = useRef<HTMLInputElement>(null);
-    const [date, setDate] = useState(new Date());
-    const [dateInput, setDateInput] = useState<string | undefined>(format(value, "yyyy-MM-dd"));
-    const [month, setMonth] = useState(new Date());
+    const [dateInput, setDateInput] = useState<string | undefined>(format(value || new Date(), "yyyy-MM-dd"));
     const onDateInput = useDebouncedCallback(
         (value: string) => {
             const date = new Date(value);
             if (date.toString() !== "Invalid Date") {
-                setDate(date);
-                setMonth(date);
+                onChange(date);
             }
         },
         500
@@ -52,7 +49,7 @@ export function InputCalendar({
                         "flex gap-x-1 justify-between items-center w-full rounded-full pe-4 ",
                         "bg-transparent border-slate-300 hover:bg-transparent hover:border-slate-800",
                         !value && "text-gray-400 font-normal",
-                        className?.button,
+                        styles?.button,
                     )}
                     onClick={() => dateRef.current?.focus()}
                 >
@@ -76,29 +73,26 @@ export function InputCalendar({
                     placeholder="YYYY-MM-DD"
                     className={cn(
                         "w-full border rounded-lg",
-                        className?.search,
+                        styles?.search,
                     )}
                     ref={dateRef}
                     disabled={disabled}
                     onChange={(e) => {
-                        setDateInput(e.target.value);
                         onDateInput(e.target.value);
+                        setDateInput(e.target.value);
                     }}
                     value={dateInput}
                 />
                 <Calendar
                     mode="single"
-                    selected={date}
-                    month={month}
+                    selected={value}
+                    month={value}
                     onMonthChange={(date) => {
-                        setDateInput(format(date, "yyyy-MM"));
-                        setMonth(date);
+                        setDateInput(format(date, "yyyy-MM-dd"));
+                        onChange(date);
                     }}
                     onSelect={(date) => {
-                        if (date) {
-                            setDateInput(format(date, "yyyy-MM-dd"));
-                            setDate(date);
-                        }
+                        setDateInput(date ? format(date, "yyyy-MM-dd") : "");
                         onChange(date);
                     }}
                     initialFocus
@@ -106,7 +100,7 @@ export function InputCalendar({
                         return date > new Date();
                     }}
                     className={cn(
-                        className?.calendar,
+                        styles?.calendar,
                     )}
                 />
             </PopoverContent>

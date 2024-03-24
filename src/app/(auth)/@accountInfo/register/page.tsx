@@ -38,18 +38,20 @@ export default function Step() {
     const form = useForm<z.infer<typeof registerSchema3>>({
         resolver: zodResolver(registerSchema3),
         defaultValues: {
-            firstname: entries?.firstname || "",
-            lastname: entries?.lastname || "",
-            dateOfBirth: entries?.dateOfBirth || undefined,
-            gender: entries?.gender || undefined,
+            firstname: entries.firstname || "",
+            lastname: entries.lastname || "",
+            dateOfBirth: entries.dateOfBirth || undefined,
+            gender: entries.gender || undefined,
         }
     });
     const updateRegisterStore = useRegisterStore((state) => state.updateEntries);
-    const [selected, setSelected] = useState(false);
-
+    const [selected, setSelected] = useState(!!entries.gender);
     const { next, direction } = useMultiStep(MultiStepKeys.register);
     function onSubmit(values: z.infer<typeof registerSchema3>) {
-        updateRegisterStore(values);
+        updateRegisterStore({
+            ...values,
+            dateOfBirth: values.dateOfBirth || new Date(),
+        });
         next();
     }
     const animation = direction == "forward" ? slideInRightExitLeft : slideInLeftExitRight;
@@ -123,8 +125,8 @@ export default function Step() {
                                     <FormLabel>Date de naissance*</FormLabel>
                                     <FormControl>
                                         <InputCalendar 
-                                            className={{ button: "bg-black" }} 
-                                            value={field.value} 
+                                            styles={{ button: "[&>span]:text-slate-500" }}
+                                            value={field.value}
                                             onChange={field.onChange} 
                                         />
                                     </FormControl>

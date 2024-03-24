@@ -1,5 +1,5 @@
 import Image from "next/image";
-import kaaba from "@/../../public/auth/kaaba.jpg";
+import kaaba from "@/../public/auth/kaaba.jpg";
 
 export default function SideBanner() {
     return (
