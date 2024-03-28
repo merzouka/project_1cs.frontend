@@ -26,7 +26,7 @@ import { OAUTH_PROVIDERS } from "@/app/(auth)/actions/oauth";
 
 import { loginFormSchema } from "@/app/(auth)/constants/schemas";
 import PasswordInput from "@/app/(auth)/components/password-input";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 import { useUserStore } from "@/stores/user-store";
 
@@ -40,6 +40,8 @@ import { useDebouncedCallback } from "use-debounce";
 
 export default function LoginPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const returnPage = searchParams.get("return");
 
     const form = useForm<z.infer<typeof loginFormSchema>>({
         resolver: zodResolver(loginFormSchema),
@@ -62,6 +64,9 @@ export default function LoginPage() {
                 const response = await axios.post(getUrl(endpoints.login), entries)
                 const data = JSON.parse(response.data);
                 setUser(data.data);
+                if (returnPage) {
+                    router.push(returnPage);
+                }
                 router.push(`/profile/${data.id}`);
                 return data;
             } catch (error) {
@@ -191,10 +196,11 @@ export default function LoginPage() {
                 </Button>
 
                 <div className="flex-grow max-h-12"></div>
-                <BottomMessage 
+                <BottomMessage
                     prompt={"Vous n'avez pas de compte?"} 
                     link="/register"
                     action={"Inscrivez-vous"} 
+                    params={searchParams}
                 />
                 <div className="flex-grow max-h-8"></div>
             </div>

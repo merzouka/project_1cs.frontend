@@ -125,7 +125,6 @@ export default function Step() {
                                     <FormLabel>Date de naissance*</FormLabel>
                                     <FormControl>
                                         <InputCalendar 
-                                            styles={{ button: "[&>span]:text-slate-500" }}
                                             value={field.value}
                                             onChange={field.onChange} 
                                         />

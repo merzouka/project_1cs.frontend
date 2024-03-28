@@ -24,7 +24,7 @@ import { Province, cities } from "@/constants/cities";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useRegisterStore } from "@/app/(auth)/stores/register-store";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/toaster";
@@ -42,6 +42,8 @@ import { format } from "date-fns";
 import { useErrorStore } from "../../stores/register-error-store";
 
 export default function Step() {
+    const searchParams = useSearchParams();
+
     const entries = useRegisterStore((state) => state.entries);
     const form = useForm<z.infer<typeof registerSchema4>>({
         resolver: zodResolver(registerSchema4),
@@ -68,6 +70,7 @@ export default function Step() {
         queryKey: ["register"],
         queryFn: async () => {
             try {
+                router.push(`/login?${searchParams.toString()}`);
                 setIsRegisterProcess(false);
                 const response = await axios.post(getUrl(endpoints.register), {
                     email: entries.email,
