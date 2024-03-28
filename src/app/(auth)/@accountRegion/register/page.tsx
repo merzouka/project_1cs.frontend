@@ -23,8 +23,8 @@ import {
 import { Province, cities } from "@/constants/cities";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useRegisterStore } from "@/app/(auth)/constants/register-store";
-import { useRouter } from "next/navigation";
+import { useRegisterStore } from "@/app/(auth)/stores/register-store";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/toaster";
@@ -39,33 +39,38 @@ import { rokkitt } from "@/constants/fonts";
 import { MultiStepKeys, useMultiStep } from "@/app/(auth)/hooks/use-mutli-step-register";
 import { slideInRightExitLeft, slideInRightExitRight } from "@/constants/animations";
 import { format } from "date-fns";
+import { useErrorStore } from "../../stores/register-error-store";
 
 export default function Step() {
+    const searchParams = useSearchParams();
+
     const entries = useRegisterStore((state) => state.entries);
     const form = useForm<z.infer<typeof registerSchema4>>({
         resolver: zodResolver(registerSchema4),
         defaultValues: {
-            province: entries?.province || "",
-            city: entries?.city || "",
+            province: entries.province ? `${entries.province}` : "",
+            city: entries.city || "",
         }
     });
-    const [province, setProvince] = useState<string | undefined>(undefined);
-    const provinceCities = province && cities.find((city: Province) => city.province === province);
+    const [province, setProvince] = useState<number | undefined>(entries.province);
+    const provinceCities = province && cities.find((city: Province) => city.province === province) 
     const updateRegisterStore = useRegisterStore((state) => state.updateEntries);
     const [isRegisterProcessing, setIsRegisterProcess] = useState(false);
     const router = useRouter();
     const { toast } = useToast();
 
     const [selected, setSelected] = useState({
-        province: false,
-        city: false,
+        province: !!entries.province,
+        city: !!entries.city,
     });
 
     const { setStep } = useMultiStep(MultiStepKeys.register);
+    const setEmailError = useErrorStore((state) => state.setErrors);
     const { isLoading } = useQuery({
         queryKey: ["register"],
         queryFn: async () => {
             try {
+                router.push(`/login?${searchParams.toString()}`);
                 setIsRegisterProcess(false);
                 const response = await axios.post(getUrl(endpoints.register), {
                     email: entries.email,
@@ -73,7 +78,7 @@ export default function Step() {
                     password: entries.password,
                     firstName: entries.firstname,
                     lastName: entries.lastname,
-                    dateOfBirth: format(entries.dateOfBirth, "yyyy-MM-dd"),
+                    dateOfBirth: entries.dateOfBirth ? format(entries.dateOfBirth, "yyyy-MM-dd"): new Date(),
                     gender: entries.gender,
                     province: Number(entries.province),
                     city: entries.city,
@@ -82,11 +87,7 @@ export default function Step() {
                 return JSON.parse(response.data);
             } catch (error) {
                 if (error instanceof AxiosError && error.response) {
-                    toast({
-                        title: "Adresse e-mail déjà utilisée",
-                        description: "Essayez d'utiliser une autre adresse e-mail.",
-                        variant: "destructive",
-                    });
+                    setEmailError({ email: "Adresse e-mail déjà utilisée" })
                     setStep(0);
                     throw new Error("duplicate email");
                 }
@@ -102,7 +103,10 @@ export default function Step() {
         retry: false,
     });
     async function onSubmit(values: z.infer<typeof registerSchema4>) {
-        updateRegisterStore(values);
+        updateRegisterStore({
+            ...values,
+            province: Number(values.province)
+        });
         setIsRegisterProcess(true);
     }
 
@@ -136,11 +140,11 @@ export default function Step() {
                                     <FormLabel>Wilaya*</FormLabel>
                                     <Select 
                                         onValueChange={(value) => {
-                                            setProvince(provinces.find((province) => `${province.number}` == value)?.name);
+                                            setProvince(Number(value));
                                             setSelected({...selected, province: true})
                                             field.onChange(value);
                                         }} 
-                                        defaultValue={field.value}
+                                        defaultValue={field.value !== undefined ? `${field.value}` : ""}
                                         disabled={isLoading}
                                     >
                                         <FormControl>
@@ -148,7 +152,7 @@ export default function Step() {
                                                 "rounded-full text-gray-500",
                                                 selected.province && "text-black"
                                             )}>
-                                                <SelectValue placeholder="Sélectionneé votre wilaya"/>
+                                                <SelectValue placeholder="Sélectionnez votre wilaya"/>
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>

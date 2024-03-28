@@ -7,6 +7,7 @@ export default function BottomMessage({
     prompt,
     link,
     className,
+    params,
     }: {
         action: string;
         prompt: string;
@@ -15,7 +16,8 @@ export default function BottomMessage({
             wrapper?: string,
             button?: string,
             link?: string,
-        }
+        },
+        params?: URLSearchParams,
     }) {
     return (
         <p className={cn(
@@ -32,7 +34,7 @@ export default function BottomMessage({
                 )}>
                 <Link className={cn(
                     "text-xs" 
-                )} href={link}>
+                )} href={`${link}?${params?.toString()}`}>
                     {action}
                 </Link>
             </Button>

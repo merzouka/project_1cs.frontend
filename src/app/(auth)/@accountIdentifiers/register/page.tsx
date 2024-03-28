@@ -25,12 +25,13 @@ import { OAUTH_PROVIDERS } from "@/app/(auth)/actions/oauth";
 
 // schema
 import { registerSchema1 } from "@/app/(auth)/constants/schemas";
-import { useRegisterStore } from "@/app/(auth)/constants/register-store";
+import { useRegisterStore } from "@/app/(auth)/stores/register-store";
 
 import { motion } from "framer-motion";
 
 // fonts
 import { rokkitt } from "@/constants/fonts";
+import { useErrorStore } from "../../stores/register-error-store";
 
 
 export default function Step() {
@@ -57,6 +58,8 @@ export default function Step() {
     }
 
     const animation = direction == "forward" ? slideInRightExitLeft : slideInLeftExitRight;
+    const errors = useErrorStore((state) => state.errors);
+    const setErrors = useErrorStore((state) => state.setErrors);
     return (
         <>
             <motion.p className={cn(
@@ -90,9 +93,15 @@ export default function Step() {
                                             className="rounded-full bg-gray-100 border-0"
                                             {...field}
                                             disabled={isOauthRegsitering}
+                                            onChange={(e) => {
+                                                setErrors({ email: undefined });
+                                                field.onChange(e.target.value);
+                                            }}
                                         />
                                     </FormControl>
-                                    <FormMessage className="text-xs" />
+                                    <FormMessage className="text-xs">
+                                        {errors.email ? errors.email : null}
+                                    </FormMessage>
                                 </FormItem> 
                             )}
                         />
