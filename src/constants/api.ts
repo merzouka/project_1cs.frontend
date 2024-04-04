@@ -8,6 +8,8 @@ export const endpoints = {
     verificationEmail: "auth/verification-email",
     otpVerification: "auth/verify-otp",
     emailUnique: "auth/email-unique",
+    logout: "auth/logout",
+    profile: (id: number | string) => `profile/${id}`,
 }
 
 export function getUrl(endpoint: string) {
