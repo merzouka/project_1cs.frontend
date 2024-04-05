@@ -18,7 +18,7 @@ export const UserPopup = ({className}: { className?: string }) => {
             )}>
                 <ProfilePicture />
                 <span className="hidden md:block">{profile.firstName != "" ? `${profile.firstName} ${profile.lastName}`: "User"}</span>
-                <IoIosArrowDown className="" />
+                <IoIosArrowDown className="hidden md:block" />
             </PopoverTrigger>
             <PopoverContent className="w-fit">
                 <ProfileActions/>

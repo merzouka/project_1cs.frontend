@@ -15,7 +15,7 @@ export const NavBar = () => {
     const isMobile = useMediaQuery("(max-width: 36rem)")
     const logo = <Logo size={isMobile ? "xs" : "small"}/>
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const animation = isMenuOpen ? { x: 0, display: "block" } : { x: "-100%", display: "hidden" };
+    const animation = isMenuOpen ? { x: 0, display: "flex" } : { x: "-100%", display: "hidden" };
 
     return (
         <>
@@ -33,13 +33,13 @@ export const NavBar = () => {
                 }
             </div>
             
-            <div className="absolute top-3 right-2 lg:top-8 lg:right-7 md:w-fit">
+            <div className="absolute top-3 right-2 lg:top-8 lg:right-7 md:w-fit  z-[1001]">
                 <UserPopup />
             </div>
             <AnimatePresence>
                 <motion.nav
                     className={cn(
-                        "absolute lg:static z-[1000] h-dvh top-0 w-full lg:w-80 flex flex-col justify-around items-center",
+                        "absolute lg:static z-[1000] h-dvh top-0 w-full lg:w-80 items-center",
                         "flex flex-col justify-between pt-24 pb-2 md:pb-8 bg-white"
                     )}
                     initial={!isMobile ? {} : {x: "-100%"}}

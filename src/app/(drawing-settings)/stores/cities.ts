@@ -1,7 +1,7 @@
 
 import { create } from "zustand";
 
-interface City {
+export interface City {
     id: number,
     name: string,
     provinceId: number,
@@ -13,8 +13,9 @@ interface State {
 
 interface Actions {
     setCities: (cities: City[]) => void;
-    getCity: (id: number) => City;
 }
 
-const useCitiesStore = create<State & Actions>((set) => ({
+export const useCitiesStore = create<State & Actions>((set) => ({
+    cities: [],
+    setCities: (cities) => set({ cities: cities }),
 }))

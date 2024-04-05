@@ -40,7 +40,7 @@ export const NavTabs = () => {
                                 {tab.icon}
                                 <span className={styles}>{tab.display}</span>
                             </Link>
-                            <div className="w-1 h-full bg-black group-hover:bg-orange-400 rounded-l-sm"></div>
+                            <div className="w-1 h-full bg-black group-hover:bg-orange-400 rounded-l-sm hidden md:block"></div>
                         </Button>
                     );
                 })

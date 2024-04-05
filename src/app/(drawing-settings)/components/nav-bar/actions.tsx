@@ -48,10 +48,10 @@ export const Actions = () => {
             {
                 actions.map((action) => {
                     return (
-                        <Button tabIndex={-1} variant="link" key={action.id} className="w-full group flex pe-0 hover:no-underline">
+                        <Button tabIndex={-1} variant="link" key={action.id} className="w-full group flex md:pe-0 hover:no-underline">
                             <Link 
                                 href={typeof action.link !== "string" ? action.link(user.id) : action.link} 
-                                className="flex gap-x-2 w-full group-hover:text-orange-400 grow hover:no-underline items-center text-base text-slate-400"
+                                className="flex justify-center md:justify-start gap-x-2 w-full group-hover:text-orange-400 grow hover:no-underline items-center text-base text-slate-400"
                             >
                                 {action.icon}
                                 {action.display}
