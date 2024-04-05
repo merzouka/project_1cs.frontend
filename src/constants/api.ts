@@ -9,6 +9,7 @@ export const endpoints = {
     otpVerification: "auth/verify-otp",
     emailUnique: "auth/email-unique",
     logout: "auth/logout",
+    profileCitites: (id: number | string) => `profile/${id}/citites`,
     profile: (id: number | string) => `profile/${id}`,
 }
 

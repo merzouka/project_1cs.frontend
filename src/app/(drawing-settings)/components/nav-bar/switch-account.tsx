@@ -19,6 +19,7 @@ export const SwitchAccount = ({className} : { className?: string }) => {
         queryKey: ["logout"],
         queryFn: async () => {
             try {
+                // TODO: use appropriate endpoint if added switch account feature
                 await axios.post(getUrl(endpoints.logout), {});
                 router.push("/login");
             } catch (error) {
@@ -26,6 +27,7 @@ export const SwitchAccount = ({className} : { className?: string }) => {
                     title: "La déconnexion a échoué",
                     variant: "destructive"
                 });
+                throw new Error("logout error");
             }
         },
         enabled: loggingOut

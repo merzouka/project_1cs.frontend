@@ -25,6 +25,7 @@ export const Logout = ({className} : { className?: string }) => {
                     title: "La déconnexion a échoué",
                     variant: "destructive"
                 });
+                throw new Error("logout error");
             }
         },
         enabled: loggingOut
