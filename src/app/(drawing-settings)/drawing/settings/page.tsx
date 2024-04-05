@@ -10,7 +10,7 @@ export default function Page() {
     const inputRef = useRef<HTMLInputElement>(null);
 
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col pt-16 md:pt-8 p-2 md:p-8 size-full">
             <div className="w-full bg-gray-100 pt-3 mb-4 lg:mb-8">
                 <div className="bg-black h-8 w-9/12 mb-3"></div>
                 <div className="bg-black h-4 w-9/12"></div>
@@ -23,7 +23,7 @@ export default function Page() {
                     </div>
                     <Button className="bg-transparent hover:bg-gray-100 text-black">{"Commencer"}</Button>
                 </TabsList>
-                <TabsContent value="participants" className="flex flex-col grow">
+                <TabsContent value="participants" className="relative h-full">
                     <div className="flex items-center border border-slate-100 rounded-lg px-2 
                         focus-within:ring-2 focus-within:ring-black focus-within:ring-offset-2 mb-2 md:mb-4
                         shadow-lg shadow-slate-200
@@ -35,7 +35,9 @@ export default function Page() {
                             placeholder="Rechercer"
                         />
                     </div>
-                    <div className="grow bg-gray-200"></div>
+                    <div className="absolute top-0 right-0 bottom-0 left-0 bg-gray-200 overflow-y-auto">
+                        <div className="h-dvh"></div>
+                    </div>
                 </TabsContent>
                 <TabsContent value="settings">
                 </TabsContent>
