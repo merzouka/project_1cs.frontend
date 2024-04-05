@@ -1,3 +1,4 @@
+"use client"
 import { useProfileStore } from "@/app/(drawing-settings)/stores/profile";
 import Image from "next/image";
 import { VscAccount } from "react-icons/vsc";

@@ -7,9 +7,9 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ProfileActions } from "./profile-actions";
 import { UserPopup } from "./user-popup";
+import { NavTabs } from "./nav-tabs";
+import { Actions } from "./actions";
 
 export const NavBar = () => {
     const isMobile = useMediaQuery("(max-width: 36rem)")
@@ -19,9 +19,9 @@ export const NavBar = () => {
 
     return (
         <>
-            <div className="absolute top-2 left-3 z-[1001] bg-white size-16 md:top-4 md:left-5"></div>
+            <div className="absolute top-2 left-3 z-[1001] rounded-full size-16 md:top-4 md:left-5">
                 {
-                    /* !isMobile ?
+                    !isMobile ?
                         <Button className="rounded-full size-18 p-1" variant="link">
                             <Link href="/" className="w-full h-full">
                                 {logo}
@@ -29,20 +29,28 @@ export const NavBar = () => {
                         </Button> :
                         <Toggle className="rounded-full size-17 p-3" onPressedChange={(pressed) => setIsMenuOpen(pressed)}>
                             {logo}
-                        </Toggle> */
+                        </Toggle>
                 }
+            </div>
             
-            <div className="absolute top-3 right-2 lg:top-8 lg:right-7 size-12 bg-black md:w-fit md:min-w-20">
+            <div className="absolute top-3 right-2 lg:top-8 lg:right-7 md:w-fit">
+                <UserPopup />
             </div>
             <AnimatePresence>
                 <motion.nav
                     className={cn(
-                        "absolute lg:static z-[1000] h-dvh top-0 w-full lg:w-80 flex flex-col justify-around items-center bg-black",
+                        "absolute lg:static z-[1000] h-dvh top-0 w-full lg:w-80 flex flex-col justify-around items-center",
+                        "flex flex-col justify-between pt-24 pb-2 md:pb-8 bg-white"
                     )}
                     initial={!isMobile ? {} : {x: "-100%"}}
                     animate={!isMobile ? {} : animation}
                 >
-                    <div className="w-9/12"></div>
+                    <div className="w-full">
+                        <NavTabs />
+                    </div>
+                    <div className="w-full">
+                        <Actions />
+                    </div>
                 </motion.nav>
             </AnimatePresence>
         </>

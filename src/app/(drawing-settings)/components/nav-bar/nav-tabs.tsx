@@ -21,7 +21,7 @@ const tabs: Tab[] = [
     }
 ]
 
-export const Tabs = () => {
+export const NavTabs = () => {
     const pathname = usePathname();
 
     return (
@@ -33,13 +33,14 @@ export const Tabs = () => {
                             key={tab.id}
                             variant="link" tabIndex={-1} 
                             aria-selected={tab.link == pathname || index == 0}
-                            className="flex justify-center items-center group border-l-3 border-left-black group-hover:border-l-orange-400 group-hover:bg-orange-200"
+                            className="flex justify-center items-center group hover:no-underline pe-0"
                             role="tab"
                         >
-                            <Link href={tab.link} className="flex justify-center items-center gap-x-4 w-full h-full underline-0">
+                            <Link href={tab.link} className="flex grow justify-center items-center gap-x-4 w-full h-full underline-0 text-base">
                                 {tab.icon}
                                 <span className={styles}>{tab.display}</span>
                             </Link>
+                            <div className="w-1 h-full bg-black group-hover:bg-orange-400 rounded-l-sm"></div>
                         </Button>
                     );
                 })
