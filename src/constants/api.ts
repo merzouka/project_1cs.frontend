@@ -11,6 +11,7 @@ export const endpoints = {
     logout: "auth/logout",
     profileCitites: (id: number | string | undefined) => `profile/${id}/citites`,
     citiesUsers: "cities/users",
+    startDrawing: "drawing/start",
     profile: (id: number | string) => `profile/${id}`,
 }
 

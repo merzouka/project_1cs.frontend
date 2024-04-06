@@ -92,9 +92,9 @@ export const Participants = () => {
                             : "flex justify-center items-center",
                     )}>
                         {
-                            isLoading && Array(15).fill(0).map(_ => {
+                            isLoading && Array(12).fill(0).map((_, i) => {
                                 return (
-                                    <ParticipantSkeleton />
+                                    <ParticipantSkeleton key={i} />
                                 );
                             })
                         }

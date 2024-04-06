@@ -5,6 +5,8 @@ import { CiUser } from "react-icons/ci";
 import { PiGearSixLight } from "react-icons/pi";
 import { IoHomeOutline } from "react-icons/io5";
 import { AiOutlineMessage } from "react-icons/ai";
+import { Poppins } from "next/font/google";
+import { cn } from "@/lib/utils";
 
 interface Action {
     link: string | ((param: string | number | undefined) => string);
@@ -38,7 +40,12 @@ const actions: Action[] = [
         display: "Acceuil",
         icon: <IoHomeOutline />
     },
-]
+];
+
+const poppins = Poppins({
+    weight: ["400", "700"],
+    subsets: ["latin"],
+});
 
 export const Actions = () => {
     const { user } = useUser();
@@ -51,7 +58,10 @@ export const Actions = () => {
                         <Button tabIndex={-1} variant="link" key={action.id} className="w-full group flex md:pe-0 hover:no-underline">
                             <Link 
                                 href={typeof action.link !== "string" ? action.link(user.id) : action.link} 
-                                className="flex justify-center md:justify-start gap-x-2 w-full group-hover:text-orange-400 grow hover:no-underline items-center text-base text-slate-400"
+                                className={cn(
+                                    "flex justify-center md:justify-start gap-x-2 w-full group-hover:text-orange-400 grow hover:no-underline items-center text-base text-slate-400",
+                                    poppins.className
+                                )}
                             >
                                 {action.icon}
                                 {action.display}

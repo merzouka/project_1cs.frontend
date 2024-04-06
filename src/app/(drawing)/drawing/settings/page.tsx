@@ -2,6 +2,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Participants } from "@/app/(drawing)/components/participants";
 import { Cities } from "@/app/(drawing)/components/cities";
+import { Settings } from "@/app/(drawing)/components/settings";
 
 export default function Page() {
 
@@ -12,19 +13,32 @@ export default function Page() {
                 <Cities />
             </div>
             <Tabs defaultValue="participants" className="flex flex-col grow">
-                <TabsList className="w-full justify-between mb-3 lg:mb-5">
+                <TabsList className="w-full justify-between mb-3 lg:mb-5 bg-transparent">
                     <div className="flex">
-                        <TabsTrigger value="participants">{"Les participants"}</TabsTrigger>
-                        <TabsTrigger value="settings">{"Le tirage"}</TabsTrigger>
+                        <TabsTrigger 
+                            className="shadow-none rounded-none border-b border-b-transparent bg-transparent
+                            data-[state=active]:text-orange-400 data-[state=active]:border-b-orange-400
+                            data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                            value="participants"
+                        >
+                            {"Participants"}
+                        </TabsTrigger>
+                        <TabsTrigger 
+                            className="shadow-none rounded-none border-b border-b-transparent bg-transparent
+                            data-[state=active]:text-orange-400 data-[state=active]:border-b-orange-400
+                            data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                            value="settings"
+                        >
+                            {"Tirage"}
+                        </TabsTrigger>
                     </div>
-                    <Button className="bg-transparent hover:bg-gray-100 text-black">{"Commencer"}</Button>
                 </TabsList>
                 <TabsContent value="participants" className="h-full">
                     <Participants />
                 </TabsContent>
-                <TabsContent value="settings">
-                    <div className="p-4 rounded-xl border border-slate-200 w-fit">
-                        <div className="h-10 bg-black w-20"></div>
+                <TabsContent value="settings" className="flex flex-row">
+                    <div className="p-4 rounded-xl border border-slate-200 grow max-h-fit max-w-[65%]">
+                        <Settings />
                     </div>
                 </TabsContent>
             </Tabs>

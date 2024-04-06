@@ -5,6 +5,12 @@ import { ProfilePicture } from "./profile-picture";
 import { useProfileStore } from "@/app/(drawing)/stores/profile";
 import { ProfileActions } from "./profile-actions";
 import { IoIosArrowDown } from "react-icons/io";
+import { Poppins } from "next/font/google";
+
+const poppins = Poppins({
+    weight: ["400", "700"],
+    subsets: ["latin"],
+});
 
 export const UserPopup = ({className}: { className?: string }) => {
     const profile = useProfileStore((state) => state.profile);
@@ -17,7 +23,12 @@ export const UserPopup = ({className}: { className?: string }) => {
                 className,
             )}>
                 <ProfilePicture />
-                <span className="hidden md:block">{profile.firstName != "" ? `${profile.firstName} ${profile.lastName}`: "User"}</span>
+                <span className={cn(
+                    "hidden md:block",
+                    poppins.className,
+                )}>
+                    {profile.firstName != "" ? `${profile.firstName} ${profile.lastName}`: "User"}
+                </span>
                 <IoIosArrowDown className="hidden md:block" />
             </PopoverTrigger>
             <PopoverContent className="w-fit">
