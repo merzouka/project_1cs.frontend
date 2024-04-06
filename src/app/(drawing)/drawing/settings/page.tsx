@@ -1,5 +1,4 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
 import { Participants } from "@/app/(drawing)/components/participants";
 import { Cities } from "@/app/(drawing)/components/cities";
 import { Settings } from "@/app/(drawing)/components/settings";
@@ -37,9 +36,7 @@ export default function Page() {
                     <Participants />
                 </TabsContent>
                 <TabsContent value="settings" className="flex flex-row">
-                    <div className="p-2 md:p-4 rounded-xl md:border md:border-slate-200 grow max-h-fit md:max-w-[65%]">
-                        <Settings />
-                    </div>
+                    <Settings />
                 </TabsContent>
             </Tabs>
         </div>

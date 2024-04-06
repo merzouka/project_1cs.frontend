@@ -77,56 +77,58 @@ export const Settings = () => {
     }
 
     return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="w-full">
-                <FormField 
-                    control={form.control}
-                    name="winners"
-                    render={({ field }) => (
-                        <FormItem className="mb-2">
-                            <FormLabel>{"Nombre de places"}</FormLabel>
-                            <FormControl>
-                                <Input
-                                    className="rounded-2xl"
-                                    {...field}
-                                    placeholder="Veuillez entrer le nombre de places"
-                                />
-                            </FormControl>
-                            <FormMessage className="text-xs"/>
-                        </FormItem>
-                    )}
-                />
-                <FormField 
-                    control={form.control}
-                    name="type"
-                    render={({ field }) => (
-                        <FormItem className="mb-2 md:mb-4">
-                            <FormLabel>{"Type de l'algorithm"}</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+        <div className="p-2 md:p-4 rounded-xl md:border md:border-slate-200 grow max-h-fit md:max-w-[65%]">
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(handleSubmit)} className="w-full">
+                    <FormField 
+                        control={form.control}
+                        name="winners"
+                        render={({ field }) => (
+                            <FormItem className="mb-2">
+                                <FormLabel>{"Nombre de places"}</FormLabel>
                                 <FormControl>
-                                    <SelectTrigger  className={cn(
-                                        "rounded-2xl",
-                                        field.value == undefined ? "text-slate-500" : "text-black"
-                                    )}>
-                                        <SelectValue 
-                                            placeholder="Veuillez sélectionner le type de l'algorithm"
-                                        />
-                                    </SelectTrigger>
+                                    <Input
+                                        className="rounded-2xl"
+                                        {...field}
+                                        placeholder="Veuillez entrer le nombre de places"
+                                    />
                                 </FormControl>
-                                <SelectContent>
-                                    <SelectItem value="random">{"Aléatoire"}</SelectItem>
-                                    <SelectItem value="age based">{"Par tranche d'age"}</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <FormMessage className="text-xs"/>
-                        </FormItem>
-                    )}
-                />
-                <Button disabled={isLoading} type="submit" className="bg-black text-white hover:bg-black/75 rounded-full w-full">
-                    {"Lancer le tirage"}
-                </Button>
-            
-            </form>
-        </Form>
+                                <FormMessage className="text-xs"/>
+                            </FormItem>
+                        )}
+                    />
+                    <FormField 
+                        control={form.control}
+                        name="type"
+                        render={({ field }) => (
+                            <FormItem className="mb-2 md:mb-4">
+                                <FormLabel>{"Type de l'algorithm"}</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                        <SelectTrigger  className={cn(
+                                            "rounded-2xl",
+                                            field.value == undefined ? "text-slate-500" : "text-black"
+                                        )}>
+                                            <SelectValue 
+                                                placeholder="Veuillez sélectionner le type de l'algorithm"
+                                            />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        <SelectItem value="random">{"Aléatoire"}</SelectItem>
+                                        <SelectItem value="age based">{"Par tranche d'age"}</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage className="text-xs"/>
+                            </FormItem>
+                        )}
+                    />
+                    <Button disabled={isLoading} type="submit" className="bg-black text-white hover:bg-black/75 rounded-full w-full">
+                        {"Lancer le tirage"}
+                    </Button>
+
+                </form>
+            </Form>
+        </div>
     );
 }

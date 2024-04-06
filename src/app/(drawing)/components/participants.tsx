@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { Participant, ParticipantSkeleton } from "./participant";
 import { PiWarningThin } from "react-icons/pi";
 import { Toaster } from "@/components/ui/toaster";
+import { useDebouncedCallback } from "use-debounce";
 
 const users = [
     { id: 1, image: null, firstName: "FirstName1", lastName: "LastName1", address: "Address1" },
@@ -35,8 +36,13 @@ const users = [
     { id: 20, image: null, firstName: "FirstName20", lastName: "LastName20", address: "Address20" }
 ];
 
-const SearchBar = () => {
+const SearchBar = ({ onChange }: { onChange: (value: string) => void }) => {
     const inputRef = useRef<HTMLInputElement>(null);
+    const [value, setValue] = useState<string | undefined>(undefined);
+    const handleChange = useDebouncedCallback((value: string) => {
+        onChange(value);
+    }, 500);
+
     return (
         <div className="flex items-center border border-slate-100 rounded-lg px-2 
             focus-within:ring-2 focus-within:ring-black focus-within:ring-offset-2 mb-2 md:mb-4
@@ -45,14 +51,20 @@ const SearchBar = () => {
             <LuSearch className="size-7 text-slate-400" onClick={() => inputRef.current?.focus()}/>
             <Input 
                 ref={inputRef}
-                className="w-full border-0 focus-visible:ring-0 focus-within:ring-transparent focus-within:ring-offset-0"
+                className="w-full border-0 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
                 placeholder="Rechercer"
+                value={value}
+                onChange={(e) => {
+                    setValue(e.target.value);
+                    handleChange(e.target.value);
+                }}
             />
         </div>
     );
 }
 
 export const Participants = () => {
+    console.log("render");
     const { cities } = useCitiesStore();
     const { toast } = useToast();
     // TODO: make true
@@ -80,15 +92,19 @@ export const Participants = () => {
             }
         }
     });
+    const [term, setTerm] = useState("");
+    const participants = term === "" ? data : data.filter(
+        (participant: any) => `${participant.firstName} ${participant.lastName}`.toLowerCase().includes(term)
+    );
 
     return (
         <> 
             <div className="flex flex-col size-full">
-                <SearchBar />
+                <SearchBar onChange={setTerm}/>
                 <div className="relative grow">
                     <div className={cn(
                         "absolute top-0 right-0 bottom-0 left-0 overflow-y-auto",
-                        !isError ? "grid grid-cols-1 md:grid-cols-3 grid-flow-column place-items-center gap-3"
+                        !isError ? "grid grid-cols-1 md:grid-cols-3 grid-flow-column place-items-start md:place-items-center gap-3"
                             : "flex justify-center items-center",
                     )}>
                         {
@@ -102,12 +118,12 @@ export const Participants = () => {
                             isError && 
                                 <div className="flex flex-col gap-y-3 text-gray-300 items-center text-4xl">
                                     <PiWarningThin className="size-14 md:size-16"/>
-                                    <p>Erreur</p>
+                                    <p>{"Erreur"}</p>
                                 </div>
                         }
                         {
                             !isLoading && !isError &&
-                                data?.map((participant: any) => <Participant key={participant.id} participant={participant}/>)
+                                participants?.map((participant: any) => <Participant key={participant.id} participant={participant}/>)
                         }
                     </div>
                 </div>
