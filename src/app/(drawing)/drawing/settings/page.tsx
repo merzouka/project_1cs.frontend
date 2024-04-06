@@ -37,7 +37,7 @@ export default function Page() {
                     <Participants />
                 </TabsContent>
                 <TabsContent value="settings" className="flex flex-row">
-                    <div className="p-4 rounded-xl border border-slate-200 grow max-h-fit max-w-[65%]">
+                    <div className="p-2 md:p-4 rounded-xl md:border md:border-slate-200 grow max-h-fit md:max-w-[65%]">
                         <Settings />
                     </div>
                 </TabsContent>

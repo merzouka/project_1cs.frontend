@@ -18,19 +18,11 @@ export const NavBar = () => {
     const animation = isMenuOpen ? { x: 0, display: "flex" } : { x: "-100%", display: "hidden" };
 
     return (
-        <>
+        <div className="size-full">
             <div className="absolute top-2 left-3 z-[1001] rounded-full size-16 md:top-4 md:left-5">
-                {
-                    !isMobile ?
-                        <Button className="rounded-full size-18 p-1" variant="link">
-                            <Link href="/" className="w-full h-full">
-                                {logo}
-                            </Link>
-                        </Button> :
-                        <Toggle className="rounded-full size-17 p-3" onPressedChange={(pressed) => setIsMenuOpen(pressed)}>
-                            {logo}
-                        </Toggle>
-                }
+                <Toggle disabled={!isMobile} className="disabled:opacity-100 rounded-full size-17 p-3" onPressedChange={(pressed) => setIsMenuOpen(pressed)}>
+                    {logo}
+                </Toggle>
             </div>
             
             <div className="absolute top-3 right-2 lg:top-8 lg:right-7 md:w-fit  z-[1001]">
@@ -42,8 +34,8 @@ export const NavBar = () => {
                         "absolute lg:static z-[1000] h-dvh top-0 w-full lg:w-80 items-center",
                         "flex flex-col justify-between pt-24 pb-2 md:pb-8 bg-white"
                     )}
-                    initial={!isMobile ? {} : {x: "-100%"}}
-                    animate={!isMobile ? {} : animation}
+                    initial={{x: "-100%"}}
+                    animate={animation}
                 >
                     <div className="w-full">
                         <NavTabs />
@@ -53,7 +45,7 @@ export const NavBar = () => {
                     </div>
                 </motion.nav>
             </AnimatePresence>
-        </>
+        </div>
     );
 }
 
