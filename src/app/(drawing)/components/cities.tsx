@@ -8,6 +8,7 @@ import axios from "axios";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState } from "react";
 import { useCitiesStore } from "@/app/(drawing)/stores/cities";
+import { Toaster } from "@/components/ui/toaster";
 
 export const Cities = () => {
     const { toast } = useToast();
@@ -16,7 +17,7 @@ export const Cities = () => {
     // TODO: get info from user without request
     // TODO: make true
     const [isFetching, setIsFetching] = useState(true);
-    const { isLoading, isError, data } = useQuery({
+    const { isLoading, isError, data, failureCount } = useQuery({
         queryKey: ["cities", user.id],
         queryFn: async () => {
             try {
@@ -43,10 +44,13 @@ export const Cities = () => {
                 setCities(response.data);
                 return response.data; */
             } catch (error) {
-                toast({
-                    title: "",
-                    variant: "destructive",
-                });
+                if (failureCount == 3) {
+                    toast({
+                        title: "Erreur de connexion",
+                        description: "Impossible de récupérer les communes.",
+                        variant: "destructive",
+                    });
+                }
                 throw new Error("connection erorr");
             }
         },
@@ -70,6 +74,7 @@ export const Cities = () => {
                     !isLoading && !isError && `${data?.map((city: any) => city.name).join(", ")}`
                 }
             </span>
+            <Toaster />
         </div>
     );
 }

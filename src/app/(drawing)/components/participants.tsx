@@ -1,8 +1,7 @@
 "use client";
 import { Input } from "@/components/ui/input";
-import { Toast } from "@/components/ui/toast";
 import { LuSearch } from "react-icons/lu";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useCitiesStore } from "@/app/(drawing)/stores/cities";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -11,28 +10,29 @@ import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { Participant, ParticipantSkeleton } from "./participant";
 import { PiWarningThin } from "react-icons/pi";
+import { Toaster } from "@/components/ui/toaster";
 
 const users = [
-    { image: null, firstName: "FirstName1", lastName: "LastName1", address: "Address1" },
-    { image: null, firstName: "FirstName2", lastName: "LastName2", address: "Address2" },
-    { image: null, firstName: "FirstName3", lastName: "LastName3", address: "Address3" },
-    { image: null, firstName: "FirstName4", lastName: "LastName4", address: "Address4" },
-    { image: null, firstName: "FirstName5", lastName: "LastName5", address: "Address5" },
-    { image: null, firstName: "FirstName6", lastName: "LastName6", address: "Address6" },
-    { image: null, firstName: "FirstName7", lastName: "LastName7", address: "Address7" },
-    { image: null, firstName: "FirstName8", lastName: "LastName8", address: "Address8" },
-    { image: null, firstName: "FirstName9", lastName: "LastName9", address: "Address9" },
-    { image: null, firstName: "FirstName10", lastName: "LastName10", address: "Address10" },
-    { image: null, firstName: "FirstName11", lastName: "LastName11", address: "Address11" },
-    { image: null, firstName: "FirstName12", lastName: "LastName12", address: "Address12" },
-    { image: null, firstName: "FirstName13", lastName: "LastName13", address: "Address13" },
-    { image: null, firstName: "FirstName14", lastName: "LastName14", address: "Address14" },
-    { image: null, firstName: "FirstName15", lastName: "LastName15", address: "Address15" },
-    { image: null, firstName: "FirstName16", lastName: "LastName16", address: "Address16" },
-    { image: null, firstName: "FirstName17", lastName: "LastName17", address: "Address17" },
-    { image: null, firstName: "FirstName18", lastName: "LastName18", address: "Address18" },
-    { image: null, firstName: "FirstName19", lastName: "LastName19", address: "Address19" },
-    { image: null, firstName: "FirstName20", lastName: "LastName20", address: "Address20" }
+    { id: 1, image: null, firstName: "FirstName1", lastName: "LastName1", address: "Address1" },
+    { id: 2, image: null, firstName: "FirstName2", lastName: "LastName2", address: "Address2" },
+    { id: 3, image: null, firstName: "FirstName3", lastName: "LastName3", address: "Address3" },
+    { id: 4, image: null, firstName: "FirstName4", lastName: "LastName4", address: "Address4" },
+    { id: 5, image: null, firstName: "FirstName5", lastName: "LastName5", address: "Address5" },
+    { id: 6, image: null, firstName: "FirstName6", lastName: "LastName6", address: "Address6" },
+    { id: 7, image: null, firstName: "FirstName7", lastName: "LastName7", address: "Address7" },
+    { id: 8, image: null, firstName: "FirstName8", lastName: "LastName8", address: "Address8" },
+    { id: 9, image: null, firstName: "FirstName9", lastName: "LastName9", address: "Address9" },
+    { id: 10, image: null, firstName: "FirstName10", lastName: "LastName10", address: "Address10" },
+    { id: 11, image: null, firstName: "FirstName11", lastName: "LastName11", address: "Address11" },
+    { id: 12, image: null, firstName: "FirstName12", lastName: "LastName12", address: "Address12" },
+    { id: 13, image: null, firstName: "FirstName13", lastName: "LastName13", address: "Address13" },
+    { id: 14, image: null, firstName: "FirstName14", lastName: "LastName14", address: "Address14" },
+    { id: 15, image: null, firstName: "FirstName15", lastName: "LastName15", address: "Address15" },
+    { id: 16, image: null, firstName: "FirstName16", lastName: "LastName16", address: "Address16" },
+    { id: 17, image: null, firstName: "FirstName17", lastName: "LastName17", address: "Address17" },
+    { id: 18, image: null, firstName: "FirstName18", lastName: "LastName18", address: "Address18" },
+    { id: 19, image: null, firstName: "FirstName19", lastName: "LastName19", address: "Address19" },
+    { id: 20, image: null, firstName: "FirstName20", lastName: "LastName20", address: "Address20" }
 ];
 
 const SearchBar = () => {
@@ -56,23 +56,26 @@ export const Participants = () => {
     const { cities } = useCitiesStore();
     const { toast } = useToast();
     // TODO: make true
-    const { isLoading, data, isError } = useQuery({
+    const [isFetching, setIsFetching] = useState(true);
+    const { isLoading, data, isError, failureCount } = useQuery({
         queryKey: ["participants", ...cities],
-        enabled: true,
+        enabled: isFetching,
         staleTime: 5 * 60 * 1000,
         queryFn: async () => {
             try {
-                return users;
+                setIsFetching(false);
                 const response = await axios.post(getUrl(endpoints.citiesUsers), {
                     cities: cities,
                 });
                 return response.data;
             } catch (error) {
-                toast({
-                    title: "Erreur de connexion",
-                    description: "Impossible de récupérer la liste des participants.",
-                    variant: "destructive",
-                });
+                if (failureCount == 3) {
+                    toast({
+                        title: "Erreur de connexion",
+                        description: "Impossible de récupérer la liste des participants.",
+                        variant: "destructive",
+                    });
+                }
                 throw new Error("fetch failed");
             }
         }
@@ -104,11 +107,12 @@ export const Participants = () => {
                         }
                         {
                             !isLoading && !isError &&
-                                data?.map((participant: any) => <Participant participant={participant}/>)
+                                data?.map((participant: any) => <Participant key={participant.id} participant={participant}/>)
                         }
                     </div>
                 </div>
             </div>
+            <Toaster />
         </>
     );
 }
