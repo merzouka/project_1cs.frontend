@@ -2,7 +2,7 @@
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { ProfilePicture } from "./profile-picture";
-import { useProfileStore } from "@/app/(drawing-settings)/stores/profile";
+import { useProfileStore } from "@/app/(drawing)/stores/profile";
 import { ProfileActions } from "./profile-actions";
 import { IoIosArrowDown } from "react-icons/io";
 

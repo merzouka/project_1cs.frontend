@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState } from "react";
-import { useCitiesStore } from "@/app/(drawing-settings)/stores/cities";
+import { useCitiesStore } from "@/app/(drawing)/stores/cities";
 
 export const Cities = () => {
     const { toast } = useToast();
@@ -54,7 +54,7 @@ export const Cities = () => {
     });
 
     return (
-        <p className="text-slate-400 flex gap-x-2 items-center text-sm flex-wrap">
+        <div className="text-slate-400 flex gap-x-2 items-center text-sm flex-wrap">
             {`Les communes concernées sont:`}
             {
                 isLoading &&
@@ -70,6 +70,6 @@ export const Cities = () => {
                     !isLoading && !isError && `${data?.map((city: any) => city.name).join(", ")}`
                 }
             </span>
-        </p>
+        </div>
     );
 }

@@ -1,7 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Participants } from "@/app/(drawing-settings)/components/participants";
-import { Cities } from "@/app/(drawing-settings)/components/cities";
+import { Participants } from "@/app/(drawing)/components/participants";
+import { Cities } from "@/app/(drawing)/components/cities";
 
 export default function Page() {
 
