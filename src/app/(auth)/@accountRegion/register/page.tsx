@@ -74,10 +74,10 @@ export default function Step() {
                 setIsRegisterProcess(false);
                 const response = await axios.post(getUrl(endpoints.register), {
                     email: entries.email,
-                    phone: entries.password,
+                    phone: entries.phone,
                     password: entries.password,
-                    firstName: entries.firstname,
-                    lastName: entries.lastname,
+                    first_name: entries.firstname,
+                    last_name: entries.lastname,
                     dateOfBirth: entries.dateOfBirth ? format(entries.dateOfBirth, "yyyy-MM-dd"): new Date(),
                     gender: entries.gender,
                     province: Number(entries.province),
