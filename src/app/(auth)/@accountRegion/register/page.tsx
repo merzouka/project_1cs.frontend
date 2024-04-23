@@ -83,7 +83,7 @@ export default function Step() {
                     city: entries.city,
                 });
                 router.push(`/login?${searchParams.toString()}`);
-                return JSON.parse(response.data);
+                return response.data;
             } catch (error) {
                 if (error instanceof AxiosError && error.response) {
                     setEmailError({ email: "Adresse e-mail déjà utilisée" })
