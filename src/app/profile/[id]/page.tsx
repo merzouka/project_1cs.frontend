@@ -11,6 +11,8 @@ export default function ProfilePage({
         }
     }) {
     const { isLoggedIn } = useUser();
+    const { user } = useUser();
+    console.log(user);
     const router = useRouter();
     if (!isLoggedIn) {
         router.push("/login");

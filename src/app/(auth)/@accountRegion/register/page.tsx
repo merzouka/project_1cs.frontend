@@ -90,7 +90,7 @@ export default function Step() {
                     setStep(0);
                     throw new Error("duplicate email");
                 }
-                console.log("error")
+                console.log(error)
                 toast({
                     title: "Erreur de connexion",
                     description: "Nous ne pouvons pas créer votre compte",
