@@ -30,7 +30,15 @@ function getRoles(roles: string[]): Role[] {
 export interface UserInfo {
     id: number | string | undefined;
     email: string;
-    roles: Role[];
+    // TODO: add roles
+    // roles: string[];
+    firstName: string;
+    lastName: string;
+    phone: string;
+    dateOfBirth: Date | undefined;
+    city: string;
+    province: number | undefined;
+    gender: "male" | "female" | undefined;
 }
 
 export interface User {
@@ -38,11 +46,7 @@ export interface User {
 }
 
 interface Actions {
-    setUser: (user: {
-        id: number | string | undefined;
-        email: string;
-        roles: string[];
-    }) => void;
+    setUser: (user: UserInfo) => void;
 }
 
 
@@ -50,7 +54,19 @@ export const useUserStore = create<User & Actions>((set) => ({
     user: {
         id: undefined,
         email: "",
-        roles: [],
+        // TODO: add roles
+        // roles: [],
+        firstName: "",
+        lastName: "",
+        phone: "",
+        dateOfBirth: undefined,
+        city: "",
+        province: undefined,
+        gender: undefined,
     },
-    setUser: (user) => set({ user: {...user, roles: getRoles(user.roles)} }),
+    setUser: (user) => set({ user: {
+        ...user,
+        // TODO: uncomment this
+        // roles: getRoles(user.roles)
+    } }),
 }));
