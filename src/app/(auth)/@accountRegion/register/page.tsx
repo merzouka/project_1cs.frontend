@@ -70,7 +70,6 @@ export default function Step() {
         queryKey: ["register"],
         queryFn: async () => {
             try {
-                router.push(`/login?${searchParams.toString()}`);
                 setIsRegisterProcess(false);
                 const response = await axios.post(getUrl(endpoints.register), {
                     email: entries.email,
@@ -79,11 +78,11 @@ export default function Step() {
                     first_name: entries.firstname,
                     last_name: entries.lastname,
                     dateOfBirth: entries.dateOfBirth ? format(entries.dateOfBirth, "yyyy-MM-dd"): new Date(),
-                    gender: entries.gender,
+                    gender: entries.gender == "male" ? "M" : "F",
                     province: Number(entries.province),
                     city: entries.city,
                 });
-                router.push("/login");
+                router.push(`/login?${searchParams.toString()}`);
                 return JSON.parse(response.data);
             } catch (error) {
                 if (error instanceof AxiosError && error.response) {
@@ -91,6 +90,7 @@ export default function Step() {
                     setStep(0);
                     throw new Error("duplicate email");
                 }
+                console.log("error")
                 toast({
                     title: "Erreur de connexion",
                     description: "Nous ne pouvons pas créer votre compte",

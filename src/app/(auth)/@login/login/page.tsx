@@ -63,7 +63,8 @@ export default function LoginPage() {
                 setIsLoginEnabled(false);
                 const response = await axios.post(getUrl(endpoints.login), entries)
                 const data = JSON.parse(response.data);
-                setUser(data.data);
+                console.log(data)
+                setUser(data);
                 if (returnPage) {
                     router.push(returnPage);
                 }
@@ -78,6 +79,7 @@ export default function LoginPage() {
                     });
                     throw new Error("credentials error");
                 }
+                console.log(error)
                 toast({
                     title: "Erreur de connexion",
                     description: "Nous ne pouvons pas connecter au serveur",
