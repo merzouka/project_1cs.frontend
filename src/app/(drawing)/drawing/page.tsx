@@ -1,10 +1,9 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Participants } from "@/app/(drawing)/components/participants";
 import { Cities } from "@/app/(drawing)/components/cities";
-import { Settings } from "@/app/(drawing)/components/settings";
+import { SettingsWinners } from "@/app/(drawing)/components/settings_winners";
 
 export default function Page() {
-
     return (
         <div className="flex flex-col pt-16 md:pt-8 p-2 md:p-8 size-full">
             <div className="w-full pt-3 mb-4 lg:mb-8">
@@ -35,8 +34,8 @@ export default function Page() {
                 <TabsContent value="participants" className="h-full">
                     <Participants />
                 </TabsContent>
-                <TabsContent value="settings" className="flex flex-row">
-                    <Settings />
+                <TabsContent value="settings" className="flex flex-row h-full">
+                    <SettingsWinners />
                 </TabsContent>
             </Tabs>
         </div>
