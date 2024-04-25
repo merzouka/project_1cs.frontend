@@ -10,8 +10,10 @@ export const endpoints = {
     emailUnique: "auth/email-unique",
     logout: "auth/logout",
     profileCitites: (id: number | string | undefined) => `profile/${id}/citites`,
-    citiesUsers: "cities/users",
+    // drawing
     startDrawing: "drawing/start",
+    drawingSettings: "drawing/settings",
+    // profile
     profile: (id: number | string) => `profile/${id}`,
 }
 

@@ -63,7 +63,6 @@ export default function LoginPage() {
                 setIsLoginEnabled(false);
                 const response = await axios.post(getUrl(endpoints.login), entries)
                 const data = JSON.parse(response.data);
-                console.log(data)
                 setUser({
                     id: data.id,
                     email: data.email,
@@ -89,7 +88,6 @@ export default function LoginPage() {
                     });
                     throw new Error("credentials error");
                 }
-                console.log(error)
                 toast({
                     title: "Erreur de connexion",
                     description: "Nous ne pouvons pas connecter au serveur",
