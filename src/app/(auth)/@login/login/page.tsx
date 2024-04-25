@@ -76,7 +76,7 @@ export default function LoginPage() {
                     city: data.city,
                     gender: data.gender == "M" ? "male" : "female",
                 });
-                if (returnPage) {
+                if (returnPage && returnPage != "profile") {
                     router.push(returnPage);
                 }
                 router.push(`/profile/${data.id}`);
