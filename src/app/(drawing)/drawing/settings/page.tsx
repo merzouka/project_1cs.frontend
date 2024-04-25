@@ -34,7 +34,7 @@ export default function Page() {
                 <TabsContent value="participants" className="h-full">
                     <Participants />
                 </TabsContent>
-                <TabsContent value="settings" className="flex flex-row h-full">
+                <TabsContent value="settings" className="flex flex-row">
                     <Settings />
                 </TabsContent>
             </Tabs>

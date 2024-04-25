@@ -26,13 +26,26 @@ import { endpoints, getUrl } from "@/constants/api";
 import { useCitiesStore } from "../stores/cities";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
+import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 
+const baseSplittingAge = 65
 const formSchema = z.object({
     winners: z.string({ required_error: "Veuillez remplir le nombre de places." })
     .regex(new RegExp(/[0-9]+/), {
         message: "Veuillez saisir un numéro.",
     }),
     type: z.enum(["random", "age based"], { required_error: "Veuillez choisir le type du tirage." }),
+    percentage: z.string({
+        required_error: "Veuillez remplir le nombre de places.",
+        invalid_type_error: "Veuillez saisir un pourcentage valide.",
+    }).regex(new RegExp("[0-9]+"), {
+        message: "Veuillez saisir un pourcentage valide.",
+    }).refine((value) => Number(value) >= 0 && Number(value) <= 100, {
+        message: "Veuillez saisir un pourcentage valide.",
+    }).optional()
+}).refine((data) => data.type == "random" || (data.type == "age based" && data?.percentage != undefined), {
+    message: `Veuillez préciser le pourcentage de places réservées aux personnes âgées.`,
+    path: ["percentage"],
 });
 
 export const Settings = () => {
@@ -72,61 +85,108 @@ export const Settings = () => {
 
     const [entries, setEntries] = useState<z.infer<typeof formSchema> | undefined>(undefined);
     function handleSubmit(values: z.infer<typeof formSchema>) {
+        console.log(values);
         setEntries(values);
         setIsFetching(true);
     }
 
+    enum DrawingType {
+        Random = "random",
+        AgeBased = "age based",
+    }
+    const [drawingType, setDrawingType] = useState<string>(DrawingType.Random);
     return (
-        <div className="p-2 md:p-4 rounded-xl md:border md:border-slate-200 grow max-h-fit md:max-w-[65%]">
+        <div className="p-2 md:p-4 rounded-xl md:border md:border-slate-200 grow md:max-w-[65%]">
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(handleSubmit)} className="w-full">
-                    <FormField 
-                        control={form.control}
-                        name="winners"
-                        render={({ field }) => (
-                            <FormItem className="mb-2">
-                                <FormLabel>{"Nombre de places"}</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        className="rounded-2xl"
-                                        {...field}
-                                        placeholder="Veuillez entrer le nombre de places"
-                                    />
-                                </FormControl>
-                                <FormMessage className="text-xs"/>
-                            </FormItem>
-                        )}
-                    />
-                    <FormField 
-                        control={form.control}
-                        name="type"
-                        render={({ field }) => (
-                            <FormItem className="mb-2 md:mb-4">
-                                <FormLabel>{"Type de l'algorithm"}</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <FormControl>
-                                        <SelectTrigger  className={cn(
-                                            "rounded-2xl",
-                                            field.value == undefined ? "text-slate-500" : "text-black"
-                                        )}>
-                                            <SelectValue 
-                                                placeholder="Veuillez sélectionner le type de l'algorithm"
+                    <LayoutGroup>
+                        <motion.div>
+                            <FormField 
+                                control={form.control}
+                                name="winners"
+                                render={({ field }) => (
+                                    <FormItem className="mb-2">
+                                        <FormLabel>{"Nombre de places"}</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                className="rounded-2xl"
+                                                {...field}
+                                                placeholder="Veuillez entrer le nombre de places"
                                             />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        <SelectItem value="random">{"Aléatoire"}</SelectItem>
-                                        <SelectItem value="age based">{"Par tranche d'age"}</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage className="text-xs"/>
-                            </FormItem>
-                        )}
-                    />
-                    <Button disabled={isLoading} type="submit" className="bg-black text-white hover:bg-black/75 rounded-full w-full">
-                        {"Lancer le tirage"}
-                    </Button>
-
+                                        </FormControl>
+                                        <FormMessage className="text-xs"/>
+                                    </FormItem>
+                                )}
+                            />
+                        </motion.div>
+                        <motion.div>
+                            <FormField 
+                                control={form.control}
+                                name="type"
+                                render={({ field }) => (
+                                    <FormItem className="mb-2 md:mb-4">
+                                        <FormLabel>{"Type de l'algorithm"}</FormLabel>
+                                        <Select onValueChange={(value) => {
+                                            setDrawingType(value)
+                                            field.onChange(value)
+                                        }} defaultValue={field.value}>
+                                            <FormControl>
+                                                <SelectTrigger  className={cn(
+                                                    "rounded-2xl",
+                                                    field.value == undefined ? "text-slate-500" : "text-black"
+                                                )}>
+                                                    <SelectValue 
+                                                        placeholder="Veuillez sélectionner le type de l'algorithm"
+                                                    />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value={DrawingType.Random}>{"Aléatoire"}</SelectItem>
+                                                <SelectItem value={DrawingType.AgeBased}>{"Par tranche d'age"}</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage className="text-xs"/>
+                                    </FormItem>
+                                )}
+                            />
+                        </motion.div>
+                        <AnimatePresence initial={false}>
+                            {
+                                drawingType == DrawingType.AgeBased && 
+                                    <motion.div className="mb-3" 
+                                        initial={{ opacity: 0, y: "-30%" }}
+                                        animate={{ opacity: 1, y: "0" }}
+                                        exit={{ opacity: 0 }}
+                                        layout
+                                    >
+                                        <FormField 
+                                            control={form.control}
+                                            name="percentage" 
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>
+                                                        {`Pourcentage pour les personnes âgées (%)`}
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input 
+                                                            className="rounded-2xl"
+                                                            placeholder={`Pourcentage des places pour les personnes âgées (> ${baseSplittingAge}) (%)`}
+                                                            {...field}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage className="text-xs"/>
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </motion.div>
+                            }
+                        </AnimatePresence>
+                        <motion.div>
+                            <Button disabled={isLoading} type="submit" className="bg-black text-white hover:bg-black/75 rounded-full w-full">
+                                {"Lancer le tirage"}
+                            </Button>
+                        </motion.div>
+                    </LayoutGroup>
                 </form>
             </Form>
         </div>
