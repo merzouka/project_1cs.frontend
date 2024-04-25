@@ -1,7 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Participants } from "@/app/(drawing)/components/participants";
 import { Cities } from "@/app/(drawing)/components/cities";
-import Tirage from "@/app/(drawing)/components/tirage";
+import { Settings } from "@/app/(drawing)/components/settings";
 
 export default function Page() {
     return (
@@ -35,7 +35,7 @@ export default function Page() {
                     <Participants />
                 </TabsContent>
                 <TabsContent value="settings" className="flex flex-row h-full">
-                    <Tirage />
+                    <Settings />
                 </TabsContent>
             </Tabs>
         </div>
