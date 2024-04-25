@@ -2,7 +2,6 @@
 import { Input } from "@/components/ui/input";
 import { LuSearch } from "react-icons/lu";
 import { useRef, useState } from "react";
-import { useCitiesStore } from "@/app/(drawing)/stores/cities";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { endpoints, getUrl } from "@/constants/api";
@@ -12,6 +11,7 @@ import { Participant, ParticipantSkeleton } from "./participant";
 import { PiWarningThin } from "react-icons/pi";
 import { Toaster } from "@/components/ui/toaster";
 import { useDebouncedCallback } from "use-debounce";
+import { useUser } from "@/hooks/use-user";
 
 const users = [
     { id: 1, image: null, firstName: "FirstName1", lastName: "LastName1", address: "Address1" },
@@ -64,20 +64,18 @@ const SearchBar = ({ onChange }: { onChange: (value: string) => void }) => {
 }
 
 export const Participants = () => {
-    const { cities } = useCitiesStore();
     const { toast } = useToast();
-    // TODO: make true
     const [isFetching, setIsFetching] = useState(true);
+    const { user } = useUser();
     const { isLoading, data, isError, failureCount } = useQuery({
-        queryKey: ["participants", ...cities],
+        queryKey: ["participants"],
         enabled: isFetching,
         staleTime: 5 * 60 * 1000,
         queryFn: async () => {
             try {
                 setIsFetching(false);
-                const response = await axios.post(getUrl(endpoints.citiesUsers), {
-                    cities: cities,
-                });
+                const response = await axios.get(getUrl(endpoints.participants(user.id)));
+                console.log(response.data);
                 return response.data;
             } catch (error) {
                 if (failureCount == 3) {

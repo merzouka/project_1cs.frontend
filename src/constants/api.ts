@@ -1,5 +1,5 @@
 
-const BACKEND_URL = "http://localhost:8000/";
+const BACKEND_URL = "http://localhost:8000";
 export const endpoints = {
     login: "auth/login",
     resetPassword: "auth/reset-password",
@@ -9,10 +9,10 @@ export const endpoints = {
     otpVerification: "auth/verify-otp",
     emailUnique: "auth/email-unique",
     logout: "auth/logout",
-    profileCitites: (id: number | string | undefined) => `baladiya-ids/${id}`,
+    profileCitites: (id: number | string | undefined) => `baladiya_names_by_utilisateur/${id}`,
     // drawing
-    startDrawing: "drawing/start",
-    drawingSettings: "drawing/settings",
+    drawingSettings: "associate-tirage",
+    participants: (id: number | string | undefined) => `participants_tirage/${id}`,
     // profile
     profile: (id: number | string) => `profile/${id}`,
 }
