@@ -1,7 +1,8 @@
 "use client";
 
-import { useUser } from "@/hooks/use-user";
+import { useUser, Page } from "@/hooks/use-user";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function ProfilePage({
     params
@@ -10,9 +11,10 @@ export default function ProfilePage({
             id: number;
         }
     }) {
-    const { isLoggedIn } = useUser();
-    const { user } = useUser();
-    console.log(user);
+    const { isLoggedIn, validateAccess } = useUser();
+    useEffect(() => {
+        validateAccess(Page.profile);
+    }, [])
     const router = useRouter();
     if (!isLoggedIn) {
         router.push("/login");

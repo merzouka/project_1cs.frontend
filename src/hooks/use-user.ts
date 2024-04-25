@@ -11,19 +11,21 @@ function hasAccess(userRoles: Role[], requiredRoles: Role[]) {
 export enum Page {
     submission = "submission",
     profile = "profile",
+    drawing = "drawing",
 }
 
 let requirements = {
     "submission": (user: UserInfo) => !!user.id,
     "profile": (user: UserInfo) => !!user.id,
+    "drawing": (user: UserInfo) => user.role == Role.drawingMaster,
 }
 
 export function useUser() {
     const user = useUserStore((state) => state.user);
     const isLoggedIn = user.id !== undefined;
-    const roles = user.roles;
-    function hasRole(role: Role): boolean {
-        return roles.includes(role);
+    const role = user.role;
+    function hasRole(toCheck: Role): boolean {
+        return role == toCheck;
     }
 
     const router = useRouter();
@@ -44,7 +46,7 @@ export function useUser() {
     return {
         user,
         isLoggedIn,
-        roles,
+        role,
         hasRole,
         validateAccess,
     }

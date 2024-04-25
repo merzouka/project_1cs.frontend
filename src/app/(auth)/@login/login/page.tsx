@@ -66,6 +66,7 @@ export default function LoginPage() {
                 console.log(data)
                 setUser({
                     id: data.id,
+                    role: data.role,
                     email: data.email,
                     firstName: data.first_name,
                     lastName: data.last_name,
