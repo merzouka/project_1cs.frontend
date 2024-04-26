@@ -1,5 +1,0 @@
-{
-  "/(inscription)/inscription/page": "app/(inscription)/inscription/page.js",
-  "/(inscription)/inscription/mahrampage/page": "app/(inscription)/inscription/mahrampage/page.js",
-  "/icon.svg/route": "app/icon.svg/route.js"
-}
