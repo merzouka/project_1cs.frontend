@@ -19,6 +19,7 @@ const config = {
         },
         extend: {
             fontFamily: {
+                custom: ["rokkitt", 'serif'],
                 sans: ["var(--font-sans)"],
             },
             keyframes: {
