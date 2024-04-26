@@ -49,17 +49,18 @@ export default function Step() {
     const [countryCode, setCountryCode] = useState("+213");
 
     const { next, direction } = useMultiStep(MultiStepKeys.register);
+    const setErrors = useErrorStore((state) => state.setErrors);
     function onSubmit(values: z.infer<typeof registerSchema1>){
         let [code, area] = countryCode.includes("-") ? countryCode.split("-") : [countryCode, ""];
         area = area === "" ? "" : `(${area})`;
         values.phone = `${code}${area}-${values.phone}`;
         updateRegisterStore(values);
+        setErrors({ email: undefined });
         next();
     }
 
     const animation = direction == "forward" ? slideInRightExitLeft : slideInLeftExitRight;
     const errors = useErrorStore((state) => state.errors);
-    const setErrors = useErrorStore((state) => state.setErrors);
     return (
         <>
             <motion.p className={cn(

@@ -63,7 +63,18 @@ export default function LoginPage() {
                 setIsLoginEnabled(false);
                 const response = await axios.post(getUrl(endpoints.login), entries)
                 const data = JSON.parse(response.data);
-                setUser(data.data);
+                console.log(data)
+                setUser({
+                    id: data.id,
+                    email: data.email,
+                    firstName: data.first_name,
+                    lastName: data.last_name,
+                    dateOfBirth: new Date(data.dateOfBirth),
+                    phone: data.phone,
+                    province: data.province,
+                    city: data.city,
+                    gender: data.gender == "M" ? "male" : "female",
+                });
                 if (returnPage) {
                     router.push(returnPage);
                 }
@@ -78,6 +89,7 @@ export default function LoginPage() {
                     });
                     throw new Error("credentials error");
                 }
+                console.log(error)
                 toast({
                     title: "Erreur de connexion",
                     description: "Nous ne pouvons pas connecter au serveur",
