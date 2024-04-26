@@ -26,7 +26,7 @@ import { endpoints, getUrl } from "@/constants/api";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
-import { useUser } from "@/hooks/use-user";
+import { Page, useUser } from "@/hooks/use-user";
 import { useRouter } from "next/navigation";
 
 const baseSplittingAge = 65
@@ -50,6 +50,8 @@ const formSchema = z.object({
 });
 
 export const Settings = () => {
+    const { user, validateAccess } = useUser();
+    validateAccess(Page.drawingSettings);
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -59,7 +61,6 @@ export const Settings = () => {
     });
     const [isFetching, setIsFetching] = useState(false);
     const { toast } = useToast();
-    const { user } = useUser();
     const router = useRouter();
     const { isLoading } = useQuery({
         queryKey: ["drawing start"],

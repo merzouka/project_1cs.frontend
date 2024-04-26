@@ -12,12 +12,14 @@ export enum Page {
     submission = "submission",
     profile = "profile",
     drawing = "drawing",
+    drawingSettings = "drawing/settings",
 }
 
 let requirements = {
     "submission": (user: UserInfo) => !!user.id,
     "profile": (user: UserInfo) => !!user.id,
-    "drawing": (user: UserInfo) => user.role == Role.drawingMaster,
+    "drawing": (user: UserInfo) => user.role == Role.hajj,
+    "drawing/settings": (user: UserInfo) => user.role == Role.drawingMaster,
 }
 
 export function useUser() {

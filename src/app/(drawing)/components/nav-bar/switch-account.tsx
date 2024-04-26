@@ -20,8 +20,13 @@ export const SwitchAccount = ({className} : { className?: string }) => {
         queryFn: async () => {
             try {
                 // TODO: use appropriate endpoint if added switch account feature
-                await axios.post(getUrl(endpoints.logout), {});
+                const response = await axios.post(getUrl(endpoints.logout), {}, {
+                    xsrfCookieName: "csrftoken",
+                    xsrfHeaderName: "X-CSRFToken",
+                    withXSRFToken: true,
+                });
                 router.push("/login");
+                return response
             } catch (error) {
                 toast({
                     title: "La déconnexion a échoué",
@@ -30,7 +35,8 @@ export const SwitchAccount = ({className} : { className?: string }) => {
                 throw new Error("logout error");
             }
         },
-        enabled: loggingOut
+        enabled: loggingOut,
+        retry: false,
     });
 
     function handleClick() {
