@@ -12,7 +12,7 @@ export const useInscriptionStore = create((set) => ({
     prenomMere: '',
     sexe: '',
     dateNaissance: '',
-    nationalite: '',
+    nationalite: 'Algérienne',
     paysResidence: '',
     nin: '',
     dateExpirationNin: '',

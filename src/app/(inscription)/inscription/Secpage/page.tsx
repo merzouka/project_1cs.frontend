@@ -19,11 +19,6 @@ export default function Page2() {
                 <Title />
                 <InscriptionPage2 />
             </div>
-
-
-
-
-
         </>
 
 

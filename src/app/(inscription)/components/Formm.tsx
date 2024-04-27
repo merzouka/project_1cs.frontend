@@ -111,7 +111,7 @@ const InscriptionPage1 = () => {
                     <div className="flex justify-center space-x-[400px] mr-[260px]">
                         <div className="mb-5 w-10">
                             <label htmlFor="nationalite" className="mb-1.5 block text-center text-sm">  Nationalité </label>
-                            <input type="text" name="nationalite" value={nationalite} onChange={handleInputChange} className="py-4 border-gray-100 shadow-md focus:border-blue w-[340px] h-7 rounded-lg border p-2 text-left text-slate-500 focus:outline-[#EBA565]" placeholder="" id="nationalite" required />
+                            <input type="text" name="nationalite" value={"Algérien"} disabled={true} onChange={handleInputChange} className="py-4 border-gray-100 shadow-md focus:border-blue w-[340px] h-7 rounded-lg border p-2 text-left text-slate-500 focus:outline-[#EBA565]" placeholder="" id="nationalite" required />
                         </div>
                         <div className="w-10">
                             <label htmlFor="paye" className="mb-1.5 block text-left text-sm w-40">  Pays de résidence  </label>

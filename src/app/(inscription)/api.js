@@ -1,13 +1,14 @@
 // api.js
-import axios from 'axios';
+"use client";
+import { AxiosInstance } from '@/config/axios';
 
 const API_BASE_URL = 'http://localhost:8000'; // Replace with your backend API URL
 
 export const submitInscriptionData = async (data) => {
+    console.log(data.photoPersonnelle);
     try {
-        const response = await axios.post(`${API_BASE_URL}/registration`,
+        const response = await AxiosInstance.post(`${API_BASE_URL}/registration`,
             {
-
                 first_name: data.nom,
                 last_name: data.prenom,
                 first_name_arabic: data.nomArabe,
@@ -26,8 +27,6 @@ export const submitInscriptionData = async (data) => {
                 emailUtilisateur: data.email,
                 province: data.wilaya,
                 city: data.commun,
-                passport_id: data.numeroPassport,
-                passport_expiration_date: data.dateExpirationPassport,
                 personal_picture: data.photoPersonnelle,
 
                 // Page 3 fields (for sexe === 'femme')
@@ -35,15 +34,18 @@ export const submitInscriptionData = async (data) => {
                 email: data.emailMahram,
                 province: data.wilayaMahram,
                 city: data.commune,
-                passport_id: data.umeroPassportMahram,
+                passport_id: data.numeroPassportMahram,
                 passport_expiration_date: data.dateExpirationPassportMahram,
                 maahram_id: data.idMahram,
-                personal_picture: data.photoPersonnelleMahram,
             },
             {
                 xsrfCookieName: "csrftoken",
                 xsrfHeaderName: "X-CSRFToken",
                 withXSRFToken: true,
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
             }
         );
         return response.data;

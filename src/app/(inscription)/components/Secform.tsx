@@ -1,8 +1,7 @@
 // pages/inscription/page2.jsx
-import React, { FormEvent } from 'react'
+import React, { FormEvent, useState } from 'react'
 import { useInscriptionStore } from '../components/Store'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { submitInscriptionData } from '../api';
 
 
@@ -13,13 +12,17 @@ const InscriptionPage2 = () => {
         setField(e.target.name, e.target.value)
     }
 
+    const [photo, setPhoto] = useState<File[]>([]);
     const handlePhotoChange = (e: any) => {
-        setField('photoPersonnelle', e.target.files[0])
+        setPhoto([e.target.files[0]])
     }
+
     const formData = useInscriptionStore((state => state.form))
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
+        console.log(photo);
         try {
+            formData.photoPersonnelle = photo[0];
             console.log(formData);
             await submitInscriptionData(formData);
         } catch (error) {
@@ -66,7 +69,7 @@ const InscriptionPage2 = () => {
                 <div className=" flex justify-center space-x-[400px] mr-[710px] mb-6">
                     <div className="mb-5 w-10">
                         <label htmlFor="picture" className="mb-1.5 block text-left w-40 text-sm" >   Photo personnelle </label>
-                        <input name="photoPersonnelle" onChange={handlePhotoChange} className="text-transparent border-gray-100 text-center shadow-md focus:border-blue w-[154px] h-[50px] rounded-lg border p-2 text-slate-500 focus:outline-[#EBA565]" type="file" placeholder="" id="picture" value={photoPersonnelle} required />
+                        <input name="photoPersonnelle" onChange={handlePhotoChange} className="text-transparent border-gray-100 text-center shadow-md focus:border-blue w-[154px] h-[50px] rounded-lg border p-2 text-slate-500 focus:outline-[#EBA565]" type="file" placeholder="" id="picture" required />
                     </div>
 
                 </div>
