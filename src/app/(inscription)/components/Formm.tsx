@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react'
+import React, { FormEvent } from 'react'
 import { useInscriptionStore } from '../components/Store'
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
@@ -10,13 +10,10 @@ import { submitInscriptionData } from '../api';
 const InscriptionPage1 = () => {
     const { nom, prenom, nomArabe, prenomArabe, prenomPere, prenomMere, sexe, dateNaissance, nationalite, paysResidence, nin, dateExpirationNin } = useInscriptionStore((state) => state.form)
     const setField = useInscriptionStore((state) => state.setField)
-    // : { nom, prenom, nomArabe, prenomArabe, prenomPere, prenomMere, sexe, dateNaissance, nationalite, paysResidence, nin, dateExpirationNin, setField
 
 
     const handleInputChange = (e: any) => {
-
         setField(e.target.name, e.target.value)
-
     }
     /*
     const [queryEnabled, setQueryEnabled] = useState(true);
@@ -44,15 +41,11 @@ const InscriptionPage1 = () => {
         enabled: queryEnabled
     }) */
 
-    console.log('ldsjfqsdkfs')
     const router = useRouter()
-    const handleSubmit = (e: any) => {
+    const handleSubmit = (e: FormEvent) => {
         e.preventDefault()
-        console.log(sexe)
         if (sexe == 'FM') {
-
             router.push("/inscription/mahrampage")
-
             return
         }
         router.push("/inscription/Secpage")
@@ -102,7 +95,7 @@ const InscriptionPage1 = () => {
                         <div className="mb-5 w-10">
                             <label htmlFor="sexe" className="block text-left w-40 mb-2 text-sm font-medium text-gray-900 dark:text-white">Sexe</label>
                             <select id="sexe" name="sexe" value={sexe} onChange={handleInputChange} className="h-9 w-[340px] shadow-md rounded-lg border  text-left text-slate-500 focus:outline-[#EBA565]">
-                                <option selected>Sélectionnez votre sexe</option>
+                                <option value="placeholder">Sélectionnez votre sexe</option>
                                 <option value="FM">femme</option>
                                 <option value="HM">homme</option>
                             </select>

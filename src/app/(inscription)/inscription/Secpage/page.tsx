@@ -3,7 +3,7 @@
 import React from 'react'
 
 import NavBar from '../../components/NavBar'
-import Titlee from '../../components/Titlee'
+import Title from '../../components/Titlee'
 import InscriptionPage2 from '../../components/Secform'
 
 export default function Page2() {
@@ -16,8 +16,7 @@ export default function Page2() {
                 }}
             >
                 <NavBar />
-                <Titlee />
-
+                <Title />
                 <InscriptionPage2 />
             </div>
 

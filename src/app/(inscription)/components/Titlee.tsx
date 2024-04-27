@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function Titlee() {
+export default function Title() {
     return (
         <>
             <div className=" mt-[20px] flex justify-center text-center">

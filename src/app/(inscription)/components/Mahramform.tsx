@@ -1,6 +1,6 @@
 // pages/inscription/page3.jsx
 "use client"
-import React from 'react'
+import React, { FormEvent } from 'react'
 
 import { useInscriptionStore } from '../components/Store'
 import Link from 'next/link'
@@ -27,22 +27,12 @@ const InscriptionPage3 = () => {
     const handlePhotoChange = (e: any) => {
         setField('photoPersonnelleMahram', e.target.files[0])
     }
-    const handleSubmit = async (e: any) => {
+    const formData = useInscriptionStore((state => state.form))
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault()
-        console.log('heelo')
+        console.log(formData);
         try {
-            const formData = useInscriptionStore((state => state.form))
             await submitInscriptionData(formData);
-            console.log('Inscription data submitted successfully');
-            console.log('nom')
-            console.log('prenom')
-            console.log('nomArabe')
-            console.log('prenomArabe')
-            console.log('prenomPere')
-            console.log('numeroPortableMahram')
-            console.log('photoPersonnelleMahram')
-            console.log('nom')
-            console.log('nom')
         } catch (error) {
             console.error('Error submitting inscription data:', error);
         }

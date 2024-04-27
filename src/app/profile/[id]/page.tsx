@@ -2,6 +2,7 @@
 
 import { useUser } from "@/hooks/use-user";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function ProfilePage({
     params
@@ -18,6 +19,9 @@ export default function ProfilePage({
         router.push("/login");
     }
     return (
-        <div>{params.id}</div>
+        <div>
+            <p>{params.id}</p>
+            <Link href="/inscription">Registration</Link>
+        </div>
     );
 }

@@ -1,11 +1,10 @@
 import React from 'react'
-import Titlee from '../../components/Titlee'
+import Title from '../../components/Titlee'
 import NavBar from '../../components/NavBar'
 import InscriptionPage3 from '../../components/Mahramform'
-import { submitInscriptionData } from '../../api';
 
 
-export default function page3() {
+export default function Page3() {
     return (
         <>
             <div
@@ -15,7 +14,7 @@ export default function page3() {
                 }}
             >
                 <NavBar />
-                <Titlee />
+                <Title />
                 <InscriptionPage3 />
             </div>
         </>

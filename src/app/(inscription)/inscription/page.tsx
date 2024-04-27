@@ -1,7 +1,7 @@
 
 import InscriptionPage1 from "../components/Formm";
 import NavBar from "../components/NavBar";
-import Titlee from "../components/Titlee";
+import Title from "../components/Titlee";
 
 export default function Homee() {
     return (
@@ -13,15 +13,9 @@ export default function Homee() {
                 }}
             >
                 <NavBar />
-                <Titlee />
+                <Title />
                 <InscriptionPage1 />
             </div>
-
-
-
-
-
         </>
-
     )
 } 

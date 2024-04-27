@@ -1,5 +1,5 @@
 // pages/inscription/page2.jsx
-import React from 'react'
+import React, { FormEvent } from 'react'
 import { useInscriptionStore } from '../components/Store'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -16,11 +16,12 @@ const InscriptionPage2 = () => {
     const handlePhotoChange = (e: any) => {
         setField('photoPersonnelle', e.target.files[0])
     }
-    const handleSubmit = async () => {
+    const formData = useInscriptionStore((state => state.form))
+    const handleSubmit = async (e: FormEvent) => {
+        e.preventDefault();
         try {
-            const formData = useInscriptionStore((state => state.form))
+            console.log(formData);
             await submitInscriptionData(formData);
-            console.log('Inscription data submitted successfully');
         } catch (error) {
             console.error('Error submitting inscription data:', error);
         }

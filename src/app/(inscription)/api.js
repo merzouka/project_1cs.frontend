@@ -39,6 +39,11 @@ export const submitInscriptionData = async (data) => {
                 passport_expiration_date: data.dateExpirationPassportMahram,
                 maahram_id: data.idMahram,
                 personal_picture: data.photoPersonnelleMahram,
+            },
+            {
+                xsrfCookieName: "csrftoken",
+                xsrfHeaderName: "X-CSRFToken",
+                withXSRFToken: true,
             }
         );
         return response.data;
