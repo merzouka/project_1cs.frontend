@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Modal from "react-modal";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Participant } from "@/app/(drawing)/components/participant";
 // @ts-ignore
