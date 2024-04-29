@@ -4,7 +4,8 @@ import { LuSearch } from "react-icons/lu";
 import { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { endpoints, getUrl } from "@/constants/api";
+import { getUrl } from "@/constants/api";
+import { endpoints } from "@/constants/endpoints"
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { Participant, ParticipantSkeleton } from "./participant";
@@ -91,7 +92,7 @@ export const Participants = () => {
     });
     const [term, setTerm] = useState("");
     const participants = term === "" ? data : data.filter(
-        (participant: any) => `${participant.firstName} ${participant.lastName}`.toLowerCase().includes(term)
+        (participant: any) => `${participant.user.first_name} ${participant.user.last_name}`.toLowerCase().includes(term)
     );
 
     return (
@@ -120,7 +121,12 @@ export const Participants = () => {
                         }
                         {
                             !isLoading && !isError &&
-                                participants?.map((participant: any) => <Participant key={participant.id} participant={participant}/>)
+                                participants?.map((participant: any) => <Participant key={participant.id} participant={{
+                                    image: participant.user.personal_picture,
+                                    firstName: participant.user.first_name,
+                                    lastName: participant.user.last_name,
+                                    nin: participant.NIN,
+                                }}/>)
                         }
                     </div>
                 </div>

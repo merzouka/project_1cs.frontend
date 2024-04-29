@@ -65,7 +65,7 @@ interface Actions {
 
 export const useUserStore = create<User & Actions>((set) => ({
     user: {
-        id: 58,
+        id: 68,
         email: "",
         role: Role.user,
         firstName: "",

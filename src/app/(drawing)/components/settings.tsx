@@ -26,9 +26,10 @@ import { endpoints } from "@/constants/endpoints";
 import { getUrl } from "@/constants/api";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
-import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
-import { Page, useUser } from "@/hooks/use-user";
+import { AnimatePresence, motion } from "framer-motion";
+import { useUser } from "@/hooks/use-user";
 import { useRouter } from "next/navigation";
+import { Pages } from "@/constants/pages";
 
 const baseSplittingAge = 65
 const formSchema = z.object({
@@ -52,7 +53,8 @@ const formSchema = z.object({
 
 export const Settings = () => {
     const { user, validateAccess } = useUser();
-    validateAccess(Page.drawingSettings);
+    // TODO: uncomment
+    // validateAccess(Page.drawingSettings);
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -63,14 +65,25 @@ export const Settings = () => {
     const { toast } = useToast();
     const router = useRouter();
 
-    const [isStateFetching, setIsStateFetching] = useState(false);
+    const [isStateFetching, setIsStateFetching] = useState(true);
+    const [disableForm, setDisableForm] = useState(false);
     const { isLoading: isStateLoading, isError: isStateError, failureCount } = useQuery({
         queryKey: ["drawing state"],
+        enabled: isStateFetching,
         queryFn: async () => {
             try {
-                const response = await axios.get(getUrl(endpoints.drawingDefined));
+                setIsStateFetching(false);
+                const response = await axios.get(getUrl(endpoints.drawingDefined(user.id)));
+                if (response.data.tirage_definit) {
+                    toast({
+                        description: "Le tirage à été déja definit.",
+                        variant: "destructive",
+                    });
+                    setDisableForm(true);
+                }
+                return response.data;
             } catch (error) {
-                if (isAxiosError(error)) {
+                if (isAxiosError(error) && failureCount == 2) {
                     toast({
                         title: "Erreur de connexion",
                         description: "Nous ne pouvons pas connecter au serveur.",
@@ -120,8 +133,7 @@ export const Settings = () => {
         AgeBased = "age based",
     }
     const [drawingType, setDrawingType] = useState<string>(DrawingType.Random);
-    const [disableForm, setDisableForm] = useState(false);
-    const formDisabled = disableForm || isStateFetching || isStateError || isSettingLoading;
+    const formDisabled = disableForm || isStateLoading || isStateError || isSettingLoading;
     return (
         <div className="p-2 md:p-4 rounded-xl md:border md:border-slate-200 grow md:max-w-[65%]">
             <Form {...form}>

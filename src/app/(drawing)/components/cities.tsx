@@ -1,7 +1,8 @@
 "use client";
 
 import { useToast } from "@/components/ui/use-toast";
-import { endpoints, getUrl } from "@/constants/api";
+import { getUrl } from "@/constants/api";
+import { endpoints } from "@/constants/endpoints";
 import { useUser } from "@/hooks/use-user";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";

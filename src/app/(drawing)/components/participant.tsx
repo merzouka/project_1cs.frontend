@@ -10,7 +10,7 @@ export const Participant = (
             image: string | null;
             firstName: string;
             lastName: string;
-            address: string;
+            nin: string;
         }
     }
 ) => {
@@ -35,7 +35,7 @@ export const Participant = (
             </div>
             <div className="flex flex-col py-3 justify-between text-sm">
                 <p className="font-bold">{`${participant.firstName} ${participant.lastName}`}</p>
-                <p className="text-gray-600">{participant.address}</p>
+                <p className="text-gray-600">{participant.nin}</p>
             </div>
         </div>
     );

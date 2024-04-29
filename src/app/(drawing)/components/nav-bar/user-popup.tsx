@@ -14,7 +14,7 @@ const poppins = Poppins({
 });
 
 export const UserPopup = ({className}: { className?: string }) => {
-    const { user: profile, validateAccess } = useUser();
+    const { user, validateAccess } = useUser();
     validateAccess(Pages.profile);
 
     return (

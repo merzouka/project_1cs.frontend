@@ -31,7 +31,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
-import { endpoints, getUrl } from "@/constants/api";
+import { getUrl } from "@/constants/api";
+import { endpoints } from "@/constants/endpoints";
 
 // fonts
 import { rokkitt } from "@/constants/fonts";
