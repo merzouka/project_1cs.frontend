@@ -7,7 +7,7 @@ import { Pages } from "@/constants/pages";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import Link from "next/link";
 
 export default function ProfilePage({
     params
@@ -45,11 +45,8 @@ export default function ProfilePage({
     });
     return (
         <div>
-            <p>{params.id}</p> 
-            <p key={"hello"}>{data}</p>
-            <button onClick={() => setIsFetching(true)}>
-                Logout
-            </button>
+            <p>{params.id}</p>
+            <Link href="/inscription">Registration</Link>
         </div>
     );
 }

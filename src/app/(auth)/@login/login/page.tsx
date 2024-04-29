@@ -35,8 +35,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { endpoints, getUrl } from "@/constants/api";
-import { useEmailStore } from "../../constants/email-store";
+import { useEmailStore } from "@/app/(auth)/constants/email-store";
 import { useDebouncedCallback } from "use-debounce";
+import Cookies from "js-cookies";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -61,7 +62,10 @@ export default function LoginPage() {
         queryFn: async () => {
             try {
                 setIsLoginEnabled(false);
-                const response = await axios.post(getUrl(endpoints.login), entries)
+                const response = await axios.post(getUrl(endpoints.login), entries, {
+                    withCredentials: true,
+                });
+                // Cookies.setItem("csrftoken", response.headers.get("Cookie"))
                 const data = JSON.parse(response.data);
                 setUser({
                     id: data.id,
