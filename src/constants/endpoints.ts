@@ -10,7 +10,7 @@ export const endpoints = {
     logout: "auth/logout",
     profileCitites: (id: number | string | undefined) => `baladiya-ids/${id}`,
     // drawing
-    startDrawing: "drawing/start",
+    drawingDefined: (id: number | string | undefined) => `check-tirage/${id}`,
     drawingSettings: "drawing/settings",
     // profile
     profile: (id: number | string) => `profile/${id}`,

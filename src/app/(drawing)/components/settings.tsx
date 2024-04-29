@@ -21,8 +21,9 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { endpoints, getUrl } from "@/constants/api";
+import axios, { isAxiosError } from "axios";
+import { endpoints } from "@/constants/endpoints";
+import { getUrl } from "@/constants/api";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
@@ -59,16 +60,36 @@ export const Settings = () => {
             type: undefined,
         }
     });
-    const [isFetching, setIsFetching] = useState(false);
     const { toast } = useToast();
     const router = useRouter();
-    const { isLoading } = useQuery({
+
+    const [isStateFetching, setIsStateFetching] = useState(false);
+    const { isLoading: isStateLoading, isError: isStateError, failureCount } = useQuery({
+        queryKey: ["drawing state"],
+        queryFn: async () => {
+            try {
+                const response = await axios.get(getUrl(endpoints.drawingDefined));
+            } catch (error) {
+                if (isAxiosError(error)) {
+                    toast({
+                        title: "Erreur de connexion",
+                        description: "Nous ne pouvons pas connecter au serveur.",
+                        variant: "destructive",
+                    });
+                    throw new Error("connection error");
+                }
+            }
+        }
+    })
+
+    const [isSettingDrawing, setIsSettingDrawing] = useState(false);
+    const { isLoading: isSettingLoading } = useQuery({
         queryKey: ["drawing start"],
-        enabled: isFetching,
+        enabled: isSettingDrawing,
         retry: 0,
         queryFn: async () => {
             try {
-                setIsFetching(false);
+                setIsSettingDrawing(false);
                 const response = await axios.post(getUrl(endpoints.drawingSettings), {
                     utilisateur_id: user.id,
                     type_tirage: entries?.type == DrawingType.Random ? 1 : 2,
@@ -91,7 +112,7 @@ export const Settings = () => {
     const [entries, setEntries] = useState<z.infer<typeof formSchema> | undefined>(undefined);
     function handleSubmit(values: z.infer<typeof formSchema>) {
         setEntries(values);
-        setIsFetching(true);
+        setIsSettingDrawing(true);
     }
 
     enum DrawingType {
@@ -99,6 +120,8 @@ export const Settings = () => {
         AgeBased = "age based",
     }
     const [drawingType, setDrawingType] = useState<string>(DrawingType.Random);
+    const [disableForm, setDisableForm] = useState(false);
+    const formDisabled = disableForm || isStateFetching || isStateError || isSettingLoading;
     return (
         <div className="p-2 md:p-4 rounded-xl md:border md:border-slate-200 grow md:max-w-[65%]">
             <Form {...form}>
@@ -115,7 +138,7 @@ export const Settings = () => {
                                             <Input
                                                 className="rounded-2xl"
                                                 {...field}
-                                                disabled={isLoading}
+                                                disabled={formDisabled}
                                                 placeholder="Veuillez entrer le nombre de places"
                                             />
                                         </FormControl>
@@ -130,7 +153,7 @@ export const Settings = () => {
                                 <FormItem className="mb-2 md:mb-4">
                                     <FormLabel>{"Type de l'algorithm"}</FormLabel>
                                     <Select 
-                                        disabled={isLoading}
+                                        disabled={formDisabled}
                                         onValueChange={(value) => {
                                             setDrawingType(value)
                                             field.onChange(value)
@@ -173,7 +196,7 @@ export const Settings = () => {
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Input 
-                                                        disabled={isLoading}
+                                                        disabled={formDisabled}
                                                         className="rounded-2xl"
                                                         placeholder={`Pourcentage des places pour les personnes âgées (> ${baseSplittingAge}) (%)`}
                                                         {...field}
@@ -187,7 +210,7 @@ export const Settings = () => {
                         }
                         <motion.div key="button">
                             <Button
-                                disabled={isLoading} 
+                                disabled={formDisabled} 
                                 type="submit" 
                                 className="bg-black text-white hover:bg-black/75 rounded-full w-full"
                             >
