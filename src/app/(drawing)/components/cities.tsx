@@ -19,9 +19,8 @@ export const Cities = () => {
             try {
                 setIsFetching(false);
                 const response = await axios.get(getUrl(endpoints.profileCitites(user.id)));
-                console.log(response.data);
                 setIsFetching(false);
-                return response.data;
+                return response.data[Object.keys(response.data)[0]];
             } catch (error) {
                 if (failureCount == 3) {
                     toast({
@@ -35,8 +34,8 @@ export const Cities = () => {
         },
         staleTime: 10 * 60 * 60 * 1000,
         enabled: isFetching,
+        retry: 2,
     });
-
     return (
         <div className="text-slate-400 flex gap-x-2 items-center text-sm flex-wrap">
             {`Les communes concernées sont:`}
@@ -50,7 +49,7 @@ export const Cities = () => {
             }
             <span>
                 {
-                    !isLoading && !isError && `${data?.map((city: any) => city.name).join(", ")}`
+                    !isLoading && !isError && `${data?.map((city: any) => city).join(", ")}`
                 }
             </span>
             <Toaster />
