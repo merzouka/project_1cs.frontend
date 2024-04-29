@@ -12,7 +12,7 @@ const Tirage = () => {
 
   useEffect(() => {
     // Fetch winners for user ID 3 when the component mounts
-    fetchWinners(3);
+    fetchWinners(58);
   }, []);
 
   const closeModal = () => {
@@ -23,8 +23,9 @@ const Tirage = () => {
   const fetchWinners = async (userId) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/fetch_winners/${userId}`
+        `http://localhost:8000/fetch-winners/${userId}`
       );
+        console.log(response);
       const winners = response.data.winners;
       setChosenUsers(winners);
       setIsOpen(true); // Open the modal to display the first winner
