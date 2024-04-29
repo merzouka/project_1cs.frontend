@@ -8,9 +8,10 @@ export const endpoints = {
     otpVerification: "auth/verify-otp",
     emailUnique: "auth/email-unique",
     logout: "auth/logout",
-    profileCitites: (id: number | string | undefined) => `baladiya-ids/${id}`,
+    profileCitites: (id: number | string | undefined) => `baladiya_names_by_utilisateur/${id}`,
     // drawing
-    startDrawing: "drawing/start",
+    drawingDefined: (id: number | string | undefined) => `check-tirage/${id}`,
+    participants: (id: number | string | undefined) => `participants_tirage/${id}`,
     drawingSettings: "drawing/settings",
     // profile
     profile: (id: number | string) => `profile/${id}`,

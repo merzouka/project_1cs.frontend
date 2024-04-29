@@ -23,7 +23,6 @@ import { cn } from "@/lib/utils";
 // fonts
 import Link from "next/link";
 import { fade, slideInRightExitLeft } from "@/constants/animations";
-import { rokkitt } from "@/constants/fonts";
 
 export default function ResetEmailPage() {
     const email = useEmailStore((state) => state.email);

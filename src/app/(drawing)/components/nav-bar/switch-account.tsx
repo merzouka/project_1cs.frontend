@@ -2,7 +2,8 @@
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
-import { endpoints, getUrl } from "@/constants/api";
+import { getUrl } from "@/constants/api";
+import { endpoints } from "@/constants/endpoints";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -20,8 +21,13 @@ export const SwitchAccount = ({className} : { className?: string }) => {
         queryFn: async () => {
             try {
                 // TODO: use appropriate endpoint if added switch account feature
-                await axios.post(getUrl(endpoints.logout), {});
+                const response = await axios.post(getUrl(endpoints.logout), {}, {
+                    xsrfCookieName: "csrftoken",
+                    xsrfHeaderName: "X-CSRFToken",
+                    withXSRFToken: true,
+                });
                 router.push("/login");
+                return response
             } catch (error) {
                 toast({
                     title: "La déconnexion a échoué",
@@ -30,7 +36,8 @@ export const SwitchAccount = ({className} : { className?: string }) => {
                 throw new Error("logout error");
             }
         },
-        enabled: loggingOut
+        enabled: loggingOut,
+        retry: false,
     });
 
     function handleClick() {

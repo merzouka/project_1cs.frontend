@@ -19,7 +19,8 @@ import { resetPasswordSchema } from "@/app/(auth)/constants/schemas";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
-import { endpoints, getUrl } from "@/constants/api";
+import { getUrl } from "@/constants/api";
+import { endpoints } from "@/constants/endpoints";
 
 import { IoIosCheckmarkCircleOutline } from "react-icons/io";
 import { IoMdCloseCircleOutline } from "react-icons/io";

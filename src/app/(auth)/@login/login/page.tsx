@@ -34,8 +34,9 @@ import BottomMessage from "@/app/(auth)/components/bottom-message";
 import { Toaster } from "@/components/ui/toaster";
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
-import { endpoints, getUrl } from "@/constants/api";
-import { useEmailStore } from "@/app/(auth)/constants/email-store";
+import { getUrl } from "@/constants/api";
+import { endpoints } from "@/constants/endpoints";
+import { useEmailStore } from "../../constants/email-store";
 import { useDebouncedCallback } from "use-debounce";
 import Cookies from "js-cookies";
 
@@ -79,8 +80,10 @@ export default function LoginPage() {
                     city: data.city,
                     gender: data.gender == "M" ? "male" : "female",
                 });
+                console.log(returnPage);
                 if (returnPage && returnPage != "profile") {
                     router.push(returnPage);
+                    return data;
                 }
                 router.push(`/profile/${data.id}`);
                 return data;
