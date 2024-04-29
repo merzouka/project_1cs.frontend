@@ -1,5 +1,5 @@
 
-const BACKEND_URL = "http://localhost:8000/";
+const BACKEND_URL = "http://localhost:8000";
 export const endpoints = {
     login: "auth/login",
     resetPassword: "auth/reset-password",
