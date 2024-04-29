@@ -67,9 +67,9 @@ export default function LoginPage() {
                 });
                 // Cookies.setItem("csrftoken", response.headers.get("Cookie"))
                 const data = JSON.parse(response.data);
-                console.log(data)
                 setUser({
                     id: data.id,
+                    role: data.role,
                     email: data.email,
                     firstName: data.first_name,
                     lastName: data.last_name,
@@ -79,7 +79,7 @@ export default function LoginPage() {
                     city: data.city,
                     gender: data.gender == "M" ? "male" : "female",
                 });
-                if (returnPage) {
+                if (returnPage && returnPage != "profile") {
                     router.push(returnPage);
                 }
                 router.push(`/profile/${data.id}`);
@@ -93,7 +93,6 @@ export default function LoginPage() {
                     });
                     throw new Error("credentials error");
                 }
-                console.log(error)
                 toast({
                     title: "Erreur de connexion",
                     description: "Nous ne pouvons pas connecter au serveur",

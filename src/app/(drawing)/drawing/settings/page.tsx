@@ -4,7 +4,6 @@ import { Cities } from "@/app/(drawing)/components/cities";
 import { Settings } from "@/app/(drawing)/components/settings";
 
 export default function Page() {
-
     return (
         <div className="flex flex-col pt-16 md:pt-8 p-2 md:p-8 size-full">
             <div className="w-full pt-3 mb-4 lg:mb-8">

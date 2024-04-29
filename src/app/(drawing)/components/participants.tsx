@@ -64,7 +64,6 @@ const SearchBar = ({ onChange }: { onChange: (value: string) => void }) => {
 }
 
 export const Participants = () => {
-    console.log("render");
     const { cities } = useCitiesStore();
     const { toast } = useToast();
     // TODO: make true
