@@ -65,6 +65,7 @@ export default function LoginPage() {
                 const data = JSON.parse(response.data);
                 setUser({
                     id: data.id,
+                    role: data.role,
                     email: data.email,
                     firstName: data.first_name,
                     lastName: data.last_name,
@@ -74,7 +75,7 @@ export default function LoginPage() {
                     city: data.city,
                     gender: data.gender == "M" ? "male" : "female",
                 });
-                if (returnPage) {
+                if (returnPage && returnPage != "profile") {
                     router.push(returnPage);
                 }
                 router.push(`/profile/${data.id}`);
