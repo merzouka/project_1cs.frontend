@@ -1,8 +1,13 @@
 "use client";
 
-import { useUser, Page } from "@/hooks/use-user";
+import { getUrl } from "@/constants/api";
+import { endpoints } from "@/constants/endpoints";
+import { useUser } from "@/hooks/use-user";
+import { Pages } from "@/constants/pages";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useState } from "react";
 
 export default function ProfilePage({
     params
@@ -12,14 +17,39 @@ export default function ProfilePage({
         }
     }) {
     const { isLoggedIn, validateAccess } = useUser();
-    useEffect(() => {
-        validateAccess(Page.profile);
-    }, [])
+    validateAccess(Pages.profile);
     const router = useRouter();
     if (!isLoggedIn) {
         router.push("/login");
     }
+    const [isFetching, setIsFetching] = useState(false);
+    const { data } = useQuery({
+        queryKey: ["logout"],
+        enabled: isFetching,
+        retry: 0,
+        queryFn: async () => {
+            try {
+                setIsFetching(false);
+                const response = await axios.post(getUrl(endpoints.logout), {}, {
+                    xsrfCookieName: "csrftoken",
+                    xsrfHeaderName: "X-CSRFToken",
+                    withXSRFToken: true,
+                });
+                console.log(response);
+                return response.data;
+            } catch (error) {
+                console.log(error);
+                throw new Error(`${error}`);
+            }
+        }
+    });
     return (
-        <div>{params.id}</div>
+        <div>
+            <p>{params.id}</p> 
+            <p key={"hello"}>{data}</p>
+            <button onClick={() => setIsFetching(true)}>
+                Logout
+            </button>
+        </div>
     );
 }
