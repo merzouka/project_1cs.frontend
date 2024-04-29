@@ -35,7 +35,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { getUrl } from "@/constants/api";
-import { endpoints } from "@/components/endpoints";
+import { endpoints } from "@/constants/endpoints";
 import { useEmailStore } from "../../constants/email-store";
 import { useDebouncedCallback } from "use-debounce";
 

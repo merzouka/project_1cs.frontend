@@ -31,7 +31,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "@/lib/utils";
 import axios, { AxiosError } from "axios";
 import { getUrl } from "@/constants/api";
-import { endpoints } from "@/components/endpoints";
+import { endpoints } from "@/constants/endpoints";
 
 // fonts
 import { inter } from "@/constants/fonts";

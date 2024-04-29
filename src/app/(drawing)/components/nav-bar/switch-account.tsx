@@ -2,7 +2,8 @@
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
-import { endpoints, getUrl } from "@/constants/api";
+import { getUrl } from "@/constants/api";
+import { endpoints } from "@/constants/endpoints";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
