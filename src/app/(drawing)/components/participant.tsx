@@ -1,6 +1,8 @@
+"use client";
 import { VscAccount } from "react-icons/vsc";
 import Image from "next/image";
 import { Skeleton } from "@/components/ui/skeleton";
+import React, { useState, useEffect } from "react";
 
 export const Participant = (
     { 
@@ -42,15 +44,15 @@ export const Participant = (
 }
 
 export const ParticipantSkeleton = () => {
-    return (
-        <div className="bg-white rounded-lg shadow-md shadow-slate-300 p-3 flex min-w-15 gap-x-2">
-            <div className="rounded-md flex justify-center items-center h-full aspect-square">
-                <Skeleton className="rounded-md size-16"/>
-            </div>
-            <div className="flex flex-col py-4 justify-between">
-                <Skeleton className="h-3 w-40"/>
-                <Skeleton className="h-2 w-52"/>
-            </div>
-        </div>
-    );
-}
+  return (
+    <div className="bg-white rounded-lg shadow-md shadow-slate-300 p-3 flex min-w-15 gap-x-2">
+      <div className="rounded-md flex justify-center items-center h-full aspect-square">
+        <Skeleton className="rounded-md size-16" />
+      </div>
+      <div className="flex flex-col py-4 justify-between">
+        <Skeleton className="h-3 w-40" />
+        <Skeleton className="h-2 w-52" />
+      </div>
+    </div>
+  );
+};
