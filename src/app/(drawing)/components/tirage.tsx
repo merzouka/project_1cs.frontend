@@ -7,16 +7,24 @@ import Modal from "react-modal";
 import { useUser } from "@/hooks/use-user";
 import { Pages } from "@/constants/pages";
 
+function translate(obj: any) {
+    return {
+        firstName: obj.first_name,
+        lastName: obj.last_name,
+        image: obj.personal_picture,
+    }
+}
+
 const Tirage = () => {
-  const { validateAccess } = useUser();
-  // validateAccess(Pages.profile);
+  const { validateAccess, user } = useUser();
+  validateAccess(Pages.profile);
   const [isOpen, setIsOpen] = useState(false);
   const [chosenUsers, setChosenUsers] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0); // Index of the current winner being displayed
 
   useEffect(() => {
     // Fetch winners for user ID 3 when the component mounts
-    fetchWinners(58);
+    fetchWinners(user.id);
   }, []);
 
   const closeModal = () => {
@@ -38,8 +46,10 @@ const Tirage = () => {
     }
   };
 
+    const [count, setCount] = useState(0);
   const handleMelangerClick = () => {
-    setCurrentIndex(0); // Reset currentIndex to start from the first winner
+    setCurrentIndex(Math.round(Math.random())); // Reset currentIndex to start from the first winner
+        setCount(count + 1);
     setIsOpen(true); // Open the modal
   };
 
@@ -49,6 +59,7 @@ const Tirage = () => {
         <button
           className="bg-white text-orange-500 border border-orange-500 rounded-full px-4 py-2 hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-colors h-10"
           onClick={handleMelangerClick}
+                    disabled={count == chosenUsers.length - 1}
         >
           Melanger
         </button>
@@ -71,7 +82,7 @@ const Tirage = () => {
           <MyModal
             isOpen={isOpen}
             onClose={closeModal}
-            participant={chosenUsers[currentIndex]}
+            participant={translate(chosenUsers[currentIndex])}
           />
         )}
       </Modal>

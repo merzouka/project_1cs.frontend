@@ -7,7 +7,7 @@ import { useUser } from '@/hooks/use-user';
 
 
 const InscriptionPage2 = () => {
-    const { numeroPortable, numeroPassport, dateExpirationPassport } = useInscriptionStore()
+    const { numeroPortable, numeroPassport, dateExpirationPassport, sexe } = useInscriptionStore()
     const setField = useInscriptionStore((state) => state.setField)
     const handleInputChange = (e: { target: { name: any; value: any } }) => {
         setField(e.target.name, e.target.value)
@@ -91,7 +91,6 @@ const InscriptionPage2 = () => {
                             Photo personnelle
                         </label>
                         <input
-                            value={photoPersonnelle}
                             name="photoPersonnelle"
                             onChange={handlePhotoChange}
                             className="text-transparent border-gray-100 text-center shadow-md focus:border-blue w-[190px] h-[40px] rounded-lg border  mr-1 p-1 text-slate-500 focus:outline-[#EBA565]"
