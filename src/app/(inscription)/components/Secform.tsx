@@ -6,7 +6,7 @@ import { submitInscriptionData } from '../api';
 
 
 const InscriptionPage2 = () => {
-    const { numeroPortable, email, wilaya, commune, numeroPassport, dateExpirationPassport, photoPersonnelle, sexe } = useInscriptionStore()
+    const { idMahram, numeroPortable, email, wilaya, commune, numeroPassport, dateExpirationPassport, photoPersonnelle, sexe } = useInscriptionStore((state) => state.form)
     const setField = useInscriptionStore((state) => state.setField)
     const handleInputChange = (e: { target: { name: any; value: any } }) => {
         setField(e.target.name, e.target.value)
@@ -23,7 +23,7 @@ const InscriptionPage2 = () => {
         console.log(photo);
         try {
             formData.photoPersonnelle = photo[0];
-            console.log(formData);
+
             await submitInscriptionData(formData);
         } catch (error) {
             console.error('Error submitting inscription data:', error);
@@ -56,7 +56,7 @@ const InscriptionPage2 = () => {
                     </div>
 
                 </div>
-                <div className="flex justify-center space-x-[400px] mr-[260px] mb-1">
+                <div className="flex justify-center space-x-[400px] mr-[260px] ">
                     <div className="mb-5 w-10">
                         <label htmlFor="np" className="mb-1.5 block  w-40 text-sm text-left">  Numéro de passport</label>
                         <input name="numeroPassport" value={numeroPassport} onChange={handleInputChange} className="py-4 border-gray-100  shadow-md focus:border-blue w-[340px] h-7 rounded-lg border p-2 text-left text-slate-500 focus:outline-[#EBA565] mb-1" type="number" placeholder="" id="np" required />
@@ -66,14 +66,40 @@ const InscriptionPage2 = () => {
                         <input name="dateExpirationPassport" value={dateExpirationPassport} onChange={handleInputChange} className="py-4 border-gray-100 shadow-md focus:border-blue w-[340px] h-7 rounded-lg border p-2 text-left text-slate-500 focus:outline-[#EBA565]" type="date" placeholder="Date d’expiration" id="DEP" required />
                     </div>
                 </div>
-                <div className=" flex justify-center space-x-[400px] mr-[710px] mb-6">
+                <div className="flex justify-center space-x-[400px] mr-[710px] mb-6">
+                    {sexe === 'FM' && (
+                        <div className="mb-5 w-10 ml-[450px]">
+                            <label htmlFor="idmahram" className="mb-1 block w-40 text-sm text-left">
+                                ID du mahram
+                            </label>
+                            <input
+                                name="idMahram"
+                                value={idMahram}
+                                onChange={handleInputChange}
+                                className="py-4 border-gray-100 shadow-md focus:border-blue w-[340px] h-7 rounded-lg border p-2 text-left text-slate-500 focus:outline-[#EBA565]  "
+                                type="number"
+                                placeholder=""
+                                id="idmahram"
+                                required
+                            />
+                        </div>
+                    )}
                     <div className="mb-5 w-10">
-                        <label htmlFor="picture" className="mb-1.5 block text-left w-40 text-sm" >   Photo personnelle </label>
-                        <input name="photoPersonnelle" onChange={handlePhotoChange} className="text-transparent border-gray-100 text-center shadow-md focus:border-blue w-[154px] h-[50px] rounded-lg border p-2 text-slate-500 focus:outline-[#EBA565]" type="file" placeholder="" id="picture" required />
+                        <label htmlFor="photoPersonnelle" className="mb-1.5 block text-left w-40 text-sm">
+                            Photo personnelle
+                        </label>
+                        <input
+                            value={photoPersonnelle}
+                            name="photoPersonnelle"
+                            onChange={handlePhotoChange}
+                            className="text-transparent border-gray-100 text-center shadow-md focus:border-blue w-[190px] h-[40px] rounded-lg border  mr-1 p-1 text-slate-500 focus:outline-[#EBA565]"
+                            type="file"
+                            placeholder=""
+                            id="photoPersonnelle"
+                            required
+                        />
                     </div>
-
                 </div>
-
                 <div className="flex justify-center ">
 
                     <button type="submit" className="border-orange-400 shadow-md h-15 mb-5 block w-[340px] rounded-lg border px-4 py-2 text-center font-bold text-black" >
@@ -84,7 +110,7 @@ const InscriptionPage2 = () => {
                 </div>
 
 
-            </form>
+            </form >
             <div className="flex justify-center ">
                 <Link href={"/inscription"} className="font-bold">
                     Cliquez pour aller à la page précédente</Link>
