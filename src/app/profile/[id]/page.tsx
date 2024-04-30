@@ -1,7 +1,7 @@
 "use client";
 
 import { useUser } from "@/hooks/use-user";
-import { useRouter } from "next/navigation";
+import { Pages } from "@/constants/pages";
 import Link from "next/link";
 
 export default function ProfilePage({
@@ -11,17 +11,14 @@ export default function ProfilePage({
             id: number;
         }
     }) {
-    const { isLoggedIn } = useUser();
-    const { user } = useUser();
-    console.log(user);
-    const router = useRouter();
-    if (!isLoggedIn) {
-        router.push("/login");
-    }
+    const { validateAccess } = useUser();
+    validateAccess(Pages.profile);
     return (
         <div>
             <p>{params.id}</p>
-            <Link href="/inscription">Registration</Link>
+            <p><Link href="/inscription">Registration</Link></p>
+            <p><Link href="/drawing/settings">Drawing Settings</Link></p>
+            <p><Link href="/drawing">Drawing</Link></p>
         </div>
     );
 }

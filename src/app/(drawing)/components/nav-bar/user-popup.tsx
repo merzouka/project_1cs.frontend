@@ -2,10 +2,11 @@
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { ProfilePicture } from "./profile-picture";
-import { useProfileStore } from "@/app/(drawing)/stores/profile";
 import { ProfileActions } from "./profile-actions";
 import { IoIosArrowDown } from "react-icons/io";
 import { Poppins } from "next/font/google";
+import { useUser } from "@/hooks/use-user";
+import { Pages } from "@/constants/pages";
 
 const poppins = Poppins({
     weight: ["400", "700"],
@@ -13,7 +14,8 @@ const poppins = Poppins({
 });
 
 export const UserPopup = ({className}: { className?: string }) => {
-    const profile = useProfileStore((state) => state.profile);
+    const { user, validateAccess } = useUser();
+    // validateAccess(Pages.profile);
 
     return (
         <Popover>
@@ -27,7 +29,7 @@ export const UserPopup = ({className}: { className?: string }) => {
                     "hidden md:block",
                     poppins.className,
                 )}>
-                    {profile.firstName != "" ? `${profile.firstName} ${profile.lastName}`: "User"}
+                    {user.firstName != "" ? `${user.firstName} ${user.lastName}`: "User"}
                 </span>
                 <IoIosArrowDown className="hidden md:block" />
             </PopoverTrigger>

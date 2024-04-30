@@ -31,7 +31,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
-import { endpoints, getUrl } from "@/constants/api";
+import { getUrl } from "@/constants/api";
+import { endpoints } from "@/constants/endpoints";
 
 // fonts
 import { rokkitt } from "@/constants/fonts";
@@ -82,6 +83,18 @@ export default function Step() {
                     province: Number(entries.province),
                     city: entries.city,
                 });
+                setStep(0);
+                updateRegisterStore({
+                    email: "",
+                    phone: "",
+                    password: "",
+                    firstname: "",
+                    lastname: "",
+                    dateOfBirth: undefined,
+                    gender: undefined,
+                    province: undefined,
+                    city: "",
+                });
                 router.push(`/login?${searchParams.toString()}`);
                 return response.data;
             } catch (error) {
@@ -90,7 +103,6 @@ export default function Step() {
                     setStep(0);
                     throw new Error("duplicate email");
                 }
-                console.log(error)
                 toast({
                     title: "Erreur de connexion",
                     description: "Nous ne pouvons pas créer votre compte",
@@ -101,6 +113,7 @@ export default function Step() {
         },
         enabled: isRegisterProcessing,
         retry: false,
+        staleTime: 0,
     });
     async function onSubmit(values: z.infer<typeof registerSchema4>) {
         updateRegisterStore({

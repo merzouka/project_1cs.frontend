@@ -5,13 +5,15 @@ export enum Role {
     drawingMaster,
     superAdmin,
     doctor,
+    user,
 }
 
 const roleMapping = {
-    "Hajj": Role.hajj,
-    "DrawingMaster": Role.drawingMaster,
+    "hajj": Role.hajj,
+    "drawing_master": Role.drawingMaster,
     "SuperAdmin": Role.superAdmin,
     "Doctor": Role.doctor,
+    "user": Role.user,
 }
 
 function getRoles(roles: string[]): Role[] {
@@ -30,8 +32,7 @@ function getRoles(roles: string[]): Role[] {
 export interface UserInfo {
     id: number | string | undefined;
     email: string;
-    // TODO: add roles
-    // roles: string[];
+    role: Role;
     firstName: string;
     lastName: string;
     phone: string;
@@ -46,27 +47,37 @@ export interface User {
 }
 
 interface Actions {
-    setUser: (user: UserInfo) => void;
+    setUser: (user: {
+        id: number | string | undefined;
+        email: string;
+        role: string;
+        firstName: string;
+        lastName: string;
+        phone: string;
+        dateOfBirth: Date | undefined;
+        city: string;
+        province: number | undefined;
+        gender: "male" | "female" | undefined;
+
+    }) => void;
 }
 
 
 export const useUserStore = create<User & Actions>((set) => ({
     user: {
-        id: undefined,
+        id: 71,
         email: "",
-        // TODO: add roles
-        // roles: [],
+        role: Role.user,
         firstName: "",
         lastName: "",
         phone: "",
         dateOfBirth: undefined,
         city: "",
-        province: undefined,
+        province: 1,
         gender: undefined,
     },
     setUser: (user) => set({ user: {
         ...user,
-        // TODO: uncomment this
-        // roles: getRoles(user.roles)
+        role: getRoles([user.role.toString()])[0]
     } }),
 }));

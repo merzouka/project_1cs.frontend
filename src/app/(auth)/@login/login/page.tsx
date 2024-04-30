@@ -34,10 +34,12 @@ import BottomMessage from "@/app/(auth)/components/bottom-message";
 import { Toaster } from "@/components/ui/toaster";
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
-import { endpoints, getUrl } from "@/constants/api";
-import { useEmailStore } from "@/app/(auth)/constants/email-store";
+import { getUrl } from "@/constants/api";
+import { endpoints } from "@/constants/endpoints";
+import { useEmailStore } from "../../constants/email-store";
 import { useDebouncedCallback } from "use-debounce";
 import Cookies from "js-cookies";
+import { AxiosInstance } from "@/config/axios";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -62,14 +64,13 @@ export default function LoginPage() {
         queryFn: async () => {
             try {
                 setIsLoginEnabled(false);
-                const response = await axios.post(getUrl(endpoints.login), entries, {
+                const response = await AxiosInstance.post(getUrl(endpoints.login), entries, {
                     withCredentials: true,
                 });
-                // Cookies.setItem("csrftoken", response.headers.get("Cookie"))
                 const data = JSON.parse(response.data);
-                console.log(data)
                 setUser({
                     id: data.id,
+                    role: data.role,
                     email: data.email,
                     firstName: data.first_name,
                     lastName: data.last_name,
@@ -79,8 +80,10 @@ export default function LoginPage() {
                     city: data.city,
                     gender: data.gender == "M" ? "male" : "female",
                 });
-                if (returnPage) {
+                console.log(returnPage);
+                if (returnPage && returnPage != "profile") {
                     router.push(returnPage);
+                    return data;
                 }
                 router.push(`/profile/${data.id}`);
                 return data;
@@ -93,7 +96,6 @@ export default function LoginPage() {
                     });
                     throw new Error("credentials error");
                 }
-                console.log(error)
                 toast({
                     title: "Erreur de connexion",
                     description: "Nous ne pouvons pas connecter au serveur",

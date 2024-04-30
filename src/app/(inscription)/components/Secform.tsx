@@ -3,10 +3,11 @@ import React, { FormEvent, useState } from 'react'
 import { useInscriptionStore } from '../components/Store'
 import Link from 'next/link'
 import { submitInscriptionData } from '../api';
+import { useUser } from '@/hooks/use-user';
 
 
 const InscriptionPage2 = () => {
-    const { idMahram, numeroPortable, email, wilaya, commune, numeroPassport, dateExpirationPassport, photoPersonnelle, sexe } = useInscriptionStore((state) => state.form)
+    const { numeroPortable, numeroPassport, dateExpirationPassport } = useInscriptionStore()
     const setField = useInscriptionStore((state) => state.setField)
     const handleInputChange = (e: { target: { name: any; value: any } }) => {
         setField(e.target.name, e.target.value)
@@ -30,6 +31,7 @@ const InscriptionPage2 = () => {
         }
     };
 
+    const { user } = useUser();
     return (
         <>
 
@@ -42,17 +44,17 @@ const InscriptionPage2 = () => {
                     </div>
                     <div className="w-10">
                         <label htmlFor="email" className="mb-1.5 block text-center text-sm">  Email</label>
-                        <input name="email" value={email} onChange={handleInputChange} className=" py-4 border-gray-100  shadow-md focus:border-blue w-[340px] h-7 rounded-lg border p-2 text-left text-slate-500 focus:outline-[#EBA565]" type="email" placeholder="" id="email" required />
+                        <input name="email" disabled value={user.email} onChange={handleInputChange} className=" py-4 border-gray-100  shadow-md focus:border-blue w-[340px] h-7 rounded-lg border p-2 text-left text-slate-500 focus:outline-[#EBA565]" type="email" placeholder="" id="email" required />
                     </div>
                 </div>
                 <div className="flex justify-center space-x-[400px] mr-[260px]">
                     <div className="mb-5 w-10">
                         <label htmlFor="wilaya" className="mb-1.5 block text-center text-sm" > Wilaya </label>
-                        <input name="wilaya" value={wilaya} onChange={handleInputChange} className=" py-4 border-gray-100  shadow-md focus:border-blue w-[340px] h-7 rounded-lg border p-2 text-left text-slate-500 focus:outline-[#EBA565] bg-grey" type="text" placeholder="" id="Wilaya" required />
+                        <input name="wilaya" disabled value={user.province} onChange={handleInputChange} className=" py-4 border-gray-100  shadow-md focus:border-blue w-[340px] h-7 rounded-lg border p-2 text-left text-slate-500 focus:outline-[#EBA565] bg-grey" type="text" placeholder="" id="Wilaya" required />
                     </div>
                     <div className="w-10">
                         <label htmlFor="commune" className="mb-1.5 block text-center text-sm">  commune </label>
-                        <input name="commune" value={commune} onChange={handleInputChange} className=" py-4 border-gray-100  shadow-md focus:border-blue w-[340px] h-7 rounded-lg border p-2 text-left text-slate-500 focus:outline-[#EBA565]" type="text" placeholder="" id="commune" required />
+                        <input name="commune" disabled value={user.city} onChange={handleInputChange} className=" py-4 border-gray-100  shadow-md focus:border-blue w-[340px] h-7 rounded-lg border p-2 text-left text-slate-500 focus:outline-[#EBA565]" type="text" placeholder="" id="commune" required />
                     </div>
 
                 </div>

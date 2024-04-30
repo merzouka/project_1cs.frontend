@@ -1,48 +1,27 @@
 "use client";
 
 import { useToast } from "@/components/ui/use-toast";
-import { endpoints, getUrl } from "@/constants/api";
+import { getUrl } from "@/constants/api";
+import { endpoints } from "@/constants/endpoints";
 import { useUser } from "@/hooks/use-user";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState } from "react";
-import { useCitiesStore } from "@/app/(drawing)/stores/cities";
 import { Toaster } from "@/components/ui/toaster";
 
 export const Cities = () => {
     const { toast } = useToast();
-    const setCities = useCitiesStore((state) => state.setCities);
     const { user } = useUser();
-    // TODO: get info from user without request
-    // TODO: make true
     const [isFetching, setIsFetching] = useState(true);
     const { isLoading, isError, data, failureCount } = useQuery({
-        queryKey: ["cities", user.id],
+        queryKey: ["cities"],
         queryFn: async () => {
             try {
                 setIsFetching(false);
-                return [
-                    {
-                        id: 1,
-                        name: "Algiers",
-                        wilaya: 16
-                    },
-                    {
-                        id: 2,
-                        name: "Oran",
-                        wilaya: 31
-                    },
-                    {
-                        id: 3,
-                        name: "Constantine",
-                        wilaya: 25
-                    }
-                ];
-                /* const response = await axios.get(getUrl(endpoints.profileCitites(user.id)));
+                const response = await axios.get(getUrl(endpoints.profileCitites(user.id)));
                 setIsFetching(false);
-                setCities(response.data);
-                return response.data; */
+                return response.data[Object.keys(response.data)[0]];
             } catch (error) {
                 if (failureCount == 3) {
                     toast({
@@ -54,9 +33,10 @@ export const Cities = () => {
                 throw new Error("connection erorr");
             }
         },
+        staleTime: 10 * 60 * 60 * 1000,
         enabled: isFetching,
+        retry: 2,
     });
-
     return (
         <div className="text-slate-400 flex gap-x-2 items-center text-sm flex-wrap">
             {`Les communes concernées sont:`}
@@ -70,8 +50,7 @@ export const Cities = () => {
             }
             <span>
                 {
-                    // TODO: change name to appropriate field
-                    !isLoading && !isError && `${data?.map((city: any) => city.name).join(", ")}`
+                    !isLoading && !isError && `${data?.map((city: any) => city).join(", ")}`
                 }
             </span>
             <Toaster />
