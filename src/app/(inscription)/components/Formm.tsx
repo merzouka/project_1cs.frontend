@@ -20,13 +20,12 @@ const InscriptionPage1 = () => {
     const router = useRouter()
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault()
-        if (sexe == 'FM') {
-            router.push("/inscription/mahrampage")
-            return
-        }
+        router.push("/inscription/Secpage")
+
         router.push("/inscription/Secpage")
     }
     const { user } = useUser();
+
     return (
         <>
             <div className="flex justify-center">
