@@ -20,19 +20,21 @@ export const Participant = (
         <div className="bg-white rounded-lg shadow-md shadow-slate-300 p-3 flex items-center w-full gap-x-2">
             <div className="rounded-md flex justify-center items-center h-full aspect-square">
                 {
-                    participant.image == null?
-                        <VscAccount className="size-10"/>:
-                        // TODO: change to not use string
-                        <div className="relative w-10 aspect-square">
-                            <Image 
-                                src={participant.image}
-                                alt="profile image"
-                                sizes="100%"
-                                fill
-                                className="rounded-lg"
-                                style={{ objectFit: "cover" }}
-                            />
-                        </div>
+                    // participant.image != null
+                        // ?
+                        <VscAccount className="size-10"/>
+                    // :
+                        // // TODO: change to not use string
+                        // <div className="relative w-10 aspect-square">
+                        //     <Image 
+                        //         src={participant.image}
+                        //         alt="profile image"
+                        //         sizes="100%"
+                        //         fill
+                        //         className="rounded-lg"
+                        //         style={{ objectFit: "cover" }}
+                        //     />
+                        // </div>
                 }
             </div>
             <div className="flex flex-col py-3 justify-between text-sm">

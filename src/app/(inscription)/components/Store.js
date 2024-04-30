@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 export const useInscriptionStore = create((set) => ({
+    setValues: (values) => set((state) => ({ form: { ...state.form, ...values } })),
   setField: (field, value) => set((state) => ({ form: { ...state.form, [field]: value } })),
   form: {
     nom: '',

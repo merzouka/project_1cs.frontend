@@ -9,9 +9,9 @@ export const ProfilePicture = () => {
     return (
         <div className="rounded-full size-7">
             {
-                profile.image ? 
-                    <Image src={profile.image} fill style={{ objectFit: "cover" }} sizes="100%" alt="profile photo" />
-                :
+                // !profile.image ? 
+                //     <Image src={profile.image} fill style={{ objectFit: "cover" }} sizes="100%" alt="profile photo" />
+                // :
                     <VscAccount className="size-full"/>
             }
         </div>
