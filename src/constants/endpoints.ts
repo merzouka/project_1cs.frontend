@@ -12,7 +12,7 @@ export const endpoints = {
     // drawing
     drawingDefined: (id: number | string | undefined) => `check-tirage/${id}`,
     participants: (id: number | string | undefined) => `participants_tirage/${id}`,
-    drawingSettings: "drawing/settings",
+    drawingSettings: "associate-tirage",
     // profile
     profile: (id: number | string) => `profile/${id}`,
 }

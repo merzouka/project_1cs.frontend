@@ -9,7 +9,7 @@ import { Pages } from "@/constants/pages";
 
 const Tirage = () => {
   const { validateAccess } = useUser();
-  validateAccess(Pages.profile);
+  // validateAccess(Pages.profile);
   const [isOpen, setIsOpen] = useState(false);
   const [chosenUsers, setChosenUsers] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0); // Index of the current winner being displayed

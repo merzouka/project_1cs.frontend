@@ -16,9 +16,9 @@ export default function ProfilePage({
     return (
         <div>
             <p>{params.id}</p>
-            <Link href="/inscription">Registration</Link>
-            <Link href="/drawing/settings">Drawing Settings</Link>
-            <Link href="/drawing">Drawing</Link>
+            <p><Link href="/inscription">Registration</Link></p>
+            <p><Link href="/drawing/settings">Drawing Settings</Link></p>
+            <p><Link href="/drawing">Drawing</Link></p>
         </div>
     );
 }
