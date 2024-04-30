@@ -6,50 +6,26 @@ import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { submitInscriptionData } from '../api';
+import { useUser } from '@/hooks/use-user';
 
 const InscriptionPage1 = () => {
-    const { nom, prenom, nomArabe, prenomArabe, prenomPere, prenomMere, sexe, dateNaissance, nationalite, paysResidence, nin, dateExpirationNin } = useInscriptionStore((state) => state.form)
+    const { nomArabe, prenomArabe, prenomPere, prenomMere, sexe, paysResidence, nin, dateExpirationNin } = useInscriptionStore((state) => state.form);
     const setField = useInscriptionStore((state) => state.setField)
 
 
     const handleInputChange = (e: any) => {
         setField(e.target.name, e.target.value)
     }
-    /*
-    const [queryEnabled, setQueryEnabled] = useState(true);
-    
-    const { data } = useQuery({
-        queryKey: ['inscription', 'getinfo'],
-        queryFn: async () => {
-            setQueryEnabled(false)
-            try {
-                const response = await axios.get('http://localhost:8000/registration')
-                setField('email', (response).data.emailUtilisateur)
-                setField('nom', (response).data.first_name)
-                setField('prenom', (response).data.last_name)
-                setField('dateNaissance', (response).data.dateOfBirth)
-                setField('wilaya', (response).data.province)
-                setField('sexe', (response).data.gender)
-                setField('commune', (response).data.city)
-                return response.data
-
-            } catch (e) {
-                console.log(e)
-                throw new Error("error")
-            }
-        },
-        enabled: queryEnabled
-    }) */
 
     const router = useRouter()
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault()
-        if (sexe == 'FM') {
-            router.push("/inscription/mahrampage")
-            return
-        }
+        router.push("/inscription/Secpage")
+
         router.push("/inscription/Secpage")
     }
+    const { user } = useUser();
+
     return (
         <>
             <div className="flex justify-center">
@@ -58,11 +34,11 @@ const InscriptionPage1 = () => {
                     <div className="flex justify-center space-x-[400px] mr-[260px]">
                         <div className="mb-5 w-10">
                             <label htmlFor="nom" className="mb-1.5 block text-center text-sm" >Nom</label>
-                            <input className=" py-4 border-gray-100  shadow-md focus:border-blue w-[340px] h-7 rounded-lg border p-2 text-left text-slate-500 focus:outline-[#EBA565] bg-grey" type="text" name="nom" value={nom} onChange={handleInputChange} required />
+                            <input disabled={true} className=" py-4 border-gray-100  shadow-md focus:border-blue w-[340px] h-7 rounded-lg border p-2 text-left text-slate-500 focus:outline-[#EBA565] bg-grey" type="text" name="nom" value={user.lastName} onChange={handleInputChange} required />
                         </div>
                         <div className="w-10">
                             <label htmlFor="prénom" className="mb-1.5 block text-center text-sm">prénom</label>
-                            <input type="text" name="prenom" value={prenom} onChange={handleInputChange} className=" py-4 border-gray-100 shadow-md focus:border-blue w-[340px] h-7 rounded-lg border p-2 text-left text-slate-500 focus:outline-[#EBA565]" id="prénom" required />
+                            <input disabled={true} type="text" name="prenom" value={user.firstName} onChange={handleInputChange} className=" py-4 border-gray-100 shadow-md focus:border-blue w-[340px] h-7 rounded-lg border p-2 text-left text-slate-500 focus:outline-[#EBA565]" id="prénom" required />
                         </div>
                     </div>
 
@@ -94,7 +70,7 @@ const InscriptionPage1 = () => {
                     <div className="flex justify-center space-x-[400px] mr-[260px]">
                         <div className="mb-5 w-10">
                             <label htmlFor="sexe" className="block text-left w-40 mb-2 text-sm font-medium text-gray-900 dark:text-white">Sexe</label>
-                            <select id="sexe" name="sexe" value={sexe} onChange={handleInputChange} className="h-9 w-[340px] shadow-md rounded-lg border  text-left text-slate-500 focus:outline-[#EBA565]">
+                            <select id="sexe" disabled name="sexe" value={user.gender == "male" ? "HM" : "FM"} onChange={handleInputChange} className="h-9 w-[340px] shadow-md rounded-lg border  text-left text-slate-500 focus:outline-[#EBA565]">
                                 <option value="placeholder">Sélectionnez votre sexe</option>
                                 <option value="FM">femme</option>
                                 <option value="HM">homme</option>
@@ -102,7 +78,7 @@ const InscriptionPage1 = () => {
                         </div>
                         <div className="w-10 my-1">
                             <label htmlFor="DN" className="mb-1.5 block w-40 text-left text-sm">Date de nainaissance </label>
-                            <input id="DN" type="date" name="dateNaissance" value={dateNaissance} onChange={handleInputChange} className="py-4 border-gray-100 shadow-md w-[340px] focus:border-blue h-7 rounded-lg border p-2 text-left text-slate-500 focus:outline-[#EBA565]" placeholder="Date de nainaissance" required />
+                            <input id="DN" type="date" name="dateNaissance" disabled value={user.dateOfBirth?.toString()} onChange={handleInputChange} className="py-4 border-gray-100 shadow-md w-[340px] focus:border-blue h-7 rounded-lg border p-2 text-left text-slate-500 focus:outline-[#EBA565]" placeholder="Date de nainaissance" required />
                         </div>
                     </div>
 

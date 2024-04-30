@@ -18,8 +18,13 @@ export const Logout = ({className} : { className?: string }) => {
         queryKey: ["logout"],
         queryFn: async () => {
             try {
-                await axios.post(getUrl(endpoints.logout), {});
+                const response = await axios.post(getUrl(endpoints.logout), {}, {
+                    xsrfCookieName: "csrftoken",
+                    xsrfHeaderName: "X-CSRFToken",
+                    withXSRFToken: true,
+                });
                 router.push("/login");
+                return response
             } catch (error) {
                 toast({
                     title: "La déconnexion a échoué",
@@ -28,7 +33,8 @@ export const Logout = ({className} : { className?: string }) => {
                 throw new Error("logout error");
             }
         },
-        enabled: loggingOut
+        enabled: loggingOut,
+        retry: false,
     });
 
     function handleClick() {

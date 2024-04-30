@@ -1,6 +1,7 @@
 
 export enum Pages {
-    submission = "submission",
+    submission = "inscription",
     profile = "profile",
     drawing = "drawing",
+    drawingSettings = "drawing/settings",
 }

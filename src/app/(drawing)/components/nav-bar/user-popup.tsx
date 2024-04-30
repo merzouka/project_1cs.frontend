@@ -14,8 +14,8 @@ const poppins = Poppins({
 });
 
 export const UserPopup = ({className}: { className?: string }) => {
-    const { user: profile, validateAccess } = useUser();
-    // validateAccess(Pages.profile);
+    const { user, validateAccess } = useUser();
+    validateAccess(Pages.profile);
 
     return (
         <Popover>
@@ -29,7 +29,7 @@ export const UserPopup = ({className}: { className?: string }) => {
                     "hidden md:block",
                     poppins.className,
                 )}>
-                    {profile.firstName != "" ? `${profile.firstName} ${profile.lastName}`: "User"}
+                    {user.firstName != "" ? `${user.firstName} ${user.lastName}`: "User"}
                 </span>
                 <IoIosArrowDown className="hidden md:block" />
             </PopoverTrigger>
