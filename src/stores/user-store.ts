@@ -10,7 +10,7 @@ export enum Role {
 
 const roleMapping = {
     "hajj": Role.hajj,
-    "DrawingMaster": Role.drawingMaster,
+    "drawing_master": Role.drawingMaster,
     "SuperAdmin": Role.superAdmin,
     "Doctor": Role.doctor,
     "user": Role.user,
@@ -65,7 +65,7 @@ interface Actions {
 
 export const useUserStore = create<User & Actions>((set) => ({
     user: {
-        id: 68,
+        id: undefined,
         email: "",
         role: Role.user,
         firstName: "",

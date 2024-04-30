@@ -4,8 +4,12 @@ import axios from "axios";
 import { Participant } from "@/app/(drawing)/components/participant";
 import MyModal from "./mymodal";
 import Modal from "react-modal";
+import { useUser } from "@/hooks/use-user";
+import { Pages } from "@/constants/pages";
 
 const Tirage = () => {
+  const { validateAccess } = useUser();
+  validateAccess(Pages.profile);
   const [isOpen, setIsOpen] = useState(false);
   const [chosenUsers, setChosenUsers] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0); // Index of the current winner being displayed
