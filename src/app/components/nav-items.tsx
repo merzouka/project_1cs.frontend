@@ -1,12 +1,12 @@
-import Link from "next/link";
+import { DesktopNavigation } from "./desktop-nav";
 
-interface Page {
+export interface NavPage {
     id: string,
     link: string,
     display: string
 }
 
-const pages: Page[] = [
+const pages: NavPage[] = [
     {
         id: "home",
         link: "/",
@@ -31,16 +31,6 @@ const pages: Page[] = [
 
 export const NavItems = () => {
     return (
-        <nav className="hidden md:flex flex-grow h-full justify-center items-center">
-            <ul className="flex items-center justify-center gap-x-5">
-                {
-                    pages.map((page) => (
-                        <li key={page.id} className="font-semibold text-gray-600 hover:text-orange-400">
-                            <Link href={page.link}>{page.display}</Link>
-                        </li>
-                    ))
-                }
-            </ul>
-        </nav>
+        <DesktopNavigation pages={pages}/>
     );
 }
