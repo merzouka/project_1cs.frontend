@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 // import { useUser } from "@/hooks/use-user";
-import { UserPopup } from "./user-popup";
+import { User } from "./user";
 import { Button } from "@/components/ui/button";
 
 export const UserActions = () => {
@@ -10,8 +10,8 @@ export const UserActions = () => {
         <div className="md:absolute md:top-5 md:right-10">
             {
                 // user.id ?
-                true?
-                    <UserPopup /> :
+                false?
+                    <User /> :
                     <div className="flex gap-x-2 relative">
                         <Button className="text-black hover:text-orange-400 text-xs md:text-sm
                             font-bold bg-transparent hover:bg-transparent">

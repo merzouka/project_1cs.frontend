@@ -11,8 +11,8 @@ const poppins = Poppins({
     subsets: ["latin"],
 });
 
-export const UserPopup = ({className}: { className?: string }) => {
-    const { user, validateAccess } = useUser();
+export const User = ({className}: { className?: string }) => {
+    const { validateAccess } = useUser();
     // validateAccess(Pages.profile);
 
     return (
