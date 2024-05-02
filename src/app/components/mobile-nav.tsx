@@ -20,7 +20,7 @@ export const MobileNav = () => {
                 <UserActions />
             </div>
             <motion.nav 
-                className="md:hidden min-h-dvh justify-center items-center absolute z-[9998] bg-white w-full"
+                className="md:hidden min-h-dvh justify-center items-center absolute z-[9998] bg-white w-full mt-14"
                 animate={animate}
             >
                 <ul className="flex flex-col p-3 items-center gap-x-5">

@@ -38,7 +38,6 @@ import { getUrl } from "@/constants/api";
 import { endpoints } from "@/constants/endpoints";
 import { useEmailStore } from "../../constants/email-store";
 import { useDebouncedCallback } from "use-debounce";
-import Cookies from "js-cookies";
 import { AxiosInstance } from "@/config/axios";
 
 export default function LoginPage() {
@@ -79,8 +78,9 @@ export default function LoginPage() {
                     province: data.province,
                     city: data.city,
                     gender: data.gender == "M" ? "male" : "female",
+                    image: data?.image || undefined,
+                    emailVerified: data?.id_email_verfied || false,
                 });
-                console.log(returnPage);
                 if (returnPage && returnPage != "profile") {
                     router.push(returnPage);
                     return data;

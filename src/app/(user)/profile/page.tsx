@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export default function ProfilePage() {
     const { validateAccess } = useUser();
-    validateAccess(Pages.profile);
+    // validateAccess(Pages.profile);
     return (
         <div>
             <p><Link href="/inscription">Registration</Link></p>

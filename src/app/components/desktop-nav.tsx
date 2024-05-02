@@ -2,11 +2,15 @@ import { pages } from "./nav-items";
 import Logo from "@/components/ui/logo";
 import Link from "next/link";
 import { UserActions } from "./user-actions";
+import { cn } from "@/lib/utils";
 
-export const DesktopNav = () => {
+export const DesktopNav = ({ className }: { className?: string }) => {
     return (
-        <div className="hidden md:flex justify-around items-center w-full py-3 px-12 h-20 relative mb-2">
-            <Logo size="small" className="hidden md:block absolute top-3 left-10"/>
+        <div className={cn(
+            "hidden md:flex justify-around items-center w-full py-3 px-12 h-[5.5rem] relative mb-2 bg-white",
+            className
+        )}>
+            <Logo size="small" className="hidden md:block absolute top-1 left-10"/>
             <nav className="hidden md:flex flex-grow h-full justify-center items-center">
                 <ul className="flex items-center justify-center gap-x-5">
                     {

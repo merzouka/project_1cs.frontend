@@ -1,10 +1,10 @@
 import { DesktopNav } from "./desktop-nav";
 import { MobileNav } from "./mobile-nav";
 
-export const NavBar = () => {
+export const NavBar = ({ className }: { className?: string }) => {
     return (
         <>
-            <DesktopNav />
+            <DesktopNav className={className} />
             <MobileNav />
         </>
     );

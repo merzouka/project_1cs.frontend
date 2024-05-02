@@ -21,7 +21,7 @@ export const ProfilePicture = ({ className }: { className?: string }) => {
             <Link href="/profile">
                 {
                     user.image ? 
-                        <Image src={user.image} fill style={{ objectFit: "cover" }} sizes="100%" alt="user photo" />
+                        <Image src="/logo.svg" fill style={{ objectFit: "cover" }} sizes="100%" alt="user photo" />
                         :
                         <VscAccount className="size-8 text-black hover:text-orange-400"/>
                 }

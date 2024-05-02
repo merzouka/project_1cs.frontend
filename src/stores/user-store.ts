@@ -40,7 +40,8 @@ export interface UserInfo {
     city: string;
     province: number | undefined;
     gender: "male" | "female" | undefined;
-    image: string | undefined;
+    image?: string | undefined;
+    emailVerified?: boolean;
 }
 
 export interface User {
@@ -59,7 +60,8 @@ interface Actions {
         city: string;
         province: number | undefined;
         gender: "male" | "female" | undefined;
-        image: string | undefined;
+        image?: string | undefined;
+        emailVerified ?: boolean;
     }) => void;
 }
 
@@ -77,6 +79,7 @@ export const useUserStore = create<User & Actions>((set) => ({
         province: 1,
         gender: undefined,
         image: undefined,
+        emailVerified: false,
     },
     setUser: (user) => set({ user: {
         ...user,
