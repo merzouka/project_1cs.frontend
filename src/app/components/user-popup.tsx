@@ -1,12 +1,10 @@
 "use client";
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { ProfilePicture } from "./profile-picture";
-import { ProfileActions } from "./profile-actions";
-import { IoIosArrowDown } from "react-icons/io";
 import { Poppins } from "next/font/google";
 import { useUser } from "@/hooks/use-user";
 import { Pages } from "@/constants/pages";
+import { Logout } from "./logout";
 
 const poppins = Poppins({
     weight: ["400", "700"],
@@ -18,24 +16,14 @@ export const UserPopup = ({className}: { className?: string }) => {
     // validateAccess(Pages.profile);
 
     return (
-        <Popover>
-            <PopoverTrigger className={cn(
-                "flex gap-x-2",
-                "hover:bg-slate-100 rounded-lg p-2 items-center",
-                className,
-            )}>
-                <ProfilePicture />
-                <span className={cn(
-                    "hidden md:block",
-                    poppins.className,
-                )}>
-                    {user.firstName != "" ? `${user.firstName} ${user.lastName}`: "User"}
-                </span>
-                <IoIosArrowDown className="hidden md:block" />
-            </PopoverTrigger>
-            <PopoverContent className="w-fit">
-                <ProfileActions/>
-            </PopoverContent>
-        </Popover>
+        <div className={cn(
+            "relative size-8 flex items-center justify-center group cursor-pointer mr-5 md:mr-0",
+            className
+        )}>
+            <ProfilePicture className="absolute z-[1] top-0 left-0 transition-all group-hover:transition-all
+                group-hover:-translate-x-1/2 size-10 bg-white"/>
+            <Logout className="absolute top-0 left-0 group-hover:translate-x-1/2
+                transition-all group-hover:transition-all" />
+        </div>
     );
 }

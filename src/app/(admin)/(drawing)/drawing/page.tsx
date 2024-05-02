@@ -27,7 +27,7 @@ export default function Page() {
               className="shadow-none rounded-none border-b border-b-transparent bg-transparent
                             data-[state=active]:text-orange-400 data-[state=active]:border-b-orange-400
                             data-[state=active]:bg-transparent data-[state=active]:shadow-none"
-              value="settings"
+              value="drawing"
             >
               {"Tirage"}
             </TabsTrigger>
@@ -36,7 +36,7 @@ export default function Page() {
         <TabsContent value="participants" className="h-full">
           <Participants />
         </TabsContent>
-        <TabsContent value="settings" className="flex flex-row h-full">
+        <TabsContent value="drawing" className="flex flex-row">
           <Tirage />
         </TabsContent>
       </Tabs>

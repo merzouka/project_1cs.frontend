@@ -7,10 +7,10 @@ import { Button } from "@/components/ui/button";
 export const UserActions = () => {
     // const { user } = useUser();
     return (
-        <div className="absolute top-5 right-2 md:top-5 md:right-10">
+        <div className="md:absolute md:top-5 md:right-10">
             {
                 // user.id ?
-                false?
+                true?
                     <UserPopup /> :
                     <div className="flex gap-x-2 relative">
                         <Button className="text-black hover:text-orange-400 text-xs md:text-sm
@@ -19,10 +19,16 @@ export const UserActions = () => {
                                 <span className="hidden md:block">{"S'inscrire"}</span>
                             </Link>
                         </Button>
-                        <Button className="rounded-full bg-transparent text-orange-400 hover:text-orange-600
-                            hover:bg-transparent md:text-white md:hover:text-white
-                            md:bg-black md:hover:bg-orange-400 font-bold flex
-                            " size={"sm"}>
+                        <Button 
+                            className="hidden md:flex rounded-full text-white hover:text-white md:bg-black hover:bg-orange-400 font-bold " 
+                            size={"default"}
+                        >
+                            <Link href="/login" className="w-full h-full flex items-center">
+                                {"Se connecter"}
+                            </Link>
+                        </Button>
+                        <Button className="md:hidden rounded-full bg-transparent text-orange-400 hover:text-orange-600
+                            hover:bg-transparent font-bold" size={"sm"}>
                             <Link href="/login" className="w-full h-full flex items-center">
                                 {"Se connecter"}
                             </Link>

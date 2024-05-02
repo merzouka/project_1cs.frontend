@@ -45,17 +45,16 @@ export const Logout = ({className} : { className?: string }) => {
     return (
         <>
             <Button 
-                size={"sm"}
+                size={"icon"}
                 className={cn(
                     "flex gap-x-2 group",
-                    "bg-transparent hover:bg-transparent hover:text-orange-300 w-full",
+                    "bg-transparent hover:bg-tranparent rounded-full size-10",
                     className,
                 )}
                 disabled={isLoading}
                 onClick={handleClick}
             >
-                <IoExitOutline />
-                <span>{"Déconnexion"}</span>
+                <IoExitOutline className="size-8 text-black hover:text-orange-400" />
             </Button>
         </>
     );
