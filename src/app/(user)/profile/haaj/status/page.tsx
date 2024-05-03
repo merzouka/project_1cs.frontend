@@ -1,6 +1,8 @@
 import { Progress, Step } from "./components/progress";
 import { FaUserCheck } from "react-icons/fa";
+import { FaUserDoctor } from "react-icons/fa6";
 import { icons } from "@/constants/icons";
+import { FaFlagCheckered } from "react-icons/fa";
 
 const steps: Step[] = [
     {
@@ -17,27 +19,27 @@ const steps: Step[] = [
     },
     {
         id: "appointment",
-        status: null,
+        status: false,
         display: "Visite Médicale",
-        icon: (className) => <FaUserCheck className={className}/>,
+        icon: (className) => <FaUserDoctor className={className}/>,
     },
     {
         id: "payment",
         status: null,
         display: "Payment des frais",
-        icon: (className) => <FaUserCheck className={className}/>,
+        icon: (className) => icons.payment(className),
     },
     {
         id: "flight-choosing",
         status: null,
         display: "Choix de l'offre",
-        icon: (className) => <FaUserCheck className={className}/>,
+        icon: (className) => icons.flight(className),
     },
     {
         id: "done",
         status: null,
         display: "Fin",
-        icon: (className) => <FaUserCheck className={className}/>,
+        icon: (className) => <FaFlagCheckered className={className}/>,
     },
 ]
 

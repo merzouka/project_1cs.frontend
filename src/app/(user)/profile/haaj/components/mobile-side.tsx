@@ -13,6 +13,7 @@ export const MobileSide = () => {
             {
                 tabs.map((tab) => (
                     <Button
+                        key={tab.id}
                         className={cn(
                             "hover:bg-transparent bg-transparent hover:text-orange-300 w-full",
                             "group border-b border-b-transparent hover:border-b-orange-300 rounded-none",

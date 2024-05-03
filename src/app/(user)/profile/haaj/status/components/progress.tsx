@@ -1,4 +1,6 @@
-import { cn } from "@/lib/utils";
+import { Landmark } from "./landmark";
+import { ProgressBar } from "./progress-bar";
+import { MobileStage } from "./mobile-stage";
 
 export interface Step {
     id: string;
@@ -9,10 +11,18 @@ export interface Step {
 
 export const Progress = ({ steps }: { steps: Step[] }) => {
     return (
-        <div className="w-full relative">
-            <div className="absolute top-1/2 translate-y-1/2 h-0.5 bg-black w-full"></div>
-            <div className="absolute top-1/2 translate-y-1/2">
+        <div className="w-11/12 relative flex flex-col gap-y-6 h-full md:h-fit pt-8 md:pt-0">
+            <div className="relative md:absolute md:top-1/2 md:-translate-y-1/2 w-full">
+                <ProgressBar steps={steps}/>
+                <div className="w-full flex items-center justify-between">
+                    {
+                        steps.map((step, i) => (
+                            <Landmark key={step.id} step={step} above={i % 2 == 0}/>
+                        ))
+                    }
+                </div>
             </div>
+            <MobileStage steps={steps} />
         </div>
     );
 }

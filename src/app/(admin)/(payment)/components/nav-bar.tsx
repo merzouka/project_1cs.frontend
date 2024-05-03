@@ -1,11 +1,11 @@
 import { Tab } from "@/app/(admin)/components/nav-tabs";
 import { NavBar } from "@/app/(admin)/components/nav-bar";
-import { BsBank2 } from "react-icons/bs";
+import { icons } from "@/constants/icons";
 
 const styles = "text-black group-hover:text-orange-400"
 const tabs: Tab[] = [
     {
-        icon: <BsBank2 className={styles}/>,
+        icon: icons.payment(styles),
         display: "Payment des frais",
         id: "payment",
         link: "/payment",
