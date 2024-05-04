@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 export const DesktopSide = () => {
     const pathname = usePathname();
     return (
-        <aside className="min-h-full w-2/12 hidden md:block p-3 pt-5 pr-0">
+        <aside className="min-h-full w-64 hidden md:block p-3 pt-5 pr-0">
             <ul>
                 {
                     tabs.map((tab) => (

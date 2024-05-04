@@ -103,7 +103,6 @@ export default function Step() {
         staleTime: 0,
     });
     async function onSubmit(values: z.infer<typeof registerSchema4>) {
-        console.log(values);
         updateRegisterStore({
             ...values,
             province: Number(values.province)

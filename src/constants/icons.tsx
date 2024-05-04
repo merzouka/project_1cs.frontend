@@ -9,6 +9,7 @@ import { GiCardPickup } from "react-icons/gi";
 import { MdOutlinePayment } from "react-icons/md";
 import { MdFlight } from "react-icons/md";
 import { FaRegPenToSquare } from "react-icons/fa6";
+import { LuUpload } from "react-icons/lu";
 
 export const icons = {
     user: (className ?: string) =>  <CiUser className={className}/>,
@@ -23,4 +24,5 @@ export const icons = {
     close: (className ?: string) => <IoClose className={className}/>,
     check:  (className ?: string) => <FaCircleCheck className={className}/>,
     modify: (className ?: string) => <FaRegPenToSquare className={className} />,
+    upload: (className ?: string) => <LuUpload className={className}/>,
 }

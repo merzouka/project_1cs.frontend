@@ -2,15 +2,19 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useState } from "react";
 import { FaRegPenToSquare } from "react-icons/fa6";
+import { icons } from "@/constants/icons";
+import { cn } from "@/lib/utils";
 
 export const ImagePicker  = ({ 
     defaultImage, 
-    onChange 
+    onChange,
+    className,
 }: {
-        defaultImage: string;
+        defaultImage?: string;
         onChange?: (image: File) => void;
+        className?: string,
     }) => {
-    const [imageSrc, setImageSrc] = useState<string>(defaultImage);
+    const [imageSrc, setImageSrc] = useState<string | undefined>(defaultImage);
     function handleImageChange() {
         const img = document.createElement("input");
         img.type = "file";
@@ -27,20 +31,27 @@ export const ImagePicker  = ({
     }
 
     return (
-        <div className="rounded-full min-w-24 size-44 md:size-80 relative rotate-45">
-            <Image
-                src={imageSrc}
-                alt="profile image"
-                fill
-                sizes="(max-width: 768px) 50vw, 40vw"
-                className="object-cover -rotate-45 rounded-full"
-            />
+        <div className={cn(
+            "rounded-3xl min-w-24 size-44 md:size-52 relative",
+            className
+        )}>
+            {
+                imageSrc ?
+                    <Image
+                        src={imageSrc}
+                        alt="profile image"
+                        fill
+                        sizes="(max-width: 768px) 50vw, 40vw"
+                        className="object-cover rounded-3xl"
+                    />:
+                    icons.upload("bg-slate-200 text-slate-300 size-full rounded-3xl")
+        }
             <Button 
                 size={"icon"} 
                 onClick={handleImageChange}
-                className="size-5 p-1 absolute bottom-1/2 right-0 translate-x-1/2 
-                -translate-y-1/2 rounded-l -rotate-45"
+                className="size-5 p-1 absolute bottom-0.5 right-0.5 rounded-l"
             >
+                <FaRegPenToSquare className="size-4 text-white"/>
             </Button>
         </div>
     );

@@ -8,7 +8,7 @@ export default function ProfilePage() {
     const { validateAccess } = useUser();
     // validateAccess(Pages.profile);
     return (
-        <div className="py-5 w-full h-full">
+        <div className="p-5 w-full h-full">
             <h1 
                 className={cn(
                     "text-3xl text-gray-500 font-semibold",
