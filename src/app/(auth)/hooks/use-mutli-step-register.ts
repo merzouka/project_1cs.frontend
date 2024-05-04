@@ -36,7 +36,12 @@ function getUpdatedTrackers(key: string, tracker: Object, trackers: Tracker[]): 
 }
 
 const useMultiStepStore = create<State & Actions>((set, get) => ({
-    trackers: [],
+    trackers: [{
+        key: MultiStepKeys.register,
+        direction: "forward",
+        step: 3,
+        max: 4,
+    }],
     setStep: (key, step) => set((state) => ({ trackers: getUpdatedTrackers(key, { step: step }, state.trackers) })),
     setMax: (key, max) => {
         if(!get().trackers.find((tracker) => tracker.key == key)?.max) {

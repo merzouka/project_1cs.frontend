@@ -1,4 +1,6 @@
 export const endpoints = {
+    // general
+    cities: "baladiyat",
     // auth
     login: "auth/login",
     resetPassword: "auth/reset-password",
@@ -15,4 +17,5 @@ export const endpoints = {
     drawingSettings: "associate-tirage",
     // profile
     profile: (id: number | string) => `profile/${id}`,
+    profileUpdate: "profile/update",
 }

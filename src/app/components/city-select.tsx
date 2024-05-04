@@ -1,3 +1,4 @@
+import { cities } from "@/constants/cities";
 import {
     Select,
     SelectTrigger,
@@ -5,6 +6,7 @@ import {
     SelectContent,
     SelectItem
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 export interface City {
     name: string,
@@ -17,29 +19,31 @@ export const CitySelect = ({
     onChange,
     control,
     province,
-    cities,
     className,
+    disabled,
 }: {
         defaultValue: string;
         onChange: (value: string) => void;
         control: (children: React.ReactNode) => React.ReactNode,
         province: number | undefined,
-        cities: City[],
         className?: string,
+        disabled?: boolean,
     }) => {
+
     return(
-        <Select onValueChange={onChange} defaultValue={defaultValue}>
-            <SelectTrigger>
-                {control(
-                    <SelectTrigger className={className}>
-                        <SelectValue placeholder="Séléctionner votre commune."/>
-                    </SelectTrigger>
-                )}
-            </SelectTrigger>
+        <Select onValueChange={onChange} defaultValue={defaultValue} disabled={disabled}>
+            {control(
+                <SelectTrigger className={cn(
+                    className
+                )}>
+                    <SelectValue placeholder="Séléctionner votre commune."/>
+                </SelectTrigger>
+            )}
             <SelectContent>
                 {
-                    province &&
-                        cities.filter((city) => city.wilaya == province).map((city) => (
+                    !province ? 
+                        <p>Sélectionnez une wilaya</p>:
+                        cities.filter((city) => city.province == province).map((city) => (
                             <SelectItem key={city.id} value={`${city.id}`}>{city.name}</SelectItem>
                         ))
                 }

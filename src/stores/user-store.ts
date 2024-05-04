@@ -76,7 +76,7 @@ export const useUserStore = create<User & Actions>((set) => ({
         phone: "",
         dateOfBirth: undefined,
         city: "",
-        province: 1,
+        province: undefined,
         gender: undefined,
         image: undefined,
         emailVerified: false,

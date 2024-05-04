@@ -9,6 +9,7 @@ export default function SideBanner() {
             h-full w-full
             ">
             <Image className="object-cover object-center rounded-2xl" fill
+                srcSet="(min-width: 808px) 50vw, 100vw"
                 src={kaaba}
                 alt="an image of the kaaba" 
             />

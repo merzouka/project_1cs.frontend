@@ -8,6 +8,7 @@ import { FaCircleCheck } from "react-icons/fa6";
 import { GiCardPickup } from "react-icons/gi";
 import { MdOutlinePayment } from "react-icons/md";
 import { MdFlight } from "react-icons/md";
+import { FaRegPenToSquare } from "react-icons/fa6";
 
 export const icons = {
     user: (className ?: string) =>  <CiUser className={className}/>,
@@ -21,4 +22,5 @@ export const icons = {
     home: (className ?: string) =>  <IoHomeOutline className={className}/>,
     close: (className ?: string) => <IoClose className={className}/>,
     check:  (className ?: string) => <FaCircleCheck className={className}/>,
+    modify: (className ?: string) => <FaRegPenToSquare className={className} />,
 }
