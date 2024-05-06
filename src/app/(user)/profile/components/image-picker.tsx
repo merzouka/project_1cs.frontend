@@ -32,7 +32,7 @@ export const ImagePicker  = ({
 
     return (
         <div className={cn(
-            "rounded-3xl min-w-24 size-44 md:size-52 relative",
+            "rounded-3xl min-w-24 size-32 relative",
             className
         )}>
             {

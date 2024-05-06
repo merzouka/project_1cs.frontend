@@ -8,15 +8,17 @@ export default function ProfilePage() {
     const { validateAccess } = useUser();
     // validateAccess(Pages.profile);
     return (
-        <div className="p-5 w-full h-full">
-            <h1 
-                className={cn(
-                    "text-3xl text-gray-500 font-semibold",
-                )}
-            >
-                {"Détails de comptes"}
-            </h1>
-            <ProfileForm />
+        <div className="w-full h-full relative">
+            <div className="p-5 w-full h-full overflow-scroll absolute top-0 right-0 left-0 bottom-0">
+                <h1 
+                    className={cn(
+                        "text-3xl text-gray-500 font-semibold",
+                    )}
+                >
+                    {"Détails de comptes"}
+                </h1>
+                <ProfileForm />
+            </div>
         </div>
     );
 }

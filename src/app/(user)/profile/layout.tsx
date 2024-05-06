@@ -5,7 +5,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     return (
         <div className="w-full h-dvh flex flex-col">
             <NavBar className="drop-shadow-sm" />
-            <div className="w-full relative">
+            <div className="w-full relative z-[9999]">
                 <EmailVerification />
             </div>
             {children}

@@ -130,8 +130,7 @@ export const ProfileForm = () => {
     const [hasChanged, setHasChanged] = useState(false);
     const [image, setImage] = useState<File>();
     return (
-        <div className="p-2 md:p-5 grid md:grid-cols-[min-content_1fr] md:grid-rows-2 
-            place-items-center md:place-items-start gap-x-10">
+        <div className="p-5 overflow-y-scroll">
             <ImagePicker 
                 className="mx-5 mb-2"
                 defaultImage={user.image}
@@ -190,7 +189,7 @@ export const ProfileForm = () => {
                             <FormItem className="mb-2">
                                 <FormLabel>{"Email"}</FormLabel>
                                 <FormControl>
-                                    <div className="flex items-center gap-x-2 w-full relative">
+                                    <div className="flex items-center gap-x-2 w-full max-w-[33rem] relative">
                                         <EditableInput 
                                             className="max-w-[33rem]"
                                             onChange={(value) => {
