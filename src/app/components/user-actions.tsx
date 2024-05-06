@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 export const UserActions = () => {
     // const { user } = useUser();
     return (
-        <div className="md:absolute md:top-5 md:right-10">
+        <div className="md:absolute md:top-6 md:right-10">
             {
                 // user.id ?
                 false?

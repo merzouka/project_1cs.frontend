@@ -18,4 +18,5 @@ export const endpoints = {
     // profile
     profile: (id: number | string) => `profile/${id}`,
     profileUpdate: "profile/update",
+    currentUser : "auth/currently_user",
 }
