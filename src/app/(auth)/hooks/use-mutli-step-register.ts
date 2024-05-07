@@ -96,4 +96,5 @@ export enum MultiStepKeys {
     register = "register",
     resetEmail = "resetEmail",
     resetPassword = "resetPassword",
+    verifyEmail = "verifyEmail",
 }

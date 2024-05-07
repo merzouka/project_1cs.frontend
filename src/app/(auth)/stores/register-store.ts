@@ -1,12 +1,5 @@
 import { create } from "zustand";
 
-enum Steps {
-    Step1,
-    Step2,
-    Step3,
-    Step4
-}
-
 export interface RegisterStep1 {
     email: string,
     phone: string,

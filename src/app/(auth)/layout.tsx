@@ -24,13 +24,15 @@ function getActiveStep(step: number, ...steps: React.ReactNode[]) {
 function isLeft(pathname: string) {
     return pathname.includes("login") ||
         pathname.includes("reset-password-email") ||
-        pathname.includes("reset-password");
+        pathname.includes("reset-password") ||
+        pathname.includes("verify-email");
 }
 
 export default function AuthLayout({
     login, 
     accountIdentifiers, accountPassword, accountInfo, accountRegion,
-    resetPassword, resetEmail, resetEmailSent, resetSuccess
+    resetPassword, resetEmail, resetEmailSent, resetSuccess,
+    emailVerified, emailVerification,
     }: {
         login: React.ReactNode,
         accountIdentifiers: React.ReactNode,
@@ -41,6 +43,8 @@ export default function AuthLayout({
         resetEmail: React.ReactNode,
         resetEmailSent: React.ReactNode,
         resetSuccess: React.ReactNode,
+        emailVerified: React.ReactNode,
+        emailVerification: React.ReactNode,
     }) {
     const pathname = usePathname();
     const registerSteps = 4;
@@ -54,6 +58,11 @@ export default function AuthLayout({
     const resetPasswordSteps = 2
     const { step: resetPasswordStep, setMax: setResetPasswordMax } = useMultiStep(MultiStepKeys.resetPassword);
     setResetPasswordMax(resetPasswordSteps);
+
+    const verifyEmailSteps = 2
+    const { step: verifyEmailStep, setMax: setVerifyEmailMax } = useMultiStep(MultiStepKeys.resetPassword);
+    console.log(verifyEmailStep);
+    setVerifyEmailMax(verifyEmailSteps);
 
     return (
         <Suspense>
@@ -105,6 +114,25 @@ export default function AuthLayout({
                                             resetPasswordStep,
                                             resetPassword,
                                             resetSuccess,
+                                        )}
+                                    </AnimatePresence>
+                                    <div aria-hidden className="grow-[2]"></div>
+                                </motion.main>
+                        }
+                        {
+                            pathname.includes("verify-email") &&
+                                <motion.main 
+                                    key="verify-email"
+                                    {...fade}
+                                    className="flex flex-col justify-center items-center w-full px-4 lg:px-0 h-full relative lg:col-start-2 col-start-1 col-span-1 row-start-1 row-span-1"
+                                >
+                                    <Logo />
+                                    <div aria-hidden className="flex-grow-[1]"></div>
+                                    <AnimatePresence custom="wait" initial={false}>
+                                        {getActiveStep(
+                                            verifyEmailStep,
+                                            emailVerification,
+                                            emailVerified,
                                         )}
                                     </AnimatePresence>
                                     <div aria-hidden className="grow-[2]"></div>
