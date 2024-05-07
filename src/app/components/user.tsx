@@ -6,11 +6,6 @@ import { useUser } from "@/hooks/use-user";
 import { Pages } from "@/constants/pages";
 import { Logout } from "./logout";
 
-const poppins = Poppins({
-    weight: ["400", "700"],
-    subsets: ["latin"],
-});
-
 export const User = ({className}: { className?: string }) => {
     const { validateAccess } = useUser();
     // validateAccess(Pages.profile);

@@ -1,16 +1,15 @@
 "use client";
 import Link from "next/link";
-// import { useUser } from "@/hooks/use-user";
+import { useUser } from "@/hooks/use-user";
 import { User } from "./user";
 import { Button } from "@/components/ui/button";
 
 export const UserActions = () => {
-    // const { user } = useUser();
+    const { user } = useUser();
     return (
         <div className="md:absolute md:top-6 md:right-10">
             {
-                // user.id ?
-                false?
+                user.isLoggedIn ?
                     <User /> :
                     <div className="flex gap-x-2 relative">
                         <Button className="text-black hover:text-orange-400 text-xs md:text-sm

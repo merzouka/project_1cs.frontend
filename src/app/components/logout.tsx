@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Cookies from "js-cookie";
 
 import { IoExitOutline } from "react-icons/io5";
 
@@ -24,6 +25,7 @@ export const Logout = ({className} : { className?: string }) => {
                     xsrfHeaderName: "X-CSRFToken",
                     withXSRFToken: true,
                 });
+                Cookies.remove("sessionid");
                 router.push("/login");
                 return response
             } catch (error) {

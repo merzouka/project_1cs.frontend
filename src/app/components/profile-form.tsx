@@ -24,8 +24,9 @@ import { useUserStore } from "@/stores/user-store";
 import { CitySelect } from "@/app/components/city-select";
 import { PhoneInput } from "./phone-input";
 import { ImagePicker } from "./image-picker";
+import { Pages } from "@/constants/pages";
 
-const formSchema = z.object({
+const userFormSchema = z.object({
     firstName: z.string({ required_error: "Veuillez saisir votre prénom." }),
     lastName: z.string({ required_error: "Veuillez saisir votre nom." }),
     email: z.string({ required_error: "Veuillez remplir votre email."}).email({
@@ -48,19 +49,41 @@ const formSchema = z.object({
     }),
 });
 
-export const ProfileForm = () => {
-    const { user } = useUser();
+const adminFormSchema = z.object({
+    firstName: z.string({ required_error: "Veuillez saisir votre prénom." }),
+    lastName: z.string({ required_error: "Veuillez saisir votre nom." }),
+    email: z.string({ required_error: "Veuillez remplir votre email."}).email({
+        message: "Veuillez saisir un email valide." 
+    }),
+    phone: z.string({
+        required_error: "Veuillez saisir un numéro de téléphone valide." 
+    }).regex(new RegExp(/[0-9]{7,}/), {
+        message: "Veuillez saisir un numéro de téléphone valide.",
+    }),
+});
+
+export const ProfileForm = ({ page, isAdminProfile }: { page: Pages, isAdminProfile?: boolean }) => {
+    const { user, validateAccess } = useUser();
+    // validateAccess(page);
+
+    const formSchema = isAdminProfile ? adminFormSchema : userFormSchema;
+    const values = isAdminProfile ? {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phone: user.phone.includes("-") ? user.phone.split("-")[1] : user.phone,
+    } : {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        city: user.city,
+        province: `${user.province || ""}`,
+        phone: user.phone.includes("-") ? user.phone.split("-")[1] : user.phone,
+    }
     const setUser = useUserStore((state) => state.setUser);
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: {
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email,
-            city: user.city,
-            province: `${user.province || ""}`,
-            phone: user.phone.includes("-") ? user.phone.split("-")[1] : user.phone,
-        }
+        values: values
     });
 
     const { toast } = useToast();
@@ -138,12 +161,15 @@ export const ProfileForm = () => {
             />
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="md:row-span-2">
-                    <div className="flex flex-col w-full max-w-[33rem] md:flex-row items-stretch md:items-center justify-stretch gap-x-3">
+                    <div className={cn(
+                        "flex flex-col w-full max-w-[33rem] items-stretch md:items-center justify-stretch gap-x-3",
+                        !isAdminProfile && "md:flex-row md:items-stretch"
+                    )}>
                         <FormField 
                             control={form.control}
                             name="lastName"
                             render={({ field }) => (
-                                <FormItem className="mb-2">
+                                <FormItem className="mb-2 w-full">
                                     <FormLabel>{"Nom"}</FormLabel>
                                     <FormControl>
                                         <EditableInput 
@@ -164,7 +190,7 @@ export const ProfileForm = () => {
                             control={form.control}
                             name="firstName"
                             render={({ field }) => (
-                                <FormItem className="mb-2">
+                                <FormItem className="mb-2 w-full">
                                     <FormLabel>{"Prénom"}</FormLabel>
                                     <FormControl>
                                         <EditableInput 
@@ -227,80 +253,85 @@ export const ProfileForm = () => {
                                         </FormControl>
                                     )}
                                     styles={{
-                                        container: "mb-2"
+                                        container: "mb-2 md:mb-4"
                                     }}
                                 />
                                 <FormMessage className="text-xs"/>
                             </FormItem>
                         )}
                     />
-                    <span className="text-sm font-medium mb-2 block">
-                        {"Région"}
-                    </span>
-                    <div className={cn(
-                        "p-2 md:p-4 md:pt-5 pt-5 border border-slate-300 rounded-2xl flex-grow max-w-[33rem] relative",
-                        "mb-2 md:mb-3"
-                    )}>
-                        <div className="flex items-center justify-end absolute top-0 right-2">
-                            <Toggle 
-                                onPressedChange={() => setDisableRegion(!disableRegion)}
-                                size={"sm"}
-                                className="bg-transparent hover:bg-transparent [state=on]:text-black text-slate-400
-                                data-[state=on]:bg-transparent"
-                            >
-                                {icons.modify("size-5")}
-                            </Toggle>
-                        </div>
-                        <FormField 
-                            control={form.control}
-                            name="province"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>{"Wilaya"}</FormLabel>
-                                    <ProvinceSelect
-                                        onChange={handleProvinceChange((value) => {
-                                            setHasChanged(true);
-                                            field.onChange(value);
-                                        })}
-                                        defaultValue={`${field.value}`}
-                                        control={(children) => (
-                                            <FormControl>
-                                                {children}
-                                            </FormControl>
+                    {
+                        !isAdminProfile && 
+                            <>
+                                <span className="text-sm font-medium mb-2 block">
+                                    {"Région"}
+                                </span>
+                                <div className={cn(
+                                    "p-2 md:p-4 md:pt-5 pt-5 border border-slate-300 rounded-2xl flex-grow max-w-[33rem] relative",
+                                    "mb-2 md:mb-3"
+                                )}>
+                                    <div className="flex items-center justify-end absolute top-0 right-2">
+                                        <Toggle 
+                                            onPressedChange={() => setDisableRegion(!disableRegion)}
+                                            size={"sm"}
+                                            className="bg-transparent hover:bg-transparent [state=on]:text-black text-slate-400
+                                            data-[state=on]:bg-transparent"
+                                        >
+                                            {icons.modify("size-5")}
+                                        </Toggle>
+                                    </div>
+                                    <FormField 
+                                        control={form.control}
+                                        name="province"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>{"Wilaya"}</FormLabel>
+                                                <ProvinceSelect
+                                                    onChange={handleProvinceChange((value) => {
+                                                        setHasChanged(true);
+                                                        field.onChange(value);
+                                                    })}
+                                                    defaultValue={`${field.value}`}
+                                                    control={(children) => (
+                                                        <FormControl>
+                                                            {children}
+                                                        </FormControl>
+                                                    )}
+                                                    disabled={disableRegion}
+                                                    className="rounded-xl"
+                                                />
+                                                <FormMessage className="text-xs" />
+                                            </FormItem>
                                         )}
-                                        disabled={disableRegion}
-                                        className="rounded-xl"
                                     />
-                                    <FormMessage className="text-xs" />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField 
-                            control={form.control}
-                            name="city"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>{"Commune"}</FormLabel>
-                                    <CitySelect
-                                        onChange={handleCityChange((value) => {
-                                            setHasChanged(true);
-                                            field.onChange(value);
-                                        })}
-                                        province={province}
-                                        defaultValue={`${field.value}`}
-                                        control={(children) => (
-                                            <FormControl>
-                                                {children}
-                                            </FormControl>
+                                    <FormField 
+                                        control={form.control}
+                                        name="city"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>{"Commune"}</FormLabel>
+                                                <CitySelect
+                                                    onChange={handleCityChange((value) => {
+                                                        setHasChanged(true);
+                                                        field.onChange(value);
+                                                    })}
+                                                    province={province || user.province}
+                                                    defaultValue={`${field.value}`}
+                                                    control={(children) => (
+                                                        <FormControl>
+                                                            {children}
+                                                        </FormControl>
+                                                    )}
+                                                    disabled={disableRegion}
+                                                    className="rounded-xl"
+                                                />
+                                                <FormMessage className="text-xs" />
+                                            </FormItem>
                                         )}
-                                        disabled={disableRegion}
-                                        className="rounded-xl"
                                     />
-                                    <FormMessage className="text-xs" />
-                                </FormItem>
-                            )}
-                        />
-                    </div>
+                                </div>
+                            </>
+                    }
                     <Button 
                         disabled={!hasChanged || isLoading}
                         className="max-w-[33rem] bg-black hover:bg-black/75 w-full font-bold rounded-2xl"

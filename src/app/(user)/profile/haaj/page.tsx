@@ -2,7 +2,7 @@
 import { useUser } from "@/hooks/use-user";
 import { Pages } from "@/constants/pages";
 import { cn } from "@/lib/utils";
-import { ProfileForm } from "../components/profile-form";
+import { ProfileForm } from "@/app/components/profile-form";
 
 export default function ProfilePage() {
     const { validateAccess } = useUser();
@@ -17,7 +17,7 @@ export default function ProfilePage() {
                 >
                     {"Détails de comptes"}
                 </h1>
-                <ProfileForm />
+                <ProfileForm page={Pages.haajProfile} />
             </div>
         </div>
     );

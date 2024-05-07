@@ -9,7 +9,6 @@ import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useRegisterStore } from "@/app/(auth)/stores/register-store";
 
 // components
 import { Spinner } from "@/components/custom/spinner";
@@ -35,13 +34,15 @@ import { endpoints } from "@/constants/endpoints";
 
 // fonts
 import { inter } from "@/constants/fonts";
+import { useUser } from "@/hooks/use-user";
 
 const verifyEmailSchema = z.object({
     code: z.string({ required_error: "Veuillez saisir votre code" }),
 });
 
 export default function Step() {
-    const { email } = useRegisterStore((state) => state.entries);
+    const { user } = useUser();
+    const email = user.email;
     const form = useForm<z.infer<typeof verifyEmailSchema>>({
         resolver: zodResolver(verifyEmailSchema),
         defaultValues: {

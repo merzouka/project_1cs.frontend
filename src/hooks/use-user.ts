@@ -1,20 +1,14 @@
 import { Role, useUserStore } from "@/stores/user-store"
 import { useRouter } from "next/navigation";
-import { useLayoutEffect } from "react";
 import { Pages } from "@/constants/pages";
 import { pageValidators } from "@/constants/page-validators";
 import { useQuery } from "@tanstack/react-query";
-import axios, { isAxiosError } from "axios";
+import { isAxiosError } from "axios";
 import { getUrl } from "@/constants/api";
 import { endpoints } from "@/constants/endpoints";
 import { useToast } from "@/components/ui/use-toast";
-
-function hasAccess(userRoles: Role[], requiredRoles: Role[]) {
-    if ((requiredRoles.filter((role) => !userRoles.includes(role))).length > 0) {
-        return false;
-    }
-    return true;
-}
+import { AxiosInstance } from "@/config/axios";
+import { useEffect, useState } from "react";
 
 export function useUser() {
     const user = useUserStore((state) => state.user);
@@ -27,26 +21,35 @@ export function useUser() {
 
     const router = useRouter();
     const { toast } = useToast();
+    const [isFetching, setIsFetching] = useState(false);
     function validateAccess(page: Pages) {
         const { isLoading, isError, data, failureCount } = useQuery({
+            enabled: isFetching,
             queryKey: ["profile"],
             queryFn: async () => {
                 try {
-                    const response = await axios.get(getUrl(endpoints.currentUser));
+                    setIsFetching(false);
+                    const response = await AxiosInstance.get(getUrl(endpoints.currentUser));
                     const data = response.data;
-                    setUser({
-                        isLoggedIn: true,
-                        email: data.email,
-                        emailVerified: data.is_email_verified,
-                        dateOfBirth: data.dateOfBirth,
+                    const loggedInUser = {
                         role: data.role,
+                        email: data.email,
                         firstName: data.first_name,
                         lastName: data.last_name,
+                        dateOfBirth: new Date(data.dateOfBirth),
                         phone: data.phone,
-                        gender: data.gender,
-                        city: data.city,
                         province: data.province,
-                    })
+                        city: data.city,
+                        gender: data.gender == "M" ? "male" : "female",
+                        image: data?.image || undefined,
+                        emailVerified: data?.is_email_verified || false,
+                        isLoggedIn: true,
+                    }
+                    setUser(loggedInUser);
+                    /* @ts-ignore cannot get out of range */
+                    if (!pageValidators[page](loggedInUser)) {
+                        router.push(`/login?return=${page}`);
+                    }
                     return data;
                 } catch (error) {
                     if (failureCount <= 3) {
@@ -68,6 +71,10 @@ export function useUser() {
                 }
             }
         });
+        useEffect(() => {
+            setIsFetching(true);
+        }, [setIsFetching]);
+
         return {
             isLoading,
             isError,

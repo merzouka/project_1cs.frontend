@@ -29,9 +29,8 @@ export const CitySelect = ({
         className?: string,
         disabled?: boolean,
     }) => {
-
     return(
-        <Select onValueChange={onChange} defaultValue={defaultValue} disabled={disabled}>
+        <Select onValueChange={onChange} value={defaultValue} disabled={disabled}>
             {control(
                 <SelectTrigger className={cn(
                     className

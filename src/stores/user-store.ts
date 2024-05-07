@@ -19,15 +19,16 @@ const roleMapping = {
     "banquier": Role.paymentManager,
 }
 
-function getRole(role: string): Role {
+export function getRole(role: string): Role {
     if (!Object.keys(roleMapping).includes(role)) {
-        throw new Error("invalide role");
+        throw new Error("invalid role");
     }
     /* @ts-ignore above if statement handles error */
     return roleMapping[role];
 }
 
 export interface UserInfo {
+    id?: string | number | undefined;
     email: string;
     role: Role;
     firstName: string;
@@ -48,6 +49,7 @@ export interface User {
 
 interface Actions {
     setUser: (user: {
+        id?: undefined | string | number;
         email: string;
         role: string;
         firstName: string;
@@ -66,6 +68,7 @@ interface Actions {
 
 export const useUserStore = create<User & Actions>((set) => ({
     user: {
+        id: undefined,
         email: "",
         role: Role.user,
         firstName: "",

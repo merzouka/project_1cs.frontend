@@ -28,7 +28,7 @@ import { loginFormSchema } from "@/app/(auth)/constants/schemas";
 import PasswordInput from "@/app/(auth)/components/password-input";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
-import { useUserStore } from "@/stores/user-store";
+import { Role, getRole, useUserStore } from "@/stores/user-store";
 
 import BottomMessage from "@/app/(auth)/components/bottom-message";
 import { Toaster } from "@/components/ui/toaster";
@@ -39,6 +39,25 @@ import { endpoints } from "@/constants/endpoints";
 import { useEmailStore } from "../../constants/email-store";
 import { useDebouncedCallback } from "use-debounce";
 import { AxiosInstance } from "@/config/axios";
+
+function routeByRole(role: string) {
+    switch (getRole(role)) {
+        case Role.haaj:
+            return "profile/haaj";
+        case Role.user:
+            return "profile";
+        case Role.paymentManager:
+            return "profile/payment-manager";
+        case Role.drawingManager:
+            return "profile/drawing-manager";
+        case Role.doctor:
+            return "profile/doctor";
+        case Role.admin:
+            return "profile/admin";
+        default:
+            throw new Error("invalid role");
+    }
+}
 
 export default function LoginPage() {
     const router = useRouter();
@@ -56,7 +75,6 @@ export default function LoginPage() {
     const [isLoginEnabled, setIsLoginEnabled] = useState(false);
     const { toast } = useToast();
 
-    const setUser = useUserStore((state) => state.setUser);
     const [entries, setEntries] = useState({});
     const { isLoading } = useQuery({
         queryKey: ["login"],
@@ -66,28 +84,15 @@ export default function LoginPage() {
                 const response = await AxiosInstance.post(getUrl(endpoints.login), entries, {
                     withCredentials: true,
                 });
-                const data = JSON.parse(response.data);
-                setUser({
-                    id: data.id,
-                    role: data.role,
-                    email: data.email,
-                    firstName: data.first_name,
-                    lastName: data.last_name,
-                    dateOfBirth: new Date(data.dateOfBirth),
-                    phone: data.phone,
-                    province: data.province,
-                    city: data.city,
-                    gender: data.gender == "M" ? "male" : "female",
-                    image: data?.image || undefined,
-                    emailVerified: data?.id_email_verfied || false,
-                });
+                const data = response.data;
                 if (returnPage && returnPage != "profile") {
                     router.push(returnPage);
                     return data;
                 }
-                router.push(`/profile/${data.id}`);
+                router.push(routeByRole(data.role))
                 return data;
             } catch (error) {
+                console.log(error);
                 if (error instanceof AxiosError && error.response) {
                     toast({
                         title: "Identifiants incorrects",

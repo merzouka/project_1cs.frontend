@@ -7,7 +7,7 @@ export const endpoints = {
     resetPasswordEmail: "auth/reset-password-email",
     register: "auth/register",
     verificationEmail: "auth/verification-email",
-    otpVerification: "auth/verify-otp",
+    otpVerification: "auth/verify-email",
     emailUnique: "auth/email-unique",
     logout: "auth/logout",
     profileCitites: (id: number | string | undefined) => `baladiya_names_by_utilisateur/${id}`,
