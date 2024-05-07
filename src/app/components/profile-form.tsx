@@ -64,7 +64,7 @@ const adminFormSchema = z.object({
 
 export const ProfileForm = ({ page, isAdminProfile }: { page: Pages, isAdminProfile?: boolean }) => {
     const { user, validateAccess } = useUser();
-    // validateAccess(page);
+    validateAccess(page);
 
     const formSchema = isAdminProfile ? adminFormSchema : userFormSchema;
     const values = isAdminProfile ? {

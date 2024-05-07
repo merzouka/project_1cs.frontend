@@ -1,4 +1,4 @@
-import { Role, useUserStore } from "@/stores/user-store"
+import { Role, getRole, useUserStore } from "@/stores/user-store"
 import { useRouter } from "next/navigation";
 import { Pages } from "@/constants/pages";
 import { pageValidators } from "@/constants/page-validators";
@@ -31,8 +31,9 @@ export function useUser() {
                     setIsFetching(false);
                     const response = await AxiosInstance.get(getUrl(endpoints.currentUser));
                     const data = response.data;
+                    console.log(response.data);
                     const loggedInUser = {
-                        role: data.role,
+                        role: role,
                         email: data.email,
                         firstName: data.first_name,
                         lastName: data.last_name,
@@ -47,7 +48,7 @@ export function useUser() {
                     }
                     setUser(loggedInUser);
                     /* @ts-ignore cannot get out of range */
-                    if (!pageValidators[page](loggedInUser)) {
+                    if (!pageValidators[page]({...loggedInUser, role: getRole(loggedUser.role)})) {
                         router.push(`/login?return=${page}`);
                     }
                     return data;
