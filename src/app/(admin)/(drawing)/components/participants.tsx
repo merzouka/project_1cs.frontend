@@ -3,7 +3,6 @@ import { Input } from "@/components/ui/input";
 import { LuSearch } from "react-icons/lu";
 import { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { getUrl } from "@/constants/api";
 import { endpoints } from "@/constants/endpoints"
 import { useToast } from "@/components/ui/use-toast";
@@ -13,6 +12,7 @@ import { PiWarningThin } from "react-icons/pi";
 import { Toaster } from "@/components/ui/toaster";
 import { useDebouncedCallback } from "use-debounce";
 import { useUser } from "@/hooks/use-user";
+import { AxiosInstance } from "@/config/axios";
 
 const SearchBar = ({ onChange }: { onChange: (value: string) => void }) => {
     const inputRef = useRef<HTMLInputElement>(null);
@@ -52,7 +52,7 @@ export const Participants = () => {
         queryFn: async () => {
             try {
                 setIsFetching(false);
-                const response = await axios.get(getUrl(endpoints.participants(user.id)));
+                const response = await AxiosInstance.get(getUrl(endpoints.participants));
                 console.log(response.data);
                 return response.data;
             } catch (error) {

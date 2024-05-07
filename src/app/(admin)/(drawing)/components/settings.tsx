@@ -21,7 +21,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import axios, { isAxiosError } from "axios";
+import { isAxiosError } from "axios";
 import { endpoints } from "@/constants/endpoints";
 import { getUrl } from "@/constants/api";
 import { useToast } from "@/components/ui/use-toast";
@@ -30,6 +30,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useUser } from "@/hooks/use-user";
 import { useRouter } from "next/navigation";
 import { Pages } from "@/constants/pages";
+import { AxiosInstance } from "@/config/axios";
 
 const baseSplittingAge = 65
 const formSchema = z.object({
@@ -72,7 +73,7 @@ export const Settings = () => {
         queryFn: async () => {
             try {
                 setIsStateFetching(false);
-                const response = await axios.get(getUrl(endpoints.drawingDefined(user.id)));
+                const response = await AxiosInstance.get(getUrl(endpoints.drawingDefined));
                 if (response.data.tirage_definit) {
                     toast({
                         description: "Le tirage à été déja definit.",
@@ -102,7 +103,7 @@ export const Settings = () => {
         queryFn: async () => {
             try {
                 setIsSettingDrawing(false);
-                const response = await axios.post(getUrl(endpoints.drawingSettings), {
+                const response = await AxiosInstance.post(getUrl(endpoints.drawingSettings), {
                     utilisateur_id: user.id,
                     type_tirage: entries?.type == DrawingType.Random ? 1 : 2,
                     nombre_de_place: Number(entries?.winners),

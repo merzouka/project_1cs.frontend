@@ -1,11 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { Participant } from "@/app/(admin)/(drawing)/components/participant";
 import MyModal from "./mymodal";
 import Modal from "react-modal";
 import { useUser } from "@/hooks/use-user";
 import { Pages } from "@/constants/pages";
+import { AxiosInstance } from "@/config/axios";
 
 function translate(obj: any) {
     return {
@@ -34,8 +34,8 @@ const Tirage = () => {
   //@ts-ignore
   const fetchWinners = async (userId) => {
     try {
-      const response = await axios.get(
-        `http://localhost:8000/fetch-winners/${userId}`
+      const response = await AxiosInstance.get(
+        `http://localhost:8000/fetch-winners/`
       );
         console.log(response);
       const winners = response.data.winners;

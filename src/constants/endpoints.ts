@@ -10,10 +10,10 @@ export const endpoints = {
     otpVerification: "auth/verify-email",
     emailUnique: "auth/email-unique",
     logout: "auth/logout",
-    profileCitites: (id: number | string | undefined) => `baladiya_names_by_utilisateur/${id}`,
+    profileCitites: "baladiya_names_by_utilisateur",
     // drawing
-    drawingDefined: (id: number | string | undefined) => `check-tirage/${id}`,
-    participants: (id: number | string | undefined) => `participants_tirage/${id}`,
+    drawingDefined: "check-tirage",
+    participants: "participants_tirage",
     drawingSettings: "associate-tirage",
     // profile
     profile: (id: number | string) => `profile/${id}`,

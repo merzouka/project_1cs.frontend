@@ -3,23 +3,21 @@
 import { useToast } from "@/components/ui/use-toast";
 import { getUrl } from "@/constants/api";
 import { endpoints } from "@/constants/endpoints";
-import { useUser } from "@/hooks/use-user";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
+import { AxiosInstance } from "@/config/axios";
 
 export const Cities = () => {
     const { toast } = useToast();
-    const { user } = useUser();
     const [isFetching, setIsFetching] = useState(true);
     const { isLoading, isError, data, failureCount } = useQuery({
         queryKey: ["cities"],
         queryFn: async () => {
             try {
                 setIsFetching(false);
-                const response = await axios.get(getUrl(endpoints.profileCitites(user.id)));
+                const response = await AxiosInstance.get(getUrl(endpoints.profileCitites));
                 setIsFetching(false);
                 return response.data[Object.keys(response.data)[0]];
             } catch (error) {
