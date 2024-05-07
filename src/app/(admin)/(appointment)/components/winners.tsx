@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import axios from "axios";
+import { AxiosInstance } from "@/config/axios";
 
 const WinnersComponent = () => {
   const [winners, setWinners] = useState([]);
@@ -9,10 +10,11 @@ const WinnersComponent = () => {
   useEffect(() => {
     const fetchWinners = async () => {
       try {
-        const response = await axios.get(
-          `https://example.com/winners_by_baladiya/`
+        const response = await AxiosInstance.get(
+          `http://localhost:8000/winners_by_baladiya/`
         );
         setWinners(response.data);
+                console.log(response.data);
       } catch (error) {
         console.error("Error fetching winners:", error);
       }
@@ -26,7 +28,7 @@ const WinnersComponent = () => {
       <h2>Winners List</h2>
       <ul>
         {winners.map((winner) => (
-          <li key={winner.id}>{winner.name}</li>
+          <li key={winner.id_user}>{`${winner.first_name} ${winner.last_name}`}</li>
         ))}
       </ul>
     </div>
