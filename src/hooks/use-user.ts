@@ -34,7 +34,7 @@ export function useUser() {
                     const data = response.data;
                     return data;
                 } catch (error) {
-                    if (failureCount <= 3) {
+                    if (failureCount < 3) {
                         throw new Error("fetch fail");
                     }
                     if (isAxiosError(error) && error.response) {

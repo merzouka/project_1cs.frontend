@@ -53,7 +53,7 @@ export const AdminProfileForm = ({ page }: { page: Pages }) => {
     const [entries, setEntries] = useState<z.infer<typeof formSchema>>();
     const [phone, setPhone] = useState(user.phone);
     const [isFetching, setIsFetching] = useState(false);
-    const { isLoading, failureCount } = useQuery({
+    const { isLoading, failureCount, isError } = useQuery({
         queryKey: ["profile", "update"],
         enabled: isFetching,
         queryFn: async () => {
@@ -83,7 +83,6 @@ export const AdminProfileForm = ({ page }: { page: Pages }) => {
                 });
                 return response;
             } catch (error) {
-                console.log(error);
                 if (failureCount < 3) {
                     throw new Error("error");
                 }
@@ -222,7 +221,7 @@ export const AdminProfileForm = ({ page }: { page: Pages }) => {
                         )}
                     />
                     <Button 
-                        disabled={!hasChanged || isLoading}
+                        disabled={!hasChanged || isLoading || isError}
                         className="max-w-[33rem] bg-black hover:bg-black/75 w-full font-bold rounded-2xl"
                     >
                         {"Enregistrer"}

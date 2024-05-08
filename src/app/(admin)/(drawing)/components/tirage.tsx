@@ -17,7 +17,7 @@ function translate(obj: any) {
 
 const Tirage = () => {
   const { validateAccess, user } = useUser();
-  // validateAccess(Pages.profile);
+  validateAccess(Pages.drawingSettings);
   const [isOpen, setIsOpen] = useState(false);
   const [chosenUsers, setChosenUsers] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0); // Index of the current winner being displayed
@@ -37,7 +37,6 @@ const Tirage = () => {
       const response = await AxiosInstance.get(
         `http://localhost:8000/fetch-winners/`
       );
-        console.log(response);
       const winners = response.data.winners;
       setChosenUsers(winners);
       setIsOpen(true); // Open the modal to display the first winner

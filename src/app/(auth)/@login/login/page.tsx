@@ -28,7 +28,7 @@ import { loginFormSchema } from "@/app/(auth)/constants/schemas";
 import PasswordInput from "@/app/(auth)/components/password-input";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
-import { Role, getRole, useUserStore } from "@/stores/user-store";
+import { Role, getRole } from "@/stores/user-store";
 
 import BottomMessage from "@/app/(auth)/components/bottom-message";
 import { Toaster } from "@/components/ui/toaster";
