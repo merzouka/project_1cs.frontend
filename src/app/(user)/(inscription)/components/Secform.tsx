@@ -21,7 +21,6 @@ const InscriptionPage2 = () => {
     const formData = useInscriptionStore((state => state.form))
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        console.log(photo);
         try {
             formData.photoPersonnelle = photo[0];
 

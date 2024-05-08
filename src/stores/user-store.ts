@@ -19,6 +19,10 @@ const roleMapping = {
     "banquier": Role.paymentManager,
 }
 
+export function getRoleMap(role: Role): string | undefined {
+    return Object.keys(roleMapping).find((key) => roleMapping[key] == role);
+}
+
 export function getRole(role: string): Role {
     if (!Object.keys(roleMapping).includes(role)) {
         throw new Error("invalid role");
@@ -35,7 +39,7 @@ export interface UserInfo {
     lastName: string;
     phone: string;
     dateOfBirth: Date | undefined;
-    city: string;
+    city: number | undefined;
     province: number | undefined;
     gender: "male" | "female" | undefined;
     image?: string | undefined;
@@ -56,7 +60,7 @@ interface Actions {
         lastName: string;
         phone: string;
         dateOfBirth: Date | undefined;
-        city: string;
+        city: number | undefined;
         province: number | undefined;
         gender: "male" | "female" | undefined;
         image?: string | undefined;
@@ -64,7 +68,6 @@ interface Actions {
         isLoggedIn: boolean;
     }) => void;
 }
-
 
 export const useUserStore = create<User & Actions>((set) => ({
     user: {
@@ -75,7 +78,7 @@ export const useUserStore = create<User & Actions>((set) => ({
         lastName: "",
         phone: "",
         dateOfBirth: undefined,
-        city: "",
+        city: undefined,
         province: undefined,
         gender: undefined,
         image: undefined,

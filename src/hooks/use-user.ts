@@ -9,6 +9,7 @@ import { endpoints } from "@/constants/endpoints";
 import { useToast } from "@/components/ui/use-toast";
 import { AxiosInstance } from "@/config/axios";
 import { useEffect, useState } from "react";
+import { getCityNameId } from "@/constants/cities";
 
 export function useUser() {
     const user = useUserStore((state) => state.user);
@@ -31,26 +32,6 @@ export function useUser() {
                     setIsFetching(false);
                     const response = await AxiosInstance.get(getUrl(endpoints.currentUser));
                     const data = response.data;
-                    console.log(response.data);
-                    const loggedInUser = {
-                        role: role,
-                        email: data.email,
-                        firstName: data.first_name,
-                        lastName: data.last_name,
-                        dateOfBirth: new Date(data.dateOfBirth),
-                        phone: data.phone,
-                        province: data.province,
-                        city: data.city,
-                        gender: data.gender == "M" ? "male" : "female",
-                        image: data?.image || undefined,
-                        emailVerified: data?.is_email_verified || false,
-                        isLoggedIn: true,
-                    }
-                    setUser(loggedInUser);
-                    /* @ts-ignore cannot get out of range */
-                    if (!pageValidators[page]({...loggedInUser, role: getRole(loggedUser.role)})) {
-                        router.push(`/login?return=${page}`);
-                    }
                     return data;
                 } catch (error) {
                     if (failureCount <= 3) {
@@ -75,6 +56,43 @@ export function useUser() {
         useEffect(() => {
             setIsFetching(true);
         }, [setIsFetching]);
+        useEffect(() => {
+            try {
+                if (data) {
+                    const loggedInUser = {
+                        role: data.role,
+                        email: data.email,
+                        firstName: data.first_name,
+                        lastName: data.last_name,
+                        dateOfBirth: new Date(data.dateOfBirth),
+                        phone: data.phone,
+                        province: data.province,
+                        city: getCityNameId(data.city),
+                        gender: data.gender == "M" ? "male" : "female",
+                        image: data?.image || undefined,
+                        emailVerified: data?.is_email_verified || false,
+                        isLoggedIn: true,
+                    };
+
+                    /* @ts-ignore impossible invalid values */
+                    setUser(loggedInUser);
+                    /* @ts-ignore cannot get out of range */
+                    if (!pageValidators[page]({...loggedInUser, role: getRole(loggedInUser.role)})) {
+                        if (!page.includes("profile")) {
+                            router.push(`/login?return=${page}`);
+                        } else {
+                            router.push("/login");
+                        }
+                    }
+                }
+            } catch (error) {
+                toast({
+                    description: "Erreur interne de serveur.",
+                    variant: "destructive",
+                })
+            }
+            
+        }, [data]);
 
         return {
             isLoading,

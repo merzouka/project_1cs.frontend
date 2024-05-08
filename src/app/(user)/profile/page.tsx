@@ -1,4 +1,4 @@
-import { ProfileForm } from "@/app/components/profile-form";
+import { UserProfileForm } from "@/app/components/profile-form-user";
 import { Pages } from "@/constants/pages";
 import { cn } from "@/lib/utils";
 
@@ -13,7 +13,7 @@ export default function ProfilePage() {
                 >
                     {"Détails de comptes"}
                 </h1>
-                <ProfileForm page={Pages.profile} />
+                <UserProfileForm page={Pages.profile} />
             </div>
         </div>
     );

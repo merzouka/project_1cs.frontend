@@ -17,6 +17,6 @@ export const endpoints = {
     drawingSettings: "associate-tirage",
     // profile
     profile: (id: number | string) => `profile/${id}`,
-    profileUpdate: "profile/update",
+    profileUpdate: "auth/update-profile",
     currentUser : "auth/currently_user",
 }

@@ -1,8 +1,16 @@
 export interface City {
     name: string,
-    id: string | number,
+    id: number,
     population: number,
     province: number,
+}
+
+export function getCityName(id: number): string | undefined {
+    return cities.find((city) => city.id == id)?.name;
+}
+
+export function getCityNameId(name: string): number | undefined {
+    return cities.find((city) => city.name == name)?.id;
 }
 
 export const cities: City[] = [

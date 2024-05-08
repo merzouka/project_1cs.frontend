@@ -16,7 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FcGoogle } from "react-icons/fc";
 
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -76,7 +76,7 @@ export default function LoginPage() {
     const { toast } = useToast();
 
     const [entries, setEntries] = useState({});
-    const { isLoading } = useQuery({
+    const { isLoading, data } = useQuery({
         queryKey: ["login"],
         queryFn: async () => {
             try {
@@ -85,14 +85,8 @@ export default function LoginPage() {
                     withCredentials: true,
                 });
                 const data = response.data;
-                if (returnPage && returnPage != "profile") {
-                    router.push(returnPage);
-                    return data;
-                }
-                router.push(routeByRole(data.role))
                 return data;
             } catch (error) {
-                console.log(error);
                 if (error instanceof AxiosError && error.response) {
                     toast({
                         title: "Identifiants incorrects",
@@ -112,6 +106,16 @@ export default function LoginPage() {
         enabled: isLoginEnabled,
         retry: false,
     });
+
+    useEffect(() => {
+        if (data) {
+            if (returnPage && returnPage != "profile") {
+                router.push(returnPage);
+                return data;
+            }
+            router.push(routeByRole(data.role))
+        }
+    }, [data]);
     const [email, setEmail] = useState("");
     const setEmailCallback = useDebouncedCallback((email: string) => setEmail(email), 200);
     const setStoreEmail = useEmailStore((state) => state.setEmail);

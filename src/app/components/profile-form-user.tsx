@@ -20,10 +20,11 @@ import { AxiosInstance } from "@/config/axios";
 import { getUrl } from "@/constants/api";
 import { endpoints } from "@/constants/endpoints";
 import { isAxiosError } from "axios";
-import { useUserStore } from "@/stores/user-store";
+import { getRoleMap, useUserStore } from "@/stores/user-store";
 import { CitySelect } from "@/app/components/city-select";
 import { PhoneInput } from "./phone-input";
 import { ImagePicker } from "./image-picker";
+import { Pages } from "@/constants/pages";
 
 const formSchema = z.object({
     firstName: z.string({ required_error: "Veuillez saisir votre prénom." }),
@@ -47,17 +48,18 @@ const formSchema = z.object({
         message: "Veuillez saisir un numéro de téléphone valide.",
     }),
 });
+export const UserProfileForm = ({ page }: { page: Pages }) => {
+    const { user, validateAccess } = useUser();
+    validateAccess(page);
 
-export const ProfileForm = () => {
-    const { user } = useUser();
     const setUser = useUserStore((state) => state.setUser);
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: {
+        values: {
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
-            city: user.city,
+            city: `${user.city}`,
             province: `${user.province || ""}`,
             phone: user.phone.includes("-") ? user.phone.split("-")[1] : user.phone,
         }
@@ -73,12 +75,13 @@ export const ProfileForm = () => {
         queryFn: async () => {
             try {
                 setIsFetching(false);
-                const response = await AxiosInstance.post(getUrl(endpoints.profileUpdate), {
+                const response = await AxiosInstance.patch(getUrl(endpoints.profileUpdate), {
                     first_name: entries?.firstName,
                     last_name: entries?.lastName,
                     baladiyat: Number(entries?.city),
                     email: entries?.email,
                     image: image,
+                    phone: phone,
                 }, {
                         headers: {
                             "Content-Type": "multipart/form-data",
@@ -88,14 +91,18 @@ export const ProfileForm = () => {
                     ...user,
                     firstName: entries?.firstName || user.firstName,
                     lastName: entries?.lastName || user.lastName,
-                    city: entries?.city || user.city,
+                    city: Number(entries?.city) || user.city,
                     province: Number(entries?.province) || user.province,
-                    phone: phone,
-                    role: user.role.toString(),
+                    phone: phone || user.phone,
+                    role: getRoleMap(user.role) || "user",
                 });
                 setHasChanged(false);
+                toast({
+                    description: "Votre profile a été modifié avec succés.",
+                });
                 return response;
             } catch (error) {
+                console.log(error);
                 if (failureCount < 3) {
                     throw new Error("error");
                 }
@@ -130,20 +137,25 @@ export const ProfileForm = () => {
     const [hasChanged, setHasChanged] = useState(false);
     const [image, setImage] = useState<File>();
     return (
-        <div className="p-5 overflow-y-scroll">
+        <div className={cn(
+            "p-5 overflow-y-scroll grid grid-cols-1 lg:grid-cols-[min-content_minmax(33rem,_1fr)] justify-center",
+            "grid-rows-1 lg:grid-rows-2"
+        )}>
             <ImagePicker 
-                className="mx-5 mb-2"
+                className="mx-5 mb-2 size-44 lg:mr-24"
                 defaultImage={user.image}
                 onChange={setImage}
             />
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="md:row-span-2">
-                    <div className="flex flex-col w-full max-w-[33rem] md:flex-row items-stretch md:items-center justify-stretch gap-x-3">
+                    <div className={cn(
+                        "flex flex-col w-full max-w-[33rem] items-stretch md:items-center justify-stretch gap-x-3",
+                    )}>
                         <FormField 
                             control={form.control}
                             name="lastName"
                             render={({ field }) => (
-                                <FormItem className="mb-2">
+                                <FormItem className="mb-2 w-full">
                                     <FormLabel>{"Nom"}</FormLabel>
                                     <FormControl>
                                         <EditableInput 
@@ -164,7 +176,7 @@ export const ProfileForm = () => {
                             control={form.control}
                             name="firstName"
                             render={({ field }) => (
-                                <FormItem className="mb-2">
+                                <FormItem className="mb-2 w-full">
                                     <FormLabel>{"Prénom"}</FormLabel>
                                     <FormControl>
                                         <EditableInput 
@@ -217,7 +229,10 @@ export const ProfileForm = () => {
                         render={({ field }) => (
                             <FormItem>
                                 <PhoneInput 
-                                    onPhoneChange={(value) => setPhone(value)}
+                                    onPhoneChange={(value) => {
+                                        setHasChanged(true);
+                                        setPhone(value);
+                                    }}
                                     onPhoneNumberChange={field.onChange}
                                     phoneValue={field.value}
                                     disabled={field.disabled}
@@ -227,80 +242,83 @@ export const ProfileForm = () => {
                                         </FormControl>
                                     )}
                                     styles={{
-                                        container: "mb-2"
+                                        container: "mb-2 md:mb-4"
                                     }}
                                 />
                                 <FormMessage className="text-xs"/>
                             </FormItem>
                         )}
                     />
-                    <span className="text-sm font-medium mb-2 block">
-                        {"Région"}
-                    </span>
-                    <div className={cn(
-                        "p-2 md:p-4 md:pt-5 pt-5 border border-slate-300 rounded-2xl flex-grow max-w-[33rem] relative",
-                        "mb-2 md:mb-3"
-                    )}>
-                        <div className="flex items-center justify-end absolute top-0 right-2">
-                            <Toggle 
-                                onPressedChange={() => setDisableRegion(!disableRegion)}
-                                size={"sm"}
-                                className="bg-transparent hover:bg-transparent [state=on]:text-black text-slate-400
-                                data-[state=on]:bg-transparent"
-                            >
-                                {icons.modify("size-5")}
-                            </Toggle>
+                    <>
+                        <span className="text-sm font-medium mb-2 block">
+                            {"Région"}
+                        </span>
+                        <div className={cn(
+                            "p-2 md:p-4 md:pt-5 pt-5 border border-slate-300 rounded-2xl flex-grow max-w-[33rem] relative",
+                            "mb-2 md:mb-3"
+                        )}>
+                            <div className="flex items-center justify-end absolute top-0 right-2">
+                                <Toggle 
+                                    onPressedChange={() => setDisableRegion(!disableRegion)}
+                                    size={"sm"}
+                                    className="bg-transparent hover:bg-transparent [state=on]:text-black text-slate-400
+                                    data-[state=on]:bg-transparent"
+                                >
+                                    {icons.modify("size-5")}
+                                </Toggle>
+                            </div>
+                            <FormField 
+                                control={form.control}
+                                name="province"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{"Wilaya"}</FormLabel>
+                                        <ProvinceSelect
+                                            onChange={handleProvinceChange((value) => {
+                                                setHasChanged(true);
+                                                field.onChange(value);
+                                            })}
+                                            defaultValue={`${field.value}`}
+                                            control={(children) => (
+                                                <FormControl>
+                                                    {children}
+                                                </FormControl>
+                                            )}
+                                            disabled={disableRegion}
+                                            className="rounded-xl"
+                                        />
+                                        <FormMessage className="text-xs" />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField 
+                                control={form.control}
+                                name="city"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{"Commune"}</FormLabel>
+                                        <CitySelect
+                                            onChange={handleCityChange((value) => {
+                                                setHasChanged(true);
+                                                field.onChange(value);
+                                            })}
+                                            province={province || user.province}
+                                            defaultValue={`${field.value}`}
+                                            control={(children) => (
+                                                <FormControl>
+                                                    {children}
+                                                </FormControl>
+                                            )}
+                                            disabled={disableRegion}
+                                            className="rounded-xl"
+                                        />
+                                        <FormMessage className="text-xs" />
+                                    </FormItem>
+                                )}
+                            />
                         </div>
-                        <FormField 
-                            control={form.control}
-                            name="province"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>{"Wilaya"}</FormLabel>
-                                    <ProvinceSelect
-                                        onChange={handleProvinceChange((value) => {
-                                            setHasChanged(true);
-                                            field.onChange(value);
-                                        })}
-                                        defaultValue={`${field.value}`}
-                                        control={(children) => (
-                                            <FormControl>
-                                                {children}
-                                            </FormControl>
-                                        )}
-                                        disabled={disableRegion}
-                                        className="rounded-xl"
-                                    />
-                                    <FormMessage className="text-xs" />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField 
-                            control={form.control}
-                            name="city"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>{"Commune"}</FormLabel>
-                                    <CitySelect
-                                        onChange={handleCityChange((value) => {
-                                            setHasChanged(true);
-                                            field.onChange(value);
-                                        })}
-                                        province={province}
-                                        defaultValue={`${field.value}`}
-                                        control={(children) => (
-                                            <FormControl>
-                                                {children}
-                                            </FormControl>
-                                        )}
-                                        disabled={disableRegion}
-                                        className="rounded-xl"
-                                    />
-                                    <FormMessage className="text-xs" />
-                                </FormItem>
-                            )}
-                        />
-                    </div>
+                    </>
+
                     <Button 
                         disabled={!hasChanged || isLoading}
                         className="max-w-[33rem] bg-black hover:bg-black/75 w-full font-bold rounded-2xl"

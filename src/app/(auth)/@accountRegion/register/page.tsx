@@ -35,6 +35,7 @@ import { useRegionSelect } from "@/app/components/hooks/use-region-select";
 import { CitySelect } from "@/app/components/city-select";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { getCityName } from "@/constants/cities";
 
 export default function Step() {
     const searchParams = useSearchParams();
@@ -68,7 +69,7 @@ export default function Step() {
                     dateOfBirth: entries.dateOfBirth ? format(entries.dateOfBirth, "yyyy-MM-dd"): new Date(),
                     gender: entries.gender == "male" ? "M" : "F",
                     province: Number(entries.province),
-                    city: entries.city,
+                    city: getCityName(Number(entries.city)),
                 });
                 setStep(0);
                 updateRegisterStore({
