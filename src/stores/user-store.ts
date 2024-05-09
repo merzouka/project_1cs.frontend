@@ -19,8 +19,8 @@ const roleMapping = {
     "banquier": Role.paymentManager,
 }
 
-export function getRoleMap(role: Role): string | undefined {
-    return Object.keys(roleMapping).find((key) => roleMapping[key] == role);
+export function getRoleMap(role: Role): string {
+    return Object.keys(roleMapping).find((key) => roleMapping[key as keyof typeof roleMapping] == role) || "user";
 }
 
 export function getRole(role: string): Role {

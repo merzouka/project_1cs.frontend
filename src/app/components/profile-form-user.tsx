@@ -13,7 +13,7 @@ import { BsFillPatchCheckFill } from "react-icons/bs";
 import { z } from "zod";
 import { EditableInput } from "./editable-input";
 import { Button } from "@/components/ui/button";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { AxiosInstance } from "@/config/axios";
@@ -66,65 +66,77 @@ export const UserProfileForm = ({ page }: { page: Pages }) => {
     });
 
     const { toast } = useToast();
-    const [entries, setEntries] = useState<z.infer<typeof formSchema>>();
     const [phone, setPhone] = useState(user.phone);
-    const [isFetching, setIsFetching] = useState(false);
-    const { isLoading, failureCount, isError } = useQuery({
-        queryKey: ["profile", "update"],
-        enabled: isFetching,
-        queryFn: async () => {
-            try {
-                setIsFetching(false);
-                const response = await AxiosInstance.patch(getUrl(endpoints.profileUpdate), {
-                    first_name: entries?.firstName,
-                    last_name: entries?.lastName,
-                    baladiyat: Number(entries?.city),
-                    email: entries?.email,
-                    image: image,
-                    phone: phone,
-                }, {
-                        headers: {
-                            "Content-Type": "multipart/form-data",
-                        }
-                    });
-                setUser({
-                    ...user,
-                    firstName: entries?.firstName || user.firstName,
-                    lastName: entries?.lastName || user.lastName,
-                    city: Number(entries?.city) || user.city,
-                    province: Number(entries?.province) || user.province,
-                    phone: phone || user.phone,
-                    role: getRoleMap(user.role) || "user",
+    const { isPending: isProfileUpdateLoading, isError: isProfileUpdateError, mutate: profileMutate } = useMutation({
+        retry: 3,
+        mutationFn: async (entries: z.infer<typeof formSchema>) => {
+            const response = await AxiosInstance.patch(getUrl(endpoints.profileUpdate), {
+                first_name: entries?.firstName,
+                last_name: entries?.lastName,
+                baladiyat: Number(entries?.city),
+                email: entries?.email,
+                image: image,
+                phone: phone,
+            }, {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    }
                 });
-                setHasChanged(false);
+            return response.data;
+        },
+        onMutate: (entries: z.infer<typeof formSchema>) => {
+            setUser({
+                ...user,
+                firstName: entries?.firstName || user.firstName,
+                lastName: entries?.lastName || user.lastName,
+                city: Number(entries?.city) || user.city,
+                province: Number(entries?.province) || user.province,
+                phone: phone || user.phone,
+                role: getRoleMap(user.role) || "user",
+            });
+            return user;
+        },
+        onSuccess: (_, entries, __) => {
+            setUser({
+                ...user,
+                firstName: entries?.firstName || user.firstName,
+                lastName: entries?.lastName || user.lastName,
+                city: Number(entries?.city) || user.city,
+                province: Number(entries?.province) || user.province,
+                phone: phone || user.phone,
+                role: getRoleMap(user.role) || "user",
+            });
+            setHasChanged(false);
+            toast({
+                description: "Votre profile a été modifié avec succés.",
+            });
+        },
+        onError: (error, _, context) => {
+            setUser({
+                ...user,
+                firstName: context?.firstName || user.firstName,
+                lastName: context?.lastName || user.lastName,
+                city: context?.city || user.city,
+                province: context?.province || user.province,
+                phone: context?.phone || user.phone,
+                role: getRoleMap(context?.role || user.role),
+            }); 
+            if (isAxiosError(error) && error.response) {
                 toast({
-                    description: "Votre profile a été modifié avec succés.",
-                });
-                return response;
-            } catch (error) {
-                if (failureCount < 3) {
-                    throw new Error("error");
-                }
-                if (isAxiosError(error) && error.response) {
-                    toast({
-                        description: "Cet email est déja utilisé.",
-                        variant: "destructive",
-                    });
-                    throw new Error("invalid email");
-                }
-                toast({
-                    title: "Erreur de connexion",
-                    description: "Nous ne pouvons pas enregistrer vos modifications.",
+                    description: "Cet email est déja utilisé.",
                     variant: "destructive",
                 });
-                throw new Error("connection error");
             }
+            toast({
+                title: "Erreur de connexion",
+                description: "Nous ne pouvons pas enregistrer vos modifications.",
+                variant: "destructive",
+            });
         }
-    })
+    });
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-        setEntries(values);
-        setIsFetching(true);
+        profileMutate(values);
     }
 
     const {
@@ -135,15 +147,17 @@ export const UserProfileForm = ({ page }: { page: Pages }) => {
     const [disableRegion, setDisableRegion] = useState(true);
     const [hasChanged, setHasChanged] = useState(false);
     const [image, setImage] = useState<File>();
+    const [imageSrc, setImageSrc] = useState<string | undefined>(user.image);
     return (
         <div className={cn(
             "p-5 overflow-y-scroll grid grid-cols-1 lg:grid-cols-[min-content_minmax(33rem,_1fr)] justify-center",
             "grid-rows-1 lg:grid-rows-2"
         )}>
             <ImagePicker 
-                className="mx-5 mb-2 size-44 lg:mr-24"
+                className="mx-5 mb-2"
                 defaultImage={user.image}
-                onChange={setImage}
+                onImageSrcChange={setImageSrc}
+                onImageChange={setImage}
             />
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="md:row-span-2">
@@ -319,7 +333,7 @@ export const UserProfileForm = ({ page }: { page: Pages }) => {
                     </>
 
                     <Button 
-                        disabled={!hasChanged || isLoading || isError}
+                        disabled={!hasChanged || isProfileUpdateLoading || isProfileUpdateError}
                         className="max-w-[33rem] bg-black hover:bg-black/75 w-full font-bold rounded-2xl"
                     >
                         {"Enregistrer"}

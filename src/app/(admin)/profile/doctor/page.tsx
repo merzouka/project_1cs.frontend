@@ -1,4 +1,4 @@
-import { AdminProfileForm } from "@/app/components/profile-form-admin";
+import { ProfileForm } from "@/app/components/profile-form";
 import { Pages } from "@/constants/pages";
 import { cn } from "@/lib/utils";
 
@@ -13,7 +13,7 @@ const ProfilePage = () => {
                 >
                     {"Détails de comptes"}
                 </h1>
-                <AdminProfileForm page={Pages.doctorProfile} />
+                <ProfileForm page={Pages.doctorProfile} />
             </div>
         </div>
     );

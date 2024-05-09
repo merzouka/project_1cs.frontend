@@ -4,19 +4,19 @@ import { useToast } from "@/components/ui/use-toast";
 import { getUrl } from "@/constants/api";
 import { endpoints } from "@/constants/endpoints";
 import { cn } from "@/lib/utils";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 
 import { MdSwitchAccount } from "react-icons/md";
 import { useMutation } from "@tanstack/react-query";
+import { AxiosInstance } from "@/config/axios";
 
 export const SwitchAccount = ({className} : { className?: string }) => {
     const { toast } = useToast();
     const router = useRouter();
     const { isPending: isLoggingOut, mutate } = useMutation({
         mutationFn: async () => {
-            const response = await axios.post(getUrl(endpoints.logout), {}, {
+            const response = await AxiosInstance.post(getUrl(endpoints.logout), {}, {
                 xsrfCookieName: "csrftoken",
                 xsrfHeaderName: "X-CSRFToken",
                 withXSRFToken: true,

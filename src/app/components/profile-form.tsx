@@ -13,14 +13,14 @@ import { BsFillPatchCheckFill } from "react-icons/bs";
 import { z } from "zod";
 import { EditableInput } from "./editable-input";
 import { Button } from "@/components/ui/button";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { AxiosInstance } from "@/config/axios";
 import { getUrl } from "@/constants/api";
 import { endpoints } from "@/constants/endpoints";
 import { isAxiosError } from "axios";
-import { getRole, getRoleMap, useUserStore } from "@/stores/user-store";
+import { getRoleMap, useUserStore } from "@/stores/user-store";
 import { CitySelect } from "@/app/components/city-select";
 import { PhoneInput } from "./phone-input";
 import { ImagePicker } from "./image-picker";
@@ -93,10 +93,11 @@ export const ProfileForm = ({ page }: { page: Pages }) => {
                 province: Number(entries?.province) || user.province,
                 phone: phone || user.phone,
                 role: getRoleMap(user.role) || "user",
+                image: imageSrc,
             });
             return user;
         },
-        onSuccess: (_, entries, __) => {
+        onSuccess: (data, entries, __) => {
             setUser({
                 ...user,
                 firstName: entries?.firstName || user.firstName,
@@ -112,7 +113,15 @@ export const ProfileForm = ({ page }: { page: Pages }) => {
             });
         },
         onError: (error, _, context) => {
-            setUser({...context, role: getRoleMap(context?.role) || "user"});
+            setUser({
+                ...user,
+                firstName: context?.firstName || user.firstName,
+                lastName: context?.lastName || user.lastName,
+                city: context?.city || user.city,
+                province: context?.province || user.province,
+                phone: context?.phone || user.phone,
+                role: getRoleMap(context?.role || user.role),
+            }); 
             if (isAxiosError(error) && error.response) {
                 toast({
                     description: "Cet email est déja utilisé.",
@@ -139,12 +148,14 @@ export const ProfileForm = ({ page }: { page: Pages }) => {
     const [disableRegion, setDisableRegion] = useState(true);
     const [hasChanged, setHasChanged] = useState(false);
     const [image, setImage] = useState<File>();
+    const [imageSrc, setImageSrc] = useState<string | undefined>(user.image);
     return (
         <div className="p-5 overflow-y-scroll">
             <ImagePicker 
                 className="mx-5 mb-2"
                 defaultImage={user.image}
-                onChange={setImage}
+                onImageSrcChange={setImageSrc}
+                onImageChange={setImage}
             />
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="md:row-span-2">

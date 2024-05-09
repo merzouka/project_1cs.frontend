@@ -7,11 +7,13 @@ import { cn } from "@/lib/utils";
 
 export const ImagePicker  = ({ 
     defaultImage, 
-    onChange,
+    onImageChange,
+    onImageSrcChange,
     className,
 }: {
         defaultImage?: string;
-        onChange?: (image: File) => void;
+        onImageChange?: (image: File) => void;
+        onImageSrcChange?: (imageSrc: string) => void;
         className?: string,
     }) => {
     const [imageSrc, setImageSrc] = useState<string | undefined>(defaultImage);
@@ -19,12 +21,14 @@ export const ImagePicker  = ({
         const img = document.createElement("input");
         img.type = "file";
         img.addEventListener("change", (e) => {
-            /* @ts-ignore */
-            if (e.target.files) {
-                /* @ts-ignore */
-                setImageSrc(URL.createObjectURL(e.target.files[0]))
-                /* @ts-ignore */
-                onChange(e.target.files[0])
+            const files = (e.target as HTMLInputElement).files;
+            if (files) {
+                if (files.length > 0 && files[0]) {
+                    const imageUrl = URL.createObjectURL(files[0]);
+                    setImageSrc(imageUrl);
+                    onImageChange && onImageChange(files[0]);
+                    onImageSrcChange && onImageSrcChange(imageUrl);
+                }
             }
         });
         img.click();

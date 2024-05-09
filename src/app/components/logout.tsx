@@ -10,13 +10,14 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 
 import { IoExitOutline } from "react-icons/io5";
+import { AxiosInstance } from "@/config/axios";
 
 export const Logout = ({className} : { className?: string }) => {
     const { toast } = useToast();
     const router = useRouter();
     const { isPending: isLoggingOut, mutate } = useMutation({
         mutationFn: async () => {
-            const response = await axios.post(getUrl(endpoints.logout), {}, {
+            const response = await AxiosInstance.post(getUrl(endpoints.logout), {}, {
                 xsrfCookieName: "csrftoken",
                 xsrfHeaderName: "X-CSRFToken",
                 withXSRFToken: true,
