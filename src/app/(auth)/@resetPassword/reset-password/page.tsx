@@ -17,8 +17,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { resetPasswordSchema } from "@/app/(auth)/constants/schemas";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import axios, { AxiosError } from "axios";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import axios, { isAxiosError } from "axios";
 import { getUrl } from "@/constants/api";
 import { endpoints } from "@/constants/endpoints";
 
@@ -54,42 +54,34 @@ export default function ResetPasswordPage() {
 
     const [resettingPassword, setResettingPassword] = useState(false);
     const { toast } = useToast();
-    const { isLoading } = useQuery({
-        queryKey: ["password reset"],
-        queryFn: async () => {
-            try {
-                setResettingPassword(false);
-                const response = await axios.patch(getUrl(endpoints.resetPassword), body);
-                next();
-                return JSON.parse(response.data);
-            } catch (error) {
-                if (error instanceof AxiosError && error.response) {
-                    if (matchesError(error.response.data, ResetError.DuplicatePassword)) {
-                        toast({
-                            title: "Mot de passe invalide",
-                            description: "Le mot de passe saisi est déjà utilisé.",
-                            variant: "destructive",
-                        });
-                        throw new Error("duplicate password");
-                    } else if (matchesError(error.response.data, ResetError.InvalidResetToken)) {
-                        toast({
-                            title: "Jeton de réinitialisation invalide",
-                            description: "Veuillez utiliser le courriel qui a été envoyé à votre boîte de réception.",
-                            variant: "destructive",
-                        });
-                        throw new Error("invalid reset token");
-                    }
-                }
-                toast({
-                    title: "Erreur de connexion",
-                    description: "Nous ne pouvons pas connecter au serveur",
-                    variant: "destructive",
-                });
-                throw new Error("connection error");
-            }
+    const { isPending: isRessettingPassword, mutate: resetMutate } = useMutation({
+        mutationFn: async () => {
+            const response = await axios.patch(getUrl(endpoints.resetPassword), body);
+            return response.data;
         },
-        enabled: resettingPassword,
-        retry: false,
+        onSuccess: () => next(),
+        onError: (error) => {
+            if (isAxiosError(error) && error.response) {
+                if (matchesError(error.response.data, ResetError.DuplicatePassword)) {
+                    toast({
+                        title: "Mot de passe invalide",
+                        description: "Le mot de passe saisi est déjà utilisé.",
+                        variant: "destructive",
+                    });
+                } else if (matchesError(error.response.data, ResetError.InvalidResetToken)) {
+                    toast({
+                        title: "Jeton de réinitialisation invalide",
+                        description: "Veuillez utiliser le courriel qui a été envoyé à votre boîte de réception.",
+                        variant: "destructive",
+                    });
+                }
+            }
+            toast({
+                title: "Erreur de connexion",
+                description: "Nous ne pouvons pas connecter au serveur",
+                variant: "destructive",
+            });
+        }
     });
 
     const searchParams = useSearchParams();
@@ -156,7 +148,7 @@ export default function ResetPasswordPage() {
                                         field.onChange(e.target.value);
                                     }}
                                     value={field.value}
-                                    disabled={formDisabled || isLoading}
+                                    disabled={formDisabled || isRessettingPassword}
                                     className={{
                                         field: "bg-transparent border border-slate-300",
                                         item: "mb-3"
@@ -171,7 +163,7 @@ export default function ResetPasswordPage() {
                                 <PasswordInput 
                                     onChange={field.onChange}
                                     value={field.value}
-                                    disabled={formDisabled || isLoading}
+                                    disabled={formDisabled || isRessettingPassword}
                                     label="Confirmez mot de passe"
                                     className={{
                                         field: "bg-transparent border border-slate-300",
@@ -195,7 +187,7 @@ export default function ResetPasswordPage() {
                         </ul>
                         <Button 
                             type="submit" 
-                            disabled={formDisabled || isLoading}
+                            disabled={formDisabled || isRessettingPassword}
                             className={cn(
                                 "rounded-full w-full font-bold bg-black hover:bg-black/90 mb-1 lg:mb-2",
                             )}

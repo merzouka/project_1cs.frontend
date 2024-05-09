@@ -79,15 +79,15 @@ export default function Step() {
 
     const { next } = useMultiStep(MultiStepKeys.register);
     const { isPending: isOTPLoading, mutate: otpMutate } = useMutation({
-        mutationFn: async (code) => {
+        mutationFn: async (code: string) => {
             const response = await axios.post(getUrl(endpoints.otpVerification), { email: email, code: code })
             return response.data;
         },
         onSuccess: () => {
             next();
         },
-        onError: () => {
-            if (isAxiosError && error?.response) {
+        onError: (error) => {
+            if (isAxiosError(error) && error?.response) {
                 toast({
                     title: "Erreur",
                     description: "Le code que vous avez fourni est incorrect.",

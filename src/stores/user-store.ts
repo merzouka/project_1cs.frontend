@@ -53,7 +53,7 @@ export interface User {
 
 interface Actions {
     setUser: (user: {
-        id?: undefined | string | number;
+        id?: string | number | undefined;
         email: string;
         role: string;
         firstName: string;
@@ -64,7 +64,7 @@ interface Actions {
         province: number | undefined;
         gender: "male" | "female" | undefined;
         image?: string | undefined;
-        emailVerified ?: boolean;
+        emailVerified?: boolean;
         isLoggedIn: boolean;
     }) => void;
 }

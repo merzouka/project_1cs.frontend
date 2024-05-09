@@ -84,8 +84,8 @@ export default function LoginPage() {
             });
             return response.data;
         },
-        onSuccess: (data) => {
-            queryClient.cancelQueries({ queryKey: ["profile"] });
+        onSuccess: async (data) => {
+            await  queryClient.cancelQueries({ queryKey: ["profile"] });
             queryClient.setQueryData(["profile"], data);
             const loggedInUser = {
                 role: data.role,

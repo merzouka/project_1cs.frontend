@@ -5,7 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import { getUrl, endpoints } from "@/constants/api";
+import { getUrl } from "@/constants/api";
+import { endpoints } from "@/constants/endpoints";
 import { useEmailStore } from "@/app/(auth)/constants/email-store";
 import { slideInRightExitLeft } from "@/constants/animations";
 import { Spinner } from "@/components/custom/spinner";
@@ -13,7 +14,7 @@ import { Spinner } from "@/components/custom/spinner";
 export default function ResetEmailSentPage() {
     const email = useEmailStore((state) => state.email);
     const { toast } = useToast()
-    const { isPending: isEmailLoadin, isError: isEmailError, isSuccess: isEmailSuccess, mutate } = useMutation({
+    const { isPending: isEmailLoading, isError: isEmailError, isSuccess: isEmailSuccess, mutate } = useMutation({
         mutationFn: async () => {
             const response = await axios.post(getUrl(endpoints.resetPasswordEmail), { email: email});
             return response.data;

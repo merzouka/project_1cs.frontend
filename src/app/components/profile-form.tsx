@@ -13,14 +13,14 @@ import { BsFillPatchCheckFill } from "react-icons/bs";
 import { z } from "zod";
 import { EditableInput } from "./editable-input";
 import { Button } from "@/components/ui/button";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { AxiosInstance } from "@/config/axios";
 import { getUrl } from "@/constants/api";
 import { endpoints } from "@/constants/endpoints";
 import { isAxiosError } from "axios";
-import { getRoleMap, useUserStore } from "@/stores/user-store";
+import { getRole, getRoleMap, useUserStore } from "@/stores/user-store";
 import { CitySelect } from "@/app/components/city-select";
 import { PhoneInput } from "./phone-input";
 import { ImagePicker } from "./image-picker";
@@ -66,65 +66,69 @@ export const ProfileForm = ({ page }: { page: Pages }) => {
     });
 
     const { toast } = useToast();
-    const [entries, setEntries] = useState<z.infer<typeof formSchema>>();
     const [phone, setPhone] = useState(user.phone);
-    const [isFetching, setIsFetching] = useState(false);
-    const { isLoading, failureCount, isError } = useQuery({
-        queryKey: ["profile", "update"],
-        enabled: isFetching,
-        queryFn: async () => {
-            try {
-                setIsFetching(false);
-                const response = await AxiosInstance.patch(getUrl(endpoints.profileUpdate), {
-                    first_name: entries?.firstName,
-                    last_name: entries?.lastName,
-                    baladiyat: Number(entries?.city),
-                    email: entries?.email,
-                    image: image,
-                    phone: phone,
-                }, {
-                        headers: {
-                            "Content-Type": "multipart/form-data",
-                        }
-                    });
-                setUser({
-                    ...user,
-                    firstName: entries?.firstName || user.firstName,
-                    lastName: entries?.lastName || user.lastName,
-                    city: Number(entries?.city) || user.city,
-                    province: Number(entries?.province) || user.province,
-                    phone: phone || user.phone,
-                    role: getRoleMap(user.role) || "user",
+    const { isPending: isProfileUpdateLoading, isError: isProfileUpdateError, mutate: profileMutate } = useMutation({
+        retry: 3,
+        mutationFn: async (entries: z.infer<typeof formSchema>) => {
+            const response = await AxiosInstance.patch(getUrl(endpoints.profileUpdate), {
+                first_name: entries?.firstName,
+                last_name: entries?.lastName,
+                baladiyat: Number(entries?.city),
+                email: entries?.email,
+                image: image,
+                phone: phone,
+            }, {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    }
                 });
-                setHasChanged(false);
+            return response.data;
+        },
+        onMutate: (entries: z.infer<typeof formSchema>) => {
+            setUser({
+                ...user,
+                firstName: entries?.firstName || user.firstName,
+                lastName: entries?.lastName || user.lastName,
+                city: Number(entries?.city) || user.city,
+                province: Number(entries?.province) || user.province,
+                phone: phone || user.phone,
+                role: getRoleMap(user.role) || "user",
+            });
+            return user;
+        },
+        onSuccess: (_, entries, __) => {
+            setUser({
+                ...user,
+                firstName: entries?.firstName || user.firstName,
+                lastName: entries?.lastName || user.lastName,
+                city: Number(entries?.city) || user.city,
+                province: Number(entries?.province) || user.province,
+                phone: phone || user.phone,
+                role: getRoleMap(user.role) || "user",
+            });
+            setHasChanged(false);
+            toast({
+                description: "Votre profile a été modifié avec succés.",
+            });
+        },
+        onError: (error, _, context) => {
+            setUser({...context, role: getRoleMap(context?.role) || "user"});
+            if (isAxiosError(error) && error.response) {
                 toast({
-                    description: "Votre profile a été modifié avec succés.",
-                });
-                return response;
-            } catch (error) {
-                if (failureCount < 3) {
-                    throw new Error("error");
-                }
-                if (isAxiosError(error) && error.response) {
-                    toast({
-                        description: "Cet email est déja utilisé.",
-                        variant: "destructive",
-                    });
-                    throw new Error("invalid email");
-                }
-                toast({
-                    title: "Erreur de connexion",
-                    description: "Nous ne pouvons pas enregistrer vos modifications.",
+                    description: "Cet email est déja utilisé.",
                     variant: "destructive",
                 });
-                throw new Error("connection error");
             }
+            toast({
+                title: "Erreur de connexion",
+                description: "Nous ne pouvons pas enregistrer vos modifications.",
+                variant: "destructive",
+            });
         }
-    })
+    });
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-        setEntries(values);
-        setIsFetching(true);
+        profileMutate(values);
     }
 
     const {
@@ -317,7 +321,7 @@ export const ProfileForm = ({ page }: { page: Pages }) => {
                     </>
 
                     <Button 
-                        disabled={!hasChanged || isLoading || isError}
+                        disabled={!hasChanged || isProfileUpdateLoading || isProfileUpdateError}
                         className="max-w-[33rem] bg-black hover:bg-black/75 w-full font-bold rounded-2xl"
                     >
                         {"Enregistrer"}
