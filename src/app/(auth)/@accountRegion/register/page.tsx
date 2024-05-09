@@ -18,7 +18,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/toaster";
 import { motion } from "framer-motion";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { getUrl } from "@/constants/api";
 import { endpoints } from "@/constants/endpoints";
@@ -33,7 +33,6 @@ import { useErrorStore } from "../../stores/register-error-store";
 import { ProvinceSelect } from "@/app/components/province-select";
 import { useRegionSelect } from "@/app/components/hooks/use-region-select";
 import { CitySelect } from "@/app/components/city-select";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { getCityName } from "@/constants/cities";
 
@@ -49,66 +48,64 @@ export default function Step() {
         }
     });
     const updateRegisterStore = useRegisterStore((state) => state.updateEntries);
-    const [isRegisterProcessing, setIsRegisterProcess] = useState(false);
     const router = useRouter();
     const { toast } = useToast();
 
     const { setStep } = useMultiStep(MultiStepKeys.register);
     const setEmailError = useErrorStore((state) => state.setErrors);
-    const { isLoading } = useQuery({
-        queryKey: ["register"],
-        queryFn: async () => {
-            try {
-                setIsRegisterProcess(false);
-                const response = await axios.post(getUrl(endpoints.register), {
-                    email: entries.email,
-                    phone: entries.phone,
-                    password: entries.password,
-                    first_name: entries.firstname,
-                    last_name: entries.lastname,
-                    dateOfBirth: entries.dateOfBirth ? format(entries.dateOfBirth, "yyyy-MM-dd"): new Date(),
-                    gender: entries.gender == "male" ? "M" : "F",
-                    province: Number(entries.province),
-                    city: getCityName(Number(entries.city)),
-                });
-                setStep(0);
-                updateRegisterStore({
-                    email: "",
-                    phone: "",
-                    password: "",
-                    firstname: "",
-                    lastname: "",
-                    dateOfBirth: undefined,
-                    gender: undefined,
-                    province: undefined,
-                    city: "",
-                });
-                router.push(`/login?${searchParams.toString()}`);
-                return response.data;
-            } catch (error) {
-                if (error instanceof AxiosError && error.response) {
-                    setEmailError({ email: "Adresse e-mail déjà utilisée" })
-                    setStep(0);
-                    throw new Error("duplicate email");
-                }
-                toast({
-                    title: "Erreur de connexion",
-                    description: "Nous ne pouvons pas créer votre compte",
-                    variant: "destructive",
-                });
-                throw new Error("connection error");
-            }
+    const { isPending: isRegistering, mutate } = useMutation({
+        retry: 3,
+        mutationFn: async (variables: typeof entries) => {
+            const response = await axios.post(getUrl(endpoints.register), {
+                email: variables.email,
+                phone: variables.phone,
+                password: variables.password,
+                first_name: variables.firstname,
+                last_name: variables.lastname,
+                dateOfBirth: variables.dateOfBirth ? format(variables.dateOfBirth, "yyyy-MM-dd"): new Date(),
+                gender: variables.gender == "male" ? "M" : "F",
+                province: Number(variables.province),
+                city: getCityName(Number(variables.city)),
+            });
+            return response.data;
         },
-        enabled: isRegisterProcessing,
-        retry: false,
-        staleTime: 0,
-    });
+        onSuccess: () => {
+            setStep(0);
+            updateRegisterStore({
+                email: "",
+                phone: "",
+                password: "",
+                firstname: "",
+                lastname: "",
+                dateOfBirth: undefined,
+                gender: undefined,
+                province: undefined,
+                city: "",
+            });
+            router.push(`/login?${searchParams.toString()}`);
+        },
+        onError: (error) => {
+            if (error instanceof AxiosError && error.response) {
+                setEmailError({ email: "Adresse e-mail déjà utilisée" })
+                setStep(0);
+            }
+            toast({
+                title: "Erreur de connexion",
+                description: "Nous ne pouvons pas créer votre compte",
+                variant: "destructive",
+            });
+        }
+    })
     async function onSubmit(values: z.infer<typeof registerSchema4>) {
         updateRegisterStore({
             ...values,
             province: Number(values.province)
         });
-        setIsRegisterProcess(true);
+        mutate({
+            ...entries,
+            ...values,
+            province: Number(values.province)
+        });
     }
 
     const { direction } = useMultiStep(MultiStepKeys.register);
@@ -143,7 +140,7 @@ export default function Step() {
                                     <ProvinceSelect 
                                         onChange={handleProvinceChange(field.onChange)}
                                         defaultValue={field.value !== undefined ? `${field.value}` : ""}
-                                        disabled={isLoading}
+                                        disabled={isRegistering}
                                         className="rounded-full"
                                         control={(children) => (
                                             <FormControl>
@@ -164,7 +161,7 @@ export default function Step() {
                                     <CitySelect 
                                         onChange={handleCityChange(field.onChange)}
                                         defaultValue={field.value}
-                                        disabled={isLoading}
+                                        disabled={isRegistering}
                                         province={province}
                                         control={(children) => (
                                             <FormControl>
@@ -178,7 +175,7 @@ export default function Step() {
                             )}
                         />
                         <Button 
-                            disabled={isLoading}
+                            disabled={isRegistering}
                             type="submit" 
                             className={cn(
                                 "bg-black hover:bg-black/70 rounded-full font-bold w-full",

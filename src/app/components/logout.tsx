@@ -4,44 +4,39 @@ import { useToast } from "@/components/ui/use-toast";
 import { getUrl } from "@/constants/api";
 import { endpoints } from "@/constants/endpoints";
 import { cn } from "@/lib/utils";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import Cookies from "js-cookie";
 
 import { IoExitOutline } from "react-icons/io5";
 
 export const Logout = ({className} : { className?: string }) => {
-    const [loggingOut, setLoggingOut] = useState(false);
     const { toast } = useToast();
     const router = useRouter();
-    const { isLoading } = useQuery({
-        queryKey: ["logout"],
-        queryFn: async () => {
-            try {
-                const response = await axios.post(getUrl(endpoints.logout), {}, {
-                    xsrfCookieName: "csrftoken",
-                    xsrfHeaderName: "X-CSRFToken",
-                    withXSRFToken: true,
-                });
-                Cookies.remove("sessionid");
-                router.push("/login");
-                return response
-            } catch (error) {
-                toast({
-                    title: "La déconnexion a échoué",
-                    variant: "destructive"
-                });
-                throw new Error("logout error");
-            }
+    const { isPending: isLoggingOut, mutate } = useMutation({
+        mutationFn: async () => {
+            const response = await axios.post(getUrl(endpoints.logout), {}, {
+                xsrfCookieName: "csrftoken",
+                xsrfHeaderName: "X-CSRFToken",
+                withXSRFToken: true,
+            });
+            return response;
         },
-        enabled: loggingOut,
-        retry: false,
+        onSuccess: () => {
+            Cookies.remove("sessionid");
+            router.push("/login");
+        },
+        onError: () => {
+            toast({
+                title: "La déconnexion a échoué",
+                variant: "destructive"
+            });
+        },
     });
 
     function handleClick() {
-        setLoggingOut(true);
+        mutate();
     }
 
     return (
@@ -53,7 +48,7 @@ export const Logout = ({className} : { className?: string }) => {
                     "bg-transparent hover:bg-tranparent rounded-full size-10",
                     className,
                 )}
-                disabled={isLoading}
+                disabled={isLoggingOut}
                 onClick={handleClick}
             >
                 <IoExitOutline className="size-8 text-black hover:text-orange-400" />

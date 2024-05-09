@@ -8,7 +8,7 @@ import { getUrl } from "@/constants/api";
 import { endpoints } from "@/constants/endpoints";
 import { useToast } from "@/components/ui/use-toast";
 import { AxiosInstance } from "@/config/axios";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { getCityNameId } from "@/constants/cities";
 
 export function useUser() {
@@ -22,14 +22,11 @@ export function useUser() {
 
     const router = useRouter();
     const { toast } = useToast();
-    const [isFetching, setIsFetching] = useState(false);
     function validateAccess(page: Pages) {
         const { isLoading, isError, data, failureCount } = useQuery({
-            enabled: isFetching,
             queryKey: ["profile"],
             queryFn: async () => {
                 try {
-                    setIsFetching(false);
                     const response = await AxiosInstance.get(getUrl(endpoints.currentUser));
                     const data = response.data;
                     return data;
@@ -53,9 +50,6 @@ export function useUser() {
                 }
             }
         });
-        useEffect(() => {
-            setIsFetching(true);
-        }, [setIsFetching]);
         useEffect(() => {
             try {
                 if (data) {

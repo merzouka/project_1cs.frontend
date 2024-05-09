@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { endpoints } from "@/constants/endpoints";
 import { getUrl } from "@/constants/api";
@@ -65,14 +65,11 @@ export const Settings = () => {
     const { toast } = useToast();
     const router = useRouter();
 
-    const [isStateFetching, setIsStateFetching] = useState(true);
     const [disableForm, setDisableForm] = useState(false);
     const { isLoading: isStateLoading, isError: isStateError, failureCount } = useQuery({
         queryKey: ["drawing state"],
-        enabled: isStateFetching,
         queryFn: async () => {
             try {
-                setIsStateFetching(false);
                 const response = await AxiosInstance.get(getUrl(endpoints.drawingDefined));
                 if (response.data.tirage_definit) {
                     toast({
@@ -95,37 +92,31 @@ export const Settings = () => {
         }
     })
 
-    const [isSettingDrawing, setIsSettingDrawing] = useState(false);
-    const { isLoading: isSettingLoading } = useQuery({
-        queryKey: ["drawing start"],
-        enabled: isSettingDrawing,
-        retry: 0,
-        queryFn: async () => {
-            try {
-                setIsSettingDrawing(false);
-                const response = await AxiosInstance.post(getUrl(endpoints.drawingSettings), {
-                    utilisateur_id: user.id,
-                    type_tirage: entries?.type == DrawingType.Random ? 1 : 2,
-                    nombre_de_place: Number(entries?.winners),
-                    tranche_age: entries?.percentage || null,
-                });
-                router.push("/drawing");
-                return response;
-            } catch (error) {
-                toast({
-                    title: "Erreur de connexion",
-                    description: "Nous ne pouvons pas lancer le tirage.",
-                    variant: "destructive",
-                });
-                throw new Error("connection error");
-            }
+    const { isPending: isSettingLoading, mutate } = useMutation({
+        retry: 3,
+        mutationFn: async (entries: z.infer<typeof formSchema>) => {
+            const response = await AxiosInstance.post(getUrl(endpoints.drawingSettings), {
+                utilisateur_id: user.id,
+                type_tirage: entries?.type == DrawingType.Random ? 1 : 2,
+                nombre_de_place: Number(entries?.winners),
+                tranche_age: entries?.percentage || null,
+            });
+            return response.data;
+        },
+        onSuccess: () => {
+            router.push("/drawing");
+        },
+        onError: () => {
+            toast({
+                title: "Erreur de connexion",
+                description: "Nous ne pouvons pas lancer le tirage.",
+                variant: "destructive",
+            });
         }
     });
 
-    const [entries, setEntries] = useState<z.infer<typeof formSchema> | undefined>(undefined);
     function handleSubmit(values: z.infer<typeof formSchema>) {
-        setEntries(values);
-        setIsSettingDrawing(true);
+        mutate(values);
     }
 
     enum DrawingType {

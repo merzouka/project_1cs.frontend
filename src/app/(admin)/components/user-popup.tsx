@@ -6,7 +6,6 @@ import { ProfileActions } from "./profile-actions";
 import { IoIosArrowDown } from "react-icons/io";
 import { Poppins } from "next/font/google";
 import { useUser } from "@/hooks/use-user";
-import { Pages } from "@/constants/pages";
 
 const poppins = Poppins({
     weight: ["400", "700"],
@@ -14,8 +13,7 @@ const poppins = Poppins({
 });
 
 export const UserPopup = ({className}: { className?: string }) => {
-    const { user, validateAccess } = useUser();
-    validateAccess(Pages.profile);
+    const { user } = useUser();
 
     return (
         <Popover>

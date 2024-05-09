@@ -8,7 +8,8 @@ import { MultiStepKeys, useMultiStep } from "@/app/(auth)/hooks/use-mutli-step-r
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useRegisterStore } from "@/app/(auth)/stores/register-store";
 
 // components
 import { Spinner } from "@/components/custom/spinner";
@@ -28,7 +29,7 @@ import { motion } from "framer-motion";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "@/lib/utils";
-import axios, { AxiosError } from "axios";
+import axios, { isAxiosError } from "axios";
 import { getUrl } from "@/constants/api";
 import { endpoints } from "@/constants/endpoints";
 
@@ -76,41 +77,33 @@ export default function Step() {
     });
 
 
-    const [sendingOTP, setSendingOTP] = useState(false);
-    const [code, setCode] = useState("");
-    const { isLoading: isOTPLoading } = useQuery({
-        queryKey: ["otp verification"],
-        queryFn: async () => {
-            setSendingOTP(false);
-            try {
-                const response = await axios.post(getUrl(endpoints.otpVerification), { email: email, code: code })
-                next();
-                return JSON.parse(response.data);
-            } catch (error) {
-                if (error instanceof AxiosError && error?.response) {
-                    toast({
-                        title: "Erreur",
-                        description: "Le code que vous avez fourni est incorrect.",
-                        variant: "destructive",
-                    });
-                } else {
-                    toast({
-                        title: "Erreur",
-                        description: "Nous n'avons pas pu se connecter au serveur.",
-                        variant: "destructive",
-                    });
-                }
-                throw new Error("otp error");
-            }
-        },
-        enabled: sendingOTP,
-        retry: false,
-    });
-
     const { next } = useMultiStep(MultiStepKeys.register);
+    const { isPending: isOTPLoading, mutate: otpMutate } = useMutation({
+        mutationFn: async (code) => {
+            const response = await axios.post(getUrl(endpoints.otpVerification), { email: email, code: code })
+            return response.data;
+        },
+        onSuccess: () => {
+            next();
+        },
+        onError: () => {
+            if (isAxiosError && error?.response) {
+                toast({
+                    title: "Erreur",
+                    description: "Le code que vous avez fourni est incorrect.",
+                    variant: "destructive",
+                });
+            } else {
+                toast({
+                    title: "Erreur",
+                    description: "Nous n'avons pas pu se connecter au serveur.",
+                    variant: "destructive",
+                });
+            }
+        }
+    })
     function onSubmit(values: z.infer<typeof verifyEmailSchema>) {
-        setCode(values.code);
-        setSendingOTP(true);
+        otpMutate(values.code);
     }
 
     return (

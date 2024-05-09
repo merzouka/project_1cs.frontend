@@ -16,7 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FcGoogle } from "react-icons/fc";
 
 import { useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -28,17 +28,18 @@ import { loginFormSchema } from "@/app/(auth)/constants/schemas";
 import PasswordInput from "@/app/(auth)/components/password-input";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
-import { Role, getRole } from "@/stores/user-store";
+import { Role, getRole, useUserStore } from "@/stores/user-store";
 
 import BottomMessage from "@/app/(auth)/components/bottom-message";
 import { Toaster } from "@/components/ui/toaster";
-import { useQuery } from "@tanstack/react-query";
-import axios, { AxiosError } from "axios";
+import { QueryClient, useMutation } from "@tanstack/react-query";
+import { AxiosError, isAxiosError } from "axios";
 import { getUrl } from "@/constants/api";
 import { endpoints } from "@/constants/endpoints";
 import { useEmailStore } from "../../constants/email-store";
 import { useDebouncedCallback } from "use-debounce";
 import { AxiosInstance } from "@/config/axios";
+import { getCityNameId } from "@/constants/cities";
 
 function routeByRole(role: string) {
     switch (getRole(role)) {
@@ -72,56 +73,64 @@ export default function LoginPage() {
             persist: false,
         }
     });
-    const [isLoginEnabled, setIsLoginEnabled] = useState(false);
     const { toast } = useToast();
 
-    const [entries, setEntries] = useState({});
-    const { isLoading, data } = useQuery({
-        queryKey: ["login"],
-        queryFn: async () => {
-            try {
-                setIsLoginEnabled(false);
-                const response = await AxiosInstance.post(getUrl(endpoints.login), entries, {
-                    withCredentials: true,
-                });
-                const data = response.data;
-                return data;
-            } catch (error) {
-                if (error instanceof AxiosError && error.response) {
-                    toast({
-                        title: "Identifiants incorrects",
-                        description: "Veuillez réessayer",
-                        variant: "destructive",
-                    });
-                    throw new Error("credentials error");
-                }
-                toast({
-                    title: "Erreur de connexion",
-                    description: "Nous ne pouvons pas connecter au serveur",
-                    variant: "destructive",
-                });
-                throw new Error("connection error");
-            }
+    const setUser = useUserStore((state) => state.setUser);
+    const queryClient = new QueryClient();
+    const { isPending: isLoginingIn, mutate } = useMutation({
+        mutationFn: async (values: z.infer<typeof loginFormSchema>) => {
+            const response = await AxiosInstance.post(getUrl(endpoints.login), values, {
+                withCredentials: true,
+            });
+            return response.data;
         },
-        enabled: isLoginEnabled,
-        retry: false,
-    });
+        onSuccess: (data) => {
+            queryClient.cancelQueries({ queryKey: ["profile"] });
+            queryClient.setQueryData(["profile"], data);
+            const loggedInUser = {
+                role: data.role,
+                email: data.email,
+                firstName: data.first_name,
+                lastName: data.last_name,
+                dateOfBirth: new Date(data.dateOfBirth),
+                phone: data.phone,
+                province: data.province,
+                city: getCityNameId(data.city),
+                gender: data.gender == "M" ? "male" : "female",
+                image: data?.image || undefined,
+                emailVerified: data?.is_email_verified || false,
+                isLoggedIn: true,
+            };
 
-    useEffect(() => {
-        if (data) {
+            /* @ts-ignore impossible invalid values */
+            setUser(loggedInUser);
             if (returnPage && returnPage != "profile") {
                 router.push(returnPage);
                 return data;
             }
             router.push(routeByRole(data.role))
+        },
+        onError: (error: AxiosError | Error) => {
+            if (isAxiosError(error) && error.response) {
+                toast({
+                    title: "Identifiants incorrects",
+                    description: "Veuillez réessayer",
+                    variant: "destructive",
+                });
+                return;
+            }
+            toast({
+                title: "Erreur de connexion",
+                description: "Nous ne pouvons pas connecter au serveur",
+                variant: "destructive",
+            });
         }
-    }, [data]);
+    })
     const [email, setEmail] = useState("");
     const setEmailCallback = useDebouncedCallback((email: string) => setEmail(email), 200);
     const setStoreEmail = useEmailStore((state) => state.setEmail);
     async function onSubmit(values: z.infer<typeof loginFormSchema>) {
-        setEntries({...values});
-        setIsLoginEnabled(true);
+        mutate(values);
     }
 
     return (
@@ -150,7 +159,7 @@ export default function LoginPage() {
                                             className="rounded-full bg-gray-100 border-0"
                                             {...field}
                                             onChange={(e) => { setEmailCallback(e.target.value); field.onChange(e.target.value); }}
-                                            disabled={isLoading}
+                                            disabled={isLoginingIn}
                                         />
                                     </FormControl>
                                     <FormMessage className="text-sm" />
@@ -166,7 +175,7 @@ export default function LoginPage() {
                                     onChange={field.onChange}
                                     onBlur={field.onBlur}
                                     value={field.value}
-                                    disabled={isLoading} />
+                                    disabled={isLoginingIn} />
                             )}>
                         </FormField>
                         <div className="flex justify-between items-center mb-3">
@@ -180,7 +189,7 @@ export default function LoginPage() {
                                                 className="border-slate-300 rounded-[5px]"
                                                 checked={field.value} 
                                                 onCheckedChange={field.onChange}
-                                                disabled={isLoading}
+                                                disabled={isLoginingIn}
                                             />
                                         </FormControl>
                                         <FormLabel className="m-0 text-xs">Se souvenir de moi</FormLabel>
@@ -195,7 +204,7 @@ export default function LoginPage() {
                             </Button>
                         </div>
                         <Button 
-                            disabled={isLoading} 
+                            disabled={isLoginingIn} 
                             type="submit" 
                             className={cn(
                                 "bg-black text-white rounded-full mb-2 font-bold hover:bg-black/70",
@@ -209,11 +218,9 @@ export default function LoginPage() {
                     w-full border rounded-full
                     hover:bg-transparent hover:border-slate-500
                     bg-white text-black "
-                    disabled={isLoading}
+                    disabled={isLoginingIn}
                     onClick={() => {
-                        setIsLoginEnabled(true);
                         OAUTH_PROVIDERS.google.login();
-                        setIsLoginEnabled(false);
                     }}
                 >
                     <div className="flex flex-row gap-x-2 items-center justify-center">

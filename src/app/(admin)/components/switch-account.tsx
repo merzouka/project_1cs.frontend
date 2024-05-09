@@ -4,43 +4,39 @@ import { useToast } from "@/components/ui/use-toast";
 import { getUrl } from "@/constants/api";
 import { endpoints } from "@/constants/endpoints";
 import { cn } from "@/lib/utils";
-import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import Cookies from "js-cookie";
 
 import { MdSwitchAccount } from "react-icons/md";
+import { useMutation } from "@tanstack/react-query";
 
 export const SwitchAccount = ({className} : { className?: string }) => {
-    const [loggingOut, setLoggingOut] = useState(false);
     const { toast } = useToast();
     const router = useRouter();
-    const { isLoading } = useQuery({
-        queryKey: ["logout"],
-        queryFn: async () => {
-            try {
-                // TODO: use appropriate endpoint if added switch account feature
-                const response = await axios.post(getUrl(endpoints.logout), {}, {
-                    xsrfCookieName: "csrftoken",
-                    xsrfHeaderName: "X-CSRFToken",
-                    withXSRFToken: true,
-                });
-                router.push("/login");
-                return response
-            } catch (error) {
-                toast({
-                    title: "La déconnexion a échoué",
-                    variant: "destructive"
-                });
-                throw new Error("logout error");
-            }
+    const { isPending: isLoggingOut, mutate } = useMutation({
+        mutationFn: async () => {
+            const response = await axios.post(getUrl(endpoints.logout), {}, {
+                xsrfCookieName: "csrftoken",
+                xsrfHeaderName: "X-CSRFToken",
+                withXSRFToken: true,
+            });
+            return response;
         },
-        enabled: loggingOut,
-        retry: false,
+        onSuccess: () => {
+            Cookies.remove("sessionid");
+            router.push("/login");
+        },
+        onError: () => {
+            toast({
+                title: "La déconnexion a échoué",
+                variant: "destructive"
+            });
+        },
     });
 
     function handleClick() {
-        setLoggingOut(true);
+        mutate();
     }
 
     return (
@@ -51,7 +47,7 @@ export const SwitchAccount = ({className} : { className?: string }) => {
                     "bg-transparent hover:bg-transparent hover:text-orange-300 w-full",
                     className,
                 )}
-                disabled={isLoading}
+                disabled={isLoggingOut}
                 onClick={handleClick}
                 size="sm"
             >
