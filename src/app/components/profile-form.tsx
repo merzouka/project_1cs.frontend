@@ -67,7 +67,7 @@ export const ProfileForm = ({ page }: { page: Pages }) => {
 
     const { toast } = useToast();
     const [phone, setPhone] = useState(user.phone);
-    const { isPending: isProfileUpdateLoading, isError: isProfileUpdateError, mutate: profileMutate } = useMutation({
+    const { isPending: isProfileUpdateLoading, mutate: profileMutate } = useMutation({
         retry: 3,
         mutationFn: async (entries: z.infer<typeof formSchema>) => {
             const response = await AxiosInstance.patch(getUrl(endpoints.profileUpdate), {
@@ -121,6 +121,7 @@ export const ProfileForm = ({ page }: { page: Pages }) => {
                 province: context?.province || user.province,
                 phone: context?.phone || user.phone,
                 role: getRoleMap(context?.role || user.role),
+                image: context?.image || user.image,
             }); 
             if (isAxiosError(error) && error.response) {
                 toast({
@@ -155,7 +156,10 @@ export const ProfileForm = ({ page }: { page: Pages }) => {
                 className="mx-5 mb-2"
                 defaultImage={user.image}
                 onImageSrcChange={setImageSrc}
-                onImageChange={setImage}
+                onImageChange={(image) => {
+                    setHasChanged(true);
+                    setImage(image);
+                }}
             />
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="md:row-span-2">
@@ -332,7 +336,7 @@ export const ProfileForm = ({ page }: { page: Pages }) => {
                     </>
 
                     <Button 
-                        disabled={!hasChanged || isProfileUpdateLoading || isProfileUpdateError}
+                        disabled={!hasChanged || isProfileUpdateLoading}
                         className="max-w-[33rem] bg-black hover:bg-black/75 w-full font-bold rounded-2xl"
                     >
                         {"Enregistrer"}

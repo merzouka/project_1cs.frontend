@@ -67,7 +67,7 @@ export const UserProfileForm = ({ page }: { page: Pages }) => {
 
     const { toast } = useToast();
     const [phone, setPhone] = useState(user.phone);
-    const { isPending: isProfileUpdateLoading, isError: isProfileUpdateError, mutate: profileMutate } = useMutation({
+    const { isPending: isProfileUpdateLoading, mutate: profileMutate } = useMutation({
         retry: 3,
         mutationFn: async (entries: z.infer<typeof formSchema>) => {
             const response = await AxiosInstance.patch(getUrl(endpoints.profileUpdate), {
@@ -75,7 +75,7 @@ export const UserProfileForm = ({ page }: { page: Pages }) => {
                 last_name: entries?.lastName,
                 baladiyat: Number(entries?.city),
                 email: entries?.email,
-                image: image,
+                personal_picture: image,
                 phone: phone,
             }, {
                     headers: {
@@ -93,6 +93,7 @@ export const UserProfileForm = ({ page }: { page: Pages }) => {
                 province: Number(entries?.province) || user.province,
                 phone: phone || user.phone,
                 role: getRoleMap(user.role) || "user",
+                image: imageSrc,
             });
             return user;
         },
@@ -333,7 +334,7 @@ export const UserProfileForm = ({ page }: { page: Pages }) => {
                     </>
 
                     <Button 
-                        disabled={!hasChanged || isProfileUpdateLoading || isProfileUpdateError}
+                        disabled={!hasChanged || isProfileUpdateLoading}
                         className="max-w-[33rem] bg-black hover:bg-black/75 w-full font-bold rounded-2xl"
                     >
                         {"Enregistrer"}

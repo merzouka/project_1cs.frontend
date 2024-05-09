@@ -1,14 +1,9 @@
 "use client";
 import { cn } from "@/lib/utils";
 import { ProfilePicture } from "./profile-picture";
-import { Poppins } from "next/font/google";
-import { useUser } from "@/hooks/use-user";
-import { Pages } from "@/constants/pages";
 import { Logout } from "./logout";
 
 export const User = ({className}: { className?: string }) => {
-    const { validateAccess } = useUser();
-    // validateAccess(Pages.profile);
 
     return (
         <div className={cn(

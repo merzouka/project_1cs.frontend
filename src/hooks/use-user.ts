@@ -52,6 +52,10 @@ export function useUser() {
         });
         useEffect(() => {
             try {
+                if (isError) {
+                    router.replace("/login");
+                    return;
+                }
                 if (data) {
                     const loggedInUser = {
                         role: data.role,
@@ -73,9 +77,9 @@ export function useUser() {
                     /* @ts-ignore cannot get out of range */
                     if (!pageValidators[page]({...loggedInUser, role: getRole(loggedInUser.role)})) {
                         if (!page.includes("profile")) {
-                            router.push(`/login?return=${page}`);
+                            router.replace(`/login?return=${page}`);
                         } else {
-                            router.push("/login");
+                            router.replace("/login");
                         }
                     }
                 }
@@ -86,7 +90,7 @@ export function useUser() {
                 })
             }
             
-        }, [data]);
+        }, [data, isError]);
 
         return {
             isLoading,

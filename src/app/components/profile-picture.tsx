@@ -13,7 +13,7 @@ export const ProfilePicture = ({ className }: { className?: string }) => {
         <Button 
             className={cn(
                 "flex gap-x-2 group",
-                "bg-transparent hover:bg-transparent rounded-full size-10",
+                "bg-transparent hover:bg-transparent rounded-full size-10 relative",
                 className
             )}
             size={"icon"}
@@ -21,7 +21,7 @@ export const ProfilePicture = ({ className }: { className?: string }) => {
             <Link href="/profile">
                 {
                     user.image ? 
-                        <Image src="/logo.svg" fill style={{ objectFit: "cover" }} sizes="100%" alt="user photo" />
+                        <Image src={user.image} fill style={{ objectFit: "cover" }} sizes="10vw" className="w-full h-full rounded-full" alt="user photo" />
                         :
                         <VscAccount className="size-8 text-black hover:text-orange-400"/>
                 }
