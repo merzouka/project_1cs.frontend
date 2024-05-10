@@ -25,6 +25,7 @@ import { CitySelect } from "@/app/components/city-select";
 import { PhoneInput } from "./phone-input";
 import { ImagePicker } from "./image-picker";
 import { Pages } from "@/constants/pages";
+import { getCityName, getCityNameId } from "@/constants/cities";
 
 const formSchema = z.object({
     firstName: z.string({ required_error: "Veuillez saisir votre prénom." }),
@@ -73,10 +74,10 @@ export const ProfileForm = ({ page }: { page: Pages }) => {
             const response = await AxiosInstance.patch(getUrl(endpoints.profileUpdate), {
                 first_name: entries?.firstName,
                 last_name: entries?.lastName,
-                baladiyat: Number(entries?.city),
+                city: getCityName(Number(entries?.city)),
                 email: entries?.email,
                 image: image,
-                phone: phone,
+                phone: phone || user.phone,
             }, {
                     headers: {
                         "Content-Type": "multipart/form-data",
@@ -97,15 +98,17 @@ export const ProfileForm = ({ page }: { page: Pages }) => {
             });
             return user;
         },
-        onSuccess: (data, entries, __) => {
+        onSuccess: (data) => {
             setUser({
                 ...user,
-                firstName: entries?.firstName || user.firstName,
-                lastName: entries?.lastName || user.lastName,
-                city: Number(entries?.city) || user.city,
-                province: Number(entries?.province) || user.province,
-                phone: phone || user.phone,
-                role: getRoleMap(user.role) || "user",
+                firstName: data.first_name,
+                lastName: data.last_name,
+                city: getCityNameId(data.city),
+                province: data.province,
+                phone: data.phone,
+                role: getRoleMap(data.role) || "user",
+                // change to use data.personal_picture
+                image: undefined,
             });
             setHasChanged(false);
             toast({

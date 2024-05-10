@@ -79,7 +79,10 @@ export default function LoginPage() {
     const queryClient = new QueryClient();
     const { isPending: isLoginingIn, mutate } = useMutation({
         mutationFn: async (values: z.infer<typeof loginFormSchema>) => {
-            const response = await AxiosInstance.post(getUrl(endpoints.login), values, {
+            const response = await AxiosInstance.post(getUrl(endpoints.login), {
+                ...values,
+                remember: values.persist,
+            }, {
                 withCredentials: true,
             });
             return response.data;
