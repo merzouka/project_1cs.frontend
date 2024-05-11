@@ -1,7 +1,10 @@
+import { SectionWrapper } from "./components/section-wrapper";
 
 const HomePage = () => {
     return (
-    <div>Hello from home</div>
+        <SectionWrapper title="les rites du hajj">
+            <div className="w-full h-96 border border-black">Hello world</div>
+        </SectionWrapper>
     );
 }
 
