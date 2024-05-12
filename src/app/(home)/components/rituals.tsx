@@ -1,10 +1,13 @@
+"use client";
 import Image, { StaticImageData } from "next/image";
 import ihram from "../../../../public/home/ihram.png";
-import ifadaa from "../../../../public/home/tawaf.png";
-import saii from "../../../../public/home/saii.png";
-import waqf from "../../../../public/home/waqf.png";
-import { useEffect, useState } from "react";
+import ifadaa from "../../../../public/home/tawaf.jpg";
+import saii from "../../../../public/home/saii.jpg";
+import waqf from "../../../../public/home/waqf.jpg";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import { fade } from "@/constants/animations";
 
 interface Ritual {
     id: string,
@@ -47,11 +50,39 @@ const rituals: Ritual[] = [
 
 export const Rituals = () => {
     const [currentRitual, setCurrentRitual] = useState(0);
-    useEffect(() => {
-        const interval =  setInterval(() => {
+    const [hovered, setHovered] = useState<number | undefined>(undefined);
+
+    const cycleTime = 5 * 1000;
+    const mouseEnterEventListener = useCallback((ritual: number) => {
+        clearInterval(interval.current);
+        setCurrentRitual(ritual);
+        setHovered(ritual);
+    }, []);
+
+    const mouseLeaveEventListener = useCallback(() => {
+        setHovered(undefined);
+        interval.current = setInterval(() => {
             setCurrentRitual((current) => (current + 1) % rituals.length);
-        }, 30 * 1000);
-        return () => clearInterval(interval);
+        }, cycleTime);
+    }, [])
+
+    const interval = useRef<NodeJS.Timeout | undefined>(undefined);
+    useEffect(() => {
+        interval.current = setInterval(
+            () => setCurrentRitual((ritual) => (ritual + 1) % rituals.length),
+             cycleTime
+        );
+        document.querySelectorAll(".ritual").forEach((ritual, i) => {
+            ritual.addEventListener("mouseenter", () => mouseEnterEventListener(i));
+            ritual.addEventListener("mouseleave", mouseLeaveEventListener);
+        })
+        return () => {
+            clearInterval(interval.current);
+            document.querySelectorAll(".ritual").forEach((ritual, i) => {
+                ritual.removeEventListener("mouseenter", () => mouseEnterEventListener(i));
+                ritual.removeEventListener("mouseleave", mouseLeaveEventListener);
+            });
+        };
     }, []);
 
     return (
@@ -59,24 +90,61 @@ export const Rituals = () => {
             <p className="text-center mb-3 md:mb-6">
                 {"Les bénéfices du Hajj sont multiples et de dimensions tant confessionnelles que personnelles, sociétales, morales et pédagogiques. Le Hajj est l’un des cinq piliers de l’Islam et a été prescrit pendant l’an 9 de l’Hégire."}
             </p>
-            <div className="flex h-52">
+            <div className="flex h-96 gap-x-3">
                 {
                     rituals.map((ritual, i) => (
-                         <div className={cn(
-                            "h-full flex-grow relative ritual flex",
-                            currentRitual == i && "flex-grow-[3]"
-                        )}>
+                        <motion.div 
+                            key={ritual.id}
+                            className={cn(
+                                "h-full flex-grow relative ritual flex flex-col group items-end justify-end p-3",
+                                currentRitual == i && "flex-grow-[2]"
+                            )}
+                            layout
+                        >
+                            <div aria-hidden 
+                                className={cn(
+                                    "w-full h-full rounded-xl bg-gradient-to-t",
+                                    "from-black/65 group-hover:from-black/85 absolute top-0 right-0 z-[-1]",
+                                )}
+                            ></div>
                             <Image 
                                 src={ritual.image}
                                 alt={ritual.alt}
-                                className="object-cover rounded-xl h-full"
+                                fill
+                                className="object-cover rounded-xl h-full z-[-2]"
                                 sizes="(max-width: 768px) 50vw, 100vw"
                             />
-                            {
-                                currentRitual == i &&
-                                    
-                            }
-                        </div>
+                            <motion.div 
+                                className="absolute top-0 right-0 left-0 bottom-0 flex flex-col items-center justify-end p-3"
+                                layout
+                            >
+                                {
+                                    currentRitual == i &&
+                                        <motion.h3
+                                            layout
+                                            key="heading"
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            exit={{ opacity: 0 }}
+                                            className="mb-3 text-white w-full text-2xl font-bold capitalize relative top-0"
+                                        >
+                                            {ritual.title}
+                                        </motion.h3>
+                                }
+                                {
+                                    hovered === i &&
+                                        <motion.p
+                                            key="paragraph"
+                                            {...fade}
+                                            transition={{ duration: 1.1 }}
+                                            layout
+                                            className="text-white w-full text-xs"
+                                        >
+                                            {ritual.paragraph}
+                                        </motion.p>
+                                }
+                            </motion.div>
+                        </motion.div>
                     ))
                 }
             </div>

@@ -1,10 +1,10 @@
 import { SectionWrapper } from "./components/section-wrapper";
+import { Rituals } from "./components/rituals";
 
 const HomePage = () => {
     return (
-
         <SectionWrapper title="les rites du hajj">
-            <div className="w-full h-96 border border-black">Hello world</div>
+            <Rituals />
         </SectionWrapper>
 
     );
