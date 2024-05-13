@@ -1,3 +1,4 @@
+
 "use client"
 
 import Firstsec from "./components/Firstsec";
@@ -20,7 +21,9 @@ const HomePage = () => {
 
         </SectionWrapper>
 
-    );
+
+    )
 }
+
 
 export default HomePage;
