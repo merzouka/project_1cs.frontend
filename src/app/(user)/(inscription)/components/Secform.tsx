@@ -7,7 +7,7 @@ import { useUser } from '@/hooks/use-user';
 
 
 const InscriptionPage2 = () => {
-    const { numeroPortable, numeroPassport, dateExpirationPassport, sexe } = useInscriptionStore()
+    const { numeroPortable, numeroPassport, dateExpirationPassport, sexe, idMahram } = useInscriptionStore()
     const setField = useInscriptionStore((state) => state.setField)
     const handleInputChange = (e: { target: { name: any; value: any } }) => {
         setField(e.target.name, e.target.value)

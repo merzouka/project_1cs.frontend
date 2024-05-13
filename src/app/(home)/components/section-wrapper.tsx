@@ -6,10 +6,10 @@ export const SectionWrapper = (
         title,
         children,
     }:
-    {
-        title: string,
-        children: React.ReactNode,
-    }
+        {
+            title: string,
+            children: React.ReactNode,
+        }
 ) => {
     return (
         <div className="flex flex-col justify-center items-center w-full h-fit px-3 md:px-20 mb:6 md:mb-10">
