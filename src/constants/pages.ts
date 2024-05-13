@@ -9,4 +9,7 @@ export enum Pages {
     paymentManangerProfile = "profile/payment-mananger",
     drawing = "drawing",
     drawingSettings = "drawing/settings",
+    roles = "roles",
+    hodjadj = "hodjadj",
+    bookings = "bookings",
 }
