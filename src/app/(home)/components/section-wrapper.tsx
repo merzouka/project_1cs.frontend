@@ -5,10 +5,14 @@ export const SectionWrapper = (
     {
         title,
         children,
+        styles,
     }:
     {
         title: string,
         children: React.ReactNode,
+        styles?: {
+            separtor?: string,
+        }
     }
 ) => {
     return (
@@ -19,7 +23,10 @@ export const SectionWrapper = (
             )}>
                 {title}
             </h2>
-            <div className="hidden md:block mb-5 bg-orange-400 w-36 h-0.5"></div>
+            <div className={cn(
+                "hidden md:block mb-5 bg-orange-400 w-36 h-0.5",
+                styles?.separtor,
+            )}></div>
             {children}
         </div>
     );

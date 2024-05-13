@@ -1,8 +1,8 @@
-import { GuideSection } from "./components/guide-section";
+import { FAQSection } from "./components/faq-section";
 
 const HomePage = () => {
     return (
-        <GuideSection />
+        <FAQSection />
     );
 }
 
