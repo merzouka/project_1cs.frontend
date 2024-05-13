@@ -1,12 +1,8 @@
-import { SectionWrapper } from "./components/section-wrapper";
-import { Rituals } from "./components/rituals";
+import { GuideSection } from "./components/guide-section";
 
 const HomePage = () => {
     return (
-        <SectionWrapper title="les rites du hajj">
-            <Rituals />
-        </SectionWrapper>
-
+        <GuideSection />
     );
 }
 

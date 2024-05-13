@@ -115,7 +115,7 @@ export const Rituals = () => {
                                 sizes="(max-width: 768px) 50vw, 100vw"
                             />
                             <motion.div 
-                                className="absolute top-0 right-0 left-0 bottom-0 flex flex-col items-center justify-end p-3"
+                                className="absolute top-0 right-0 left-0 bottom-0 flex flex-col items-center justify-end p-5"
                                 layout
                             >
                                 {
@@ -126,7 +126,10 @@ export const Rituals = () => {
                                             initial={{ opacity: 0 }}
                                             animate={{ opacity: 1 }}
                                             exit={{ opacity: 0 }}
-                                            className="mb-3 text-white w-full text-2xl font-bold capitalize relative top-0"
+                                            className={cn(
+                                                "text-white w-full text-2xl font-bold capitalize relative top-0",
+                                                "group-hover:mb-3"
+                                            )}
                                         >
                                             {ritual.title}
                                         </motion.h3>
