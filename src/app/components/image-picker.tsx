@@ -1,22 +1,20 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { useState } from "react";
 import { FaRegPenToSquare } from "react-icons/fa6";
 import { icons } from "@/constants/icons";
 import { cn } from "@/lib/utils";
 
 export const ImagePicker  = ({ 
-    defaultImage, 
+    imageSrc, 
     onImageChange,
     onImageSrcChange,
     className,
 }: {
-        defaultImage?: string;
+        imageSrc?: string;
         onImageChange?: (image: File) => void;
         onImageSrcChange?: (imageSrc: string) => void;
         className?: string,
     }) => {
-    const [imageSrc, setImageSrc] = useState<string | undefined>(defaultImage);
     function handleImageChange() {
         const img = document.createElement("input");
         img.type = "file";
@@ -25,7 +23,6 @@ export const ImagePicker  = ({
             if (files) {
                 if (files.length > 0 && files[0]) {
                     const imageUrl = URL.createObjectURL(files[0]);
-                    setImageSrc(imageUrl);
                     onImageChange && onImageChange(files[0]);
                     onImageSrcChange && onImageSrcChange(imageUrl);
                 }

@@ -107,8 +107,7 @@ export const ProfileForm = ({ page }: { page: Pages }) => {
                 province: data.province,
                 phone: data.phone,
                 role: getRoleMap(data.role) || "user",
-                // change to use data.personal_picture
-                image: undefined,
+                image: data.personal_picture,
             });
             setHasChanged(false);
             toast({
@@ -157,7 +156,7 @@ export const ProfileForm = ({ page }: { page: Pages }) => {
         <div className="p-5 overflow-y-scroll">
             <ImagePicker 
                 className="mx-5 mb-2"
-                defaultImage={user.image}
+                imageSrc={user.image}
                 onImageSrcChange={setImageSrc}
                 onImageChange={(image) => {
                     setHasChanged(true);

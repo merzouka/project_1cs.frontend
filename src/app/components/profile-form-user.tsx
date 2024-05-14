@@ -77,7 +77,7 @@ export const UserProfileForm = ({ page }: { page: Pages }) => {
                 city: getCityName(Number(entries?.city)),
                 email: entries?.email,
                 image: image,
-                phone: phone,
+                phone: phone || user.phone,
             }, {
                     headers: {
                         "Content-Type": "multipart/form-data",
@@ -107,8 +107,7 @@ export const UserProfileForm = ({ page }: { page: Pages }) => {
                 province: data.province,
                 phone: data.phone,
                 role: getRoleMap(data.role) || "user",
-                // change to use data.personal_picture
-                image: undefined,
+                image: data.personal_picture,
             });
             setHasChanged(false);
             toast({
@@ -160,9 +159,12 @@ export const UserProfileForm = ({ page }: { page: Pages }) => {
         )}>
             <ImagePicker 
                 className="mx-16 mb-2"
-                defaultImage={user.image}
+                imageSrc={user.image}
                 onImageSrcChange={setImageSrc}
-                onImageChange={setImage}
+                onImageChange={(image) => {
+                    setHasChanged(true);
+                    setImage(image);
+                }}
             />
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="md:row-span-2">
