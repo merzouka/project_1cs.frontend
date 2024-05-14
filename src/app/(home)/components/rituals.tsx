@@ -53,6 +53,7 @@ export const Rituals = () => {
     const [hovered, setHovered] = useState<number | undefined>(undefined);
 
     const cycleTime = 5 * 1000;
+    const interval = useRef<NodeJS.Timeout | undefined>(undefined);
     const mouseEnterEventListener = useCallback((ritual: number) => {
         clearInterval(interval.current);
         setCurrentRitual(ritual);
@@ -66,7 +67,6 @@ export const Rituals = () => {
         }, cycleTime);
     }, [])
 
-    const interval = useRef<NodeJS.Timeout | undefined>(undefined);
     useEffect(() => {
         interval.current = setInterval(
             () => setCurrentRitual((ritual) => (ritual + 1) % rituals.length),
@@ -86,11 +86,11 @@ export const Rituals = () => {
     }, []);
 
     return (
-        <div className="">
-            <p className="text-center mb-3 md:mb-6">
+        <div className="w-full flex flex-col items-center">
+            <p className="text-center mb-3 md:mb-6 max-w-[66ch]">
                 {"Les bénéfices du Hajj sont multiples et de dimensions tant confessionnelles que personnelles, sociétales, morales et pédagogiques. Le Hajj est l’un des cinq piliers de l’Islam et a été prescrit pendant l’an 9 de l’Hégire."}
             </p>
-            <div className="flex h-96 gap-x-3">
+            <div className="flex h-96 gap-x-3 w-full">
                 {
                     rituals.map((ritual, i) => (
                         <motion.div 
