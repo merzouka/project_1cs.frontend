@@ -14,7 +14,7 @@ export default function Footer() {
                 <div className='flex'>
                     <div className='mr-2'>
                         <ul className="   pl-6 space-y-2 px-5 text-[#EBA565] mr-[15px]">
-                            <li className='font-semibold'>content</li>
+                            <li className='font-semibold'>Content</li>
                             <li>
                                 <Link className=" text-xs text-bold text-black font-semibold" href={''}>Accueil</Link>
                             </li>
