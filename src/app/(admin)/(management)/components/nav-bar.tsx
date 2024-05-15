@@ -10,7 +10,7 @@ import { icons } from "@/constants/icons";
 const styles = "text-black group-hover:text-orange-500"
 const tabs: Tab[] = [
     {
-        icon: (className) => <MdOutlineAssignmentInd  className={cn(styles, className)} />,
+        icon: (className) => <MdOutlineAssignmentInd className={cn(styles, className)} />,
         display: "Roles",
         id: "roles",
         link: "/roles",
@@ -22,7 +22,7 @@ const tabs: Tab[] = [
         link: "/bookings",
     },
     {
-        icon: (className) => <FaKaaba className={cn(styles, className)}/>,
+        icon: (className) => <FaKaaba className={cn(styles, className)} />,
         display: "Les pèlerins",
         id: "hodjadj",
         link: "/hodjadj",
@@ -31,6 +31,7 @@ const tabs: Tab[] = [
 
 export const AdminNavBar = () => {
     return (
+
         <NavBar tabs={tabs} profileLink="/profile/admin" />
     );
 }
