@@ -7,7 +7,7 @@ import { IoMdArrowDropright } from "react-icons/io";
 export default function SecondSec() {
     const elements = useMemo(() => services.map(service => ({
         id: service.id,
-        element: <ServiceCard service={service} />
+        element: <ServiceCard key={service.id} service={service} />
     })), [])
 
     return (

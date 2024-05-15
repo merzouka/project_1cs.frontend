@@ -132,7 +132,7 @@ const StepCard = ({
 export const Guide = () => {
     const elements: Element[] = useMemo(() => steps.map(step => ({
         id: step.id,
-        element: <StepCard step={step} />
+        element: <StepCard key={step.id} step={step} />
     })), [])
     return (
         <Scroller elements={elements} perPage={3}/>

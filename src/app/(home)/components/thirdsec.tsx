@@ -8,8 +8,8 @@ export default function Thirdsec() {
             <div className="flex justify-center">
                 <hr className="mb-[30px] mx-auto my-2 h-0.5 w-[150px] border-0 bg-[#EBA565] " />
             </div>
-            <div className=" grid grid-cols-2 justify-start rounded-lg p-6   items-start mb-[30px]">
-                <div className="mr-[30px] ml-[160px]">
+            <div className="flex justify-center items-start rounded-lg p-6 mb-[30px] w-full">
+                <div className="">
                     <h2 className="text-[#8B929D] font-cunstom">
                         Veuillez lire attentivement les conditions,
                         si <br></br>
@@ -18,7 +18,8 @@ export default function Thirdsec() {
                         votre demande sera refusée
                     </h2>
                 </div>
-                <ul className="list-disc pl-6 space-y-2  text-[#EBA565] mr-[10px]">
+                <div className="flex-grow max-w-40"></div>
+                <ul className="list-disc pl-6 space-y-2  text-[#EBA565]">
                     <li>
                         <span className="text-[#8B929D]">Résident ou citoyen</span>
                     </li>
