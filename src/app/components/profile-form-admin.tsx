@@ -114,7 +114,7 @@ export const AdminProfileForm = ({ page }: { page: Pages }) => {
         <div className="p-5 overflow-y-scroll">
             <ImagePicker 
                 className="mx-5 mb-2"
-                defaultImage={user.image}
+                imageSrc={user.image}
                 onChange={setImage}
             />
             <Form {...form}>

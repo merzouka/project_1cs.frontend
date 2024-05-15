@@ -87,6 +87,7 @@ export const useUserStore = create<User & Actions>((set) => ({
     },
     setUser: (user) => set({ user: {
         ...user,
-        role: getRole(user.role)
-    } }),
+        role: getRole(user.role),
+    } })
 }));
+

@@ -67,7 +67,7 @@ export function useUser() {
                         province: data.province,
                         city: getCityNameId(data.city),
                         gender: data.gender == "M" ? "male" : "female",
-                        image: data?.image || undefined,
+                        image: data?.personal_picture || undefined,
                         emailVerified: data?.is_email_verified || false,
                         isLoggedIn: true,
                     };
