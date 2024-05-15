@@ -20,7 +20,7 @@ interface Ritual {
 const rituals: Ritual[] = [
     {
         id: "ihram",
-        title: "Iharm",
+        title: "Ihram",
         paragraph: "État de sacralisation, l’ihram doit se faire avant de pénétrer dans le territoire sacré. Sacralisation morale : les hommes et les femmes expriment, selon des formulations précises, leur intention d’accomplir le Hajj. Sacralisation corporelle : les hommes s’habillent d’un pagne non cousu et d’un morceau d’étoffe qui recouvre les épaules, et portent des sandales. Les femmes gardent leurs habits et se découvrent le visage et les mains.",
         image: ihram,
         alt: "ihram image",
@@ -115,7 +115,7 @@ export const Rituals = () => {
                                 sizes="(max-width: 768px) 50vw, 100vw"
                             />
                             <motion.div 
-                                className="absolute top-0 right-0 left-0 bottom-0 flex flex-col items-center justify-end p-5"
+                                className="absolute top-0 right-0 left-0 bottom-0 flex flex-col items-center justify-end p-5 overflow-x-hidden"
                                 layout
                             >
                                 {

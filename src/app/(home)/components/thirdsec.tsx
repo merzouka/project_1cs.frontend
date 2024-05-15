@@ -8,7 +8,7 @@ export default function Thirdsec() {
             <div className="flex justify-center">
                 <hr className="mb-[30px] mx-auto my-2 h-0.5 w-[150px] border-0 bg-[#EBA565] " />
             </div>
-            <div className=" flex justify-center rounded-lg p-6   items-start mb-[30px]">
+            <div className=" grid grid-cols-2 justify-start rounded-lg p-6   items-start mb-[30px]">
                 <div className="mr-[30px] ml-[160px]">
                     <h2 className="text-[#8B929D] font-cunstom">
                         Veuillez lire attentivement les conditions,
