@@ -1,50 +1,108 @@
-import { UserInfo, Role, useUserStore } from "@/stores/user-store"
+import { Role, getRole, useUserStore } from "@/stores/user-store"
 import { useRouter } from "next/navigation";
-
-function hasAccess(userRoles: Role[], requiredRoles: Role[]) {
-    if ((requiredRoles.filter((role) => !userRoles.includes(role))).length > 0) {
-        return false;
-    }
-    return true;
-}
-
-export enum Page {
-    submission = "submission",
-    profile = "profile",
-}
-
-let requirements = {
-    "submission": (user: UserInfo) => !!user.id,
-    "profile": (user: UserInfo) => !!user.id,
-}
+import { Pages } from "@/constants/pages";
+import { pageValidators } from "@/constants/page-validators";
+import { useQuery } from "@tanstack/react-query";
+import { isAxiosError } from "axios";
+import { getUrl } from "@/constants/api";
+import { endpoints } from "@/constants/endpoints";
+import { useToast } from "@/components/ui/use-toast";
+import { AxiosInstance } from "@/config/axios";
+import { useEffect } from "react";
+import { getCityNameId } from "@/constants/cities";
 
 export function useUser() {
     const user = useUserStore((state) => state.user);
-    const isLoggedIn = user.id !== undefined;
-    const roles = user.roles;
-    function hasRole(role: Role): boolean {
-        return roles.includes(role);
+    const setUser = useUserStore((state) => state.setUser);
+    const isLoggedIn = user.isLoggedIn;
+    const role = user.role;
+    function hasRole(toCheck: Role): boolean {
+        return role == toCheck;
     }
 
     const router = useRouter();
-    function validateAccess(page: Page) {
-        if (requirements[page] instanceof Array) {
-            // @ts-ignore the check above is sufficient to validate that the requirements[page] is a function
-            // or an array
-            if (!hasAccess(roles, requirements[page])) {
-                router.push(`/login?return=${page}`);
+    const { toast } = useToast();
+    function validateAccess(page: Pages) {
+        const { isLoading, isError, data, failureCount } = useQuery({
+            queryKey: ["profile"],
+            queryFn: async () => {
+                try {
+                    const response = await AxiosInstance.get(getUrl(endpoints.currentUser));
+                    const data = response.data;
+                    return data;
+                } catch (error) {
+                    if (failureCount < 3) {
+                        throw new Error("fetch fail");
+                    }
+                    if (isAxiosError(error) && error.response) {
+                        toast({
+                            description: "Non autorisé",
+                            variant: "destructive",
+                        });
+                        throw new Error("unauthorized acess");
+                    }
+                    toast({
+                        title: "Erreur de connexion",
+                        description: "Nous ne pouvons pas connecter au serveur.",
+                        variant: "destructive",
+                    });
+                    throw new Error("connection error");
+                }
             }
-            return;
-        }
-        if (!requirements[page](user)) {
-            router.push(`/login?return=${page}`);
-        }
+        });
+        useEffect(() => {
+            try {
+                if (isError) {
+                    router.replace("/login");
+                    return;
+                }
+                if (data) {
+                    const loggedInUser = {
+                        role: data.role,
+                        email: data.email,
+                        firstName: data.first_name,
+                        lastName: data.last_name,
+                        dateOfBirth: new Date(data.dateOfBirth),
+                        phone: data.phone,
+                        province: data.province,
+                        city: getCityNameId(data.city),
+                        gender: data.gender == "M" ? "male" : "female",
+                        image: data?.personal_picture || undefined,
+                        emailVerified: data?.is_email_verified || false,
+                        isLoggedIn: true,
+                    };
+
+                    /* @ts-ignore impossible invalid values */
+                    setUser(loggedInUser);
+                    /* @ts-ignore cannot get out of range */
+                    if (!pageValidators[page]({...loggedInUser, role: getRole(loggedInUser.role)})) {
+                        if (!page.includes("profile")) {
+                            router.replace(`/login?return=${page}`);
+                        } else {
+                            router.replace("/login");
+                        }
+                    }
+                }
+            } catch (error) {
+                toast({
+                    description: "Erreur interne de serveur.",
+                    variant: "destructive",
+                })
+            }
+            
+        }, [data, isError]);
+
+        return {
+            isLoading,
+            isError,
+            data,
+        };
     }
 
     return {
         user,
         isLoggedIn,
-        roles,
+        role,
         hasRole,
         validateAccess,
     }

@@ -1,44 +1,50 @@
 import { create } from "zustand";
 
 export enum Role {
-    hajj,
-    drawingMaster,
+    haaj,
+    drawingManager,
     superAdmin,
     doctor,
+    user,
+    paymentManager,
+    admin,
 }
 
 const roleMapping = {
-    "Hajj": Role.hajj,
-    "DrawingMaster": Role.drawingMaster,
-    "SuperAdmin": Role.superAdmin,
-    "Doctor": Role.doctor,
+    "user": Role.user,
+    "administrateur": Role.admin,
+    "responsable tirage": Role.drawingManager,
+    "medecin": Role.doctor,
+    "Hedj": Role.haaj,
+    "banquier": Role.paymentManager,
 }
 
-function getRoles(roles: string[]): Role[] {
-    const result: Role[] = [];
-    for (const role of roles) {
-        if (!Object.keys(roleMapping).includes(role)) {
-            throw new Error("invalid role");
-        }
-        // @ts-ignore the compiler is complaining that role value could not be a roleMapping key
-        // the code above handles that
-        result.push(roleMapping[role]);
+export function getRoleMap(role: Role): string {
+    return Object.keys(roleMapping).find((key) => roleMapping[key as keyof typeof roleMapping] == role) || "user";
+}
+
+export function getRole(role: string): Role {
+    if (!Object.keys(roleMapping).includes(role)) {
+        throw new Error("invalid role");
     }
-    return result;
+    /* @ts-ignore above if statement handles error */
+    return roleMapping[role];
 }
 
 export interface UserInfo {
-    id: number | string | undefined;
+    id?: string | number | undefined;
     email: string;
-    // TODO: add roles
-    // roles: string[];
+    role: Role;
     firstName: string;
     lastName: string;
     phone: string;
     dateOfBirth: Date | undefined;
-    city: string;
+    city: number | undefined;
     province: number | undefined;
     gender: "male" | "female" | undefined;
+    image?: string | undefined;
+    emailVerified?: boolean;
+    isLoggedIn: boolean;
 }
 
 export interface User {
@@ -46,27 +52,42 @@ export interface User {
 }
 
 interface Actions {
-    setUser: (user: UserInfo) => void;
+    setUser: (user: {
+        id?: string | number | undefined;
+        email: string;
+        role: string;
+        firstName: string;
+        lastName: string;
+        phone: string;
+        dateOfBirth: Date | undefined;
+        city: number | undefined;
+        province: number | undefined;
+        gender: "male" | "female" | undefined;
+        image?: string | undefined;
+        emailVerified?: boolean;
+        isLoggedIn: boolean;
+    }) => void;
 }
-
 
 export const useUserStore = create<User & Actions>((set) => ({
     user: {
         id: undefined,
         email: "",
-        // TODO: add roles
-        // roles: [],
+        role: Role.user,
         firstName: "",
         lastName: "",
         phone: "",
         dateOfBirth: undefined,
-        city: "",
+        city: undefined,
         province: undefined,
         gender: undefined,
+        image: undefined,
+        emailVerified: false,
+        isLoggedIn: false,
     },
     setUser: (user) => set({ user: {
         ...user,
-        // TODO: uncomment this
-        // roles: getRoles(user.roles)
-    } }),
+        role: getRole(user.role),
+    } })
 }));
+

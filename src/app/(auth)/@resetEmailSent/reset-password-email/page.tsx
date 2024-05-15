@@ -2,11 +2,11 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/toaster";
-import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import { getUrl, endpoints } from "@/constants/api";
+import { getUrl } from "@/constants/api";
+import { endpoints } from "@/constants/endpoints";
 import { useEmailStore } from "@/app/(auth)/constants/email-store";
 import { slideInRightExitLeft } from "@/constants/animations";
 import { Spinner } from "@/components/custom/spinner";
@@ -14,29 +14,25 @@ import { Spinner } from "@/components/custom/spinner";
 export default function ResetEmailSentPage() {
     const email = useEmailStore((state) => state.email);
     const { toast } = useToast()
-    const [sendingEmail, setSendingEmail] = useState(true);
-    const { isLoading: isEmailLoading, isError: isEmailError, isSuccess: isEmailSuccess } = useQuery({
-        queryKey: ["verfication email"],
-        queryFn: async () => {
-            setSendingEmail(false);
-            try {
-                const response = await axios.post(getUrl(endpoints.resetPasswordEmail), { email: email});
-                toast({
-                    description: "Un email de vérification vous a été envoyé.",
-                });
-                return JSON.parse(response.data);
-            } catch (error) {
-                toast({
-                    title: "Erreur de connexion",
-                    description: "L'e-mail n'a pas pu être envoyé.",
-                    variant: "destructive",
-                });
-                throw new Error("connection error");
-            }
+    const { isPending: isEmailLoading, isError: isEmailError, isSuccess: isEmailSuccess, mutate } = useMutation({
+        mutationFn: async () => {
+            const response = await axios.post(getUrl(endpoints.resetPasswordEmail), { email: email});
+            return response.data;
         },
-        enabled: sendingEmail,
-        retry: false,
+        onSuccess: () => {
+            toast({
+                description: "Un email de vérification vous a été envoyé.",
+            });
+        },
+        onError: () => {
+            toast({
+                title: "Erreur de connexion",
+                description: "L'e-mail n'a pas pu être envoyé.",
+                variant: "destructive",
+            });
+        }
     });
+
     return (
         <>
             <motion.div
@@ -83,7 +79,7 @@ export default function ResetEmailSentPage() {
                 className="flex items-center justify-center w-full"
             >
                 <Button disabled={isEmailLoading} 
-                    onClick={() => setSendingEmail(true)}
+                    onClick={() => mutate()}
                     className="rounded-full w-full hover:bg-black hover:text-white bg-transparent text-black border-2 border-black font-bold max-w-96">
                     {"Renvoyer"}
                 </Button>

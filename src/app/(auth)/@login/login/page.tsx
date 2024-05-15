@@ -28,15 +28,37 @@ import { loginFormSchema } from "@/app/(auth)/constants/schemas";
 import PasswordInput from "@/app/(auth)/components/password-input";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
-import { useUserStore } from "@/stores/user-store";
+import { Role, getRole, useUserStore } from "@/stores/user-store";
 
 import BottomMessage from "@/app/(auth)/components/bottom-message";
 import { Toaster } from "@/components/ui/toaster";
-import { useQuery } from "@tanstack/react-query";
-import axios, { AxiosError } from "axios";
-import { endpoints, getUrl } from "@/constants/api";
+import { QueryClient, useMutation } from "@tanstack/react-query";
+import { AxiosError, isAxiosError } from "axios";
+import { getUrl } from "@/constants/api";
+import { endpoints } from "@/constants/endpoints";
 import { useEmailStore } from "../../constants/email-store";
 import { useDebouncedCallback } from "use-debounce";
+import { AxiosInstance } from "@/config/axios";
+import { getCityNameId } from "@/constants/cities";
+
+function routeByRole(role: string) {
+    switch (getRole(role)) {
+        case Role.haaj:
+            return "/";
+        case Role.user:
+            return "/";
+        case Role.paymentManager:
+            return "/profile/payment-manager";
+        case Role.drawingManager:
+            return "/profile/drawing-manager";
+        case Role.doctor:
+            return "/profile/doctor";
+        case Role.admin:
+            return "/profile/admin";
+        default:
+            throw new Error("invalid role");
+    }
+}
 
 export default function LoginPage() {
     const router = useRouter();
@@ -51,62 +73,67 @@ export default function LoginPage() {
             persist: false,
         }
     });
-    const [isLoginEnabled, setIsLoginEnabled] = useState(false);
     const { toast } = useToast();
 
     const setUser = useUserStore((state) => state.setUser);
-    const [entries, setEntries] = useState({});
-    const { isLoading } = useQuery({
-        queryKey: ["login"],
-        queryFn: async () => {
-            try {
-                setIsLoginEnabled(false);
-                const response = await axios.post(getUrl(endpoints.login), entries)
-                const data = JSON.parse(response.data);
-                console.log(data)
-                setUser({
-                    id: data.id,
-                    email: data.email,
-                    firstName: data.first_name,
-                    lastName: data.last_name,
-                    dateOfBirth: new Date(data.dateOfBirth),
-                    phone: data.phone,
-                    province: data.province,
-                    city: data.city,
-                    gender: data.gender == "M" ? "male" : "female",
-                });
-                if (returnPage) {
-                    router.push(returnPage);
-                }
-                router.push(`/profile/${data.id}`);
+    const queryClient = new QueryClient();
+    const { isPending: isLoginingIn, mutate } = useMutation({
+        mutationFn: async (values: z.infer<typeof loginFormSchema>) => {
+            const response = await AxiosInstance.post(getUrl(endpoints.login), {
+                ...values,
+                remember: values.persist,
+            }, {
+                withCredentials: true,
+            });
+            return response.data;
+        },
+        onSuccess: async (data) => {
+            await  queryClient.cancelQueries({ queryKey: ["profile"] });
+            queryClient.setQueryData(["profile"], data);
+            const loggedInUser = {
+                role: data.role,
+                email: data.email,
+                firstName: data.first_name,
+                lastName: data.last_name,
+                dateOfBirth: new Date(data.dateOfBirth),
+                phone: data.phone,
+                province: data.province,
+                city: getCityNameId(data.city),
+                gender: data.gender == "M" ? "male" : "female",
+                image: data?.personal_picture || undefined,
+                emailVerified: data?.is_email_verified || false,
+                isLoggedIn: true,
+            };
+
+            /* @ts-ignore impossible invalid values */
+            setUser(loggedInUser);
+            if (returnPage && returnPage != "profile") {
+                router.push(returnPage);
                 return data;
-            } catch (error) {
-                if (error instanceof AxiosError && error.response) {
-                    toast({
-                        title: "Identifiants incorrects",
-                        description: "Veuillez réessayer",
-                        variant: "destructive",
-                    });
-                    throw new Error("credentials error");
-                }
-                console.log(error)
+            }
+            router.push(routeByRole(data.role))
+        },
+        onError: (error: AxiosError | Error) => {
+            if (isAxiosError(error) && error.response) {
                 toast({
-                    title: "Erreur de connexion",
-                    description: "Nous ne pouvons pas connecter au serveur",
+                    title: "Identifiants incorrects",
+                    description: "Veuillez réessayer",
                     variant: "destructive",
                 });
-                throw new Error("connection error");
+                return;
             }
-        },
-        enabled: isLoginEnabled,
-        retry: false,
-    });
+            toast({
+                title: "Erreur de connexion",
+                description: "Nous ne pouvons pas connecter au serveur",
+                variant: "destructive",
+            });
+        }
+    })
     const [email, setEmail] = useState("");
     const setEmailCallback = useDebouncedCallback((email: string) => setEmail(email), 200);
     const setStoreEmail = useEmailStore((state) => state.setEmail);
     async function onSubmit(values: z.infer<typeof loginFormSchema>) {
-        setEntries({...values});
-        setIsLoginEnabled(true);
+        mutate(values);
     }
 
     return (
@@ -135,7 +162,7 @@ export default function LoginPage() {
                                             className="rounded-full bg-gray-100 border-0"
                                             {...field}
                                             onChange={(e) => { setEmailCallback(e.target.value); field.onChange(e.target.value); }}
-                                            disabled={isLoading}
+                                            disabled={isLoginingIn}
                                         />
                                     </FormControl>
                                     <FormMessage className="text-sm" />
@@ -151,7 +178,7 @@ export default function LoginPage() {
                                     onChange={field.onChange}
                                     onBlur={field.onBlur}
                                     value={field.value}
-                                    disabled={isLoading} />
+                                    disabled={isLoginingIn} />
                             )}>
                         </FormField>
                         <div className="flex justify-between items-center mb-3">
@@ -165,7 +192,7 @@ export default function LoginPage() {
                                                 className="border-slate-300 rounded-[5px]"
                                                 checked={field.value} 
                                                 onCheckedChange={field.onChange}
-                                                disabled={isLoading}
+                                                disabled={isLoginingIn}
                                             />
                                         </FormControl>
                                         <FormLabel className="m-0 text-xs">Se souvenir de moi</FormLabel>
@@ -180,7 +207,7 @@ export default function LoginPage() {
                             </Button>
                         </div>
                         <Button 
-                            disabled={isLoading} 
+                            disabled={isLoginingIn} 
                             type="submit" 
                             className={cn(
                                 "bg-black text-white rounded-full mb-2 font-bold hover:bg-black/70",
@@ -194,11 +221,9 @@ export default function LoginPage() {
                     w-full border rounded-full
                     hover:bg-transparent hover:border-slate-500
                     bg-white text-black "
-                    disabled={isLoading}
+                    disabled={isLoginingIn}
                     onClick={() => {
-                        setIsLoginEnabled(true);
                         OAUTH_PROVIDERS.google.login();
-                        setIsLoginEnabled(false);
                     }}
                 >
                     <div className="flex flex-row gap-x-2 items-center justify-center">

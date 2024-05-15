@@ -19,7 +19,9 @@ const config = {
         },
         extend: {
             fontFamily: {
+                custom: ["rokkitt", 'serif'],
                 sans: ["var(--font-sans)"],
+                Kufi: ["Reem Kufi", 'sans-serif'],
             },
             keyframes: {
                 "accordion-down": {
