@@ -5,16 +5,18 @@ import { getUrl } from "@/constants/api";
 import { endpoints } from "@/constants/endpoints";
 import { cn } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 
 import { IoExitOutline } from "react-icons/io5";
 import { AxiosInstance } from "@/config/axios";
+import { useUserStore } from "@/stores/user-store";
 
 export const Logout = ({className} : { className?: string }) => {
     const { toast } = useToast();
+    const emptyUser = useUserStore((state) => state.emptyUser);
     const router = useRouter();
+    const pathname = usePathname();
     const { isPending: isLoggingOut, mutate } = useMutation({
         mutationFn: async () => {
             const response = await AxiosInstance.post(getUrl(endpoints.logout), {}, {
@@ -26,6 +28,11 @@ export const Logout = ({className} : { className?: string }) => {
         },
         onSuccess: () => {
             Cookies.remove("sessionid");
+            emptyUser();
+            if (pathname == "/") {
+                router.push("/");
+                return;
+            }
             router.push("/login");
         },
         onError: () => {
