@@ -14,6 +14,6 @@ export default function Loading() {
 
 function Spinner() {
     return (
-        <BiLoaderAlt className="animate-spin size-10"/>
+        <BiLoaderAlt className="animate-spin size-10 text-orange-400"/>
     );
 }

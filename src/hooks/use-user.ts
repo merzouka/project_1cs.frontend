@@ -34,18 +34,6 @@ export function useUser() {
                     if (failureCount < 3) {
                         throw new Error("fetch fail");
                     }
-                    if (isAxiosError(error) && error.response) {
-                        toast({
-                            description: "Non autorisé",
-                            variant: "destructive",
-                        });
-                        throw new Error("unauthorized acess");
-                    }
-                    toast({
-                        title: "Erreur de connexion",
-                        description: "Nous ne pouvons pas connecter au serveur.",
-                        variant: "destructive",
-                    });
                     throw new Error("connection error");
                 }
             }
