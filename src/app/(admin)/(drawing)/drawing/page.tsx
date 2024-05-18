@@ -5,9 +5,9 @@ import Tirage from "@/app/(admin)/(drawing)/components/tirage";
 
 export default function Page() {
   return (
-    <div className="flex flex-col pt-24 lg:pt-8 p-2 md:p-8 size-full">
+    <div className="flex flex-col pt-16 md:pt-8 p-2 md:p-8 size-full">
       <div className="w-full pt-3 mb-4 lg:mb-8">
-        <h1 className="text-3xl lg:text-4xl font-semibold mb-1 md:mb-2">
+        <h1 className="text-3xl md:text-4xl font-semibold mb-1 md:mb-2">
           Le tirage au sort
         </h1>
         <Cities />

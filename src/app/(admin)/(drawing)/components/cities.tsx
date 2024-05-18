@@ -5,16 +5,20 @@ import { getUrl } from "@/constants/api";
 import { endpoints } from "@/constants/endpoints";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { AxiosInstance } from "@/config/axios";
 
 export const Cities = () => {
     const { toast } = useToast();
+    const [isFetching, setIsFetching] = useState(true);
     const { isLoading, isError, data, failureCount } = useQuery({
         queryKey: ["cities"],
         queryFn: async () => {
             try {
+                setIsFetching(false);
                 const response = await AxiosInstance.get(getUrl(endpoints.profileCitites));
+                setIsFetching(false);
                 return response.data[Object.keys(response.data)[0]];
             } catch (error) {
                 if (failureCount == 3) {
@@ -28,6 +32,7 @@ export const Cities = () => {
             }
         },
         staleTime: 10 * 60 * 60 * 1000,
+        enabled: isFetching,
         retry: 2,
     });
     return (

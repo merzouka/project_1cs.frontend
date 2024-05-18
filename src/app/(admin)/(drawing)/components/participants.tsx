@@ -13,7 +13,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { useDebouncedCallback } from "use-debounce";
 import { useUser } from "@/hooks/use-user";
 import { AxiosInstance } from "@/config/axios";
-import { Pages } from "@/constants/pages";
 
 const SearchBar = ({ onChange }: { onChange: (value: string) => void }) => {
     const inputRef = useRef<HTMLInputElement>(null);
@@ -43,10 +42,9 @@ const SearchBar = ({ onChange }: { onChange: (value: string) => void }) => {
 }
 
 export const Participants = () => {
-    const { validateAccess } = useUser();
-    validateAccess(Pages.drawing);
     const { toast } = useToast();
     const [isFetching, setIsFetching] = useState(true);
+    const { user } = useUser();
     const { isLoading, data, isError, failureCount } = useQuery({
         queryKey: ["participants"],
         enabled: isFetching,
@@ -55,6 +53,7 @@ export const Participants = () => {
             try {
                 setIsFetching(false);
                 const response = await AxiosInstance.get(getUrl(endpoints.participants));
+                console.log(response.data);
                 return response.data;
             } catch (error) {
                 if (failureCount == 3) {

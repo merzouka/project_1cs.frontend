@@ -1,15 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import AccepterComponent from "./accepter";
 import RejeterComponent from "./rejeter";
 import RefusedModal from "./refused";
 
+interface ParticipantType {
+  image: string | null;
+  firstName: string;
+  lastName: string;
+  nin: string;
+}
+
 interface PatientModalProps {
   isOpen: boolean;
   onClose: () => void;
+  participant: ParticipantType;
 }
 
-const PatientModal: React.FC<PatientModalProps> = ({ isOpen, onClose }) => {
-  const [showRefusedModal, setShowRefusedModal] = useState(false); // New state to control showing the refused modal
+const PatientModal: React.FC<PatientModalProps> = ({
+  isOpen,
+  onClose,
+  participant,
+}) => {
+  const [showRefusedModal, setShowRefusedModal] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const modalStyles = {
     width: "557px",
@@ -20,41 +33,52 @@ const PatientModal: React.FC<PatientModalProps> = ({ isOpen, onClose }) => {
     ? "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 bg-white p-8 rounded-xl shadow-md"
     : "hidden";
 
-  // Sample patient data
-  const patientData = {
-    imag: null,
-    firstName: "HALLOUCHE",
-    lastName: "Abdessamed",
-    // Add more patient details here
-  };
-
   const handleClose = () => {
     onClose();
   };
 
   const handleAccept = () => {
-    handleClose(); // Close the modal when AccepterComponent is clicked
+    handleClose();
   };
 
   const handleReject = () => {
-    setShowRefusedModal(true); // Set state to show the refused modal
+    setShowRefusedModal(true);
   };
 
   const handleCloseRefusedModal = () => {
-    setShowRefusedModal(false); // Close the refused modal
+    setShowRefusedModal(false);
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
+        handleClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
 
   return (
     <>
-      {/* Modal */}
-      <div className={modalContainerClasses} style={modalStyles}>
+      <div ref={modalRef} className={modalContainerClasses} style={modalStyles}>
         {isOpen && (
           <>
-            {/* Nullable image section */}
             <div className="flex items-center justify-center">
               <div className="flex flex-col items-center">
                 <img
-                  src="auth\Rectangle 4547.jpg"
+                  src={participant.image || "auth\\Rectangle 4547.jpg"}
                   alt="Image"
                   style={{
                     width: "162px",
@@ -63,19 +87,14 @@ const PatientModal: React.FC<PatientModalProps> = ({ isOpen, onClose }) => {
                     marginBottom: "0.5rem",
                   }}
                 />
-                {/* First name and last name with padding */}
                 <div className="mt-2">
-                  {" "}
-                  {/* Added margin top */}
                   <p className="font-montserrat font-semibold text-30">
-                    {patientData.firstName} {patientData.lastName}
+                    {participant.firstName} {participant.lastName}
                   </p>
                 </div>
               </div>
             </div>
-            {/* Buttons */}
             <div className="flex justify-between mt-8">
-              {/* Increased mt-8 for space */}
               <a href="#" onClick={handleAccept}>
                 <AccepterComponent />
               </a>
@@ -87,7 +106,6 @@ const PatientModal: React.FC<PatientModalProps> = ({ isOpen, onClose }) => {
         )}
       </div>
 
-      {/* Refused Modal */}
       <RefusedModal
         isOpen={showRefusedModal}
         onClose={handleCloseRefusedModal}
