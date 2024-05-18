@@ -1,4 +1,3 @@
-// PatientPage.tsx
 "use client";
 import React, { useState } from "react";
 import PatientModal from "../components/patient";
