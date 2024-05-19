@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { endpoints } from "@/constants/endpoints";
 import { getUrl } from "@/constants/api";
@@ -54,7 +54,7 @@ const formSchema = z.object({
 
 export const Settings = () => {
     const { user, validateAccess } = useUser();
-    // validateAccess(Pages.drawingSettings);
+    validateAccess(Pages.drawingSettings);
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -65,14 +65,12 @@ export const Settings = () => {
     const { toast } = useToast();
     const router = useRouter();
 
-    const [isStateFetching, setIsStateFetching] = useState(true);
     const [disableForm, setDisableForm] = useState(false);
     const { isLoading: isStateLoading, isError: isStateError, failureCount } = useQuery({
         queryKey: ["drawing state"],
-        enabled: isStateFetching,
+        staleTime: 5 * 60 * 1000,
         queryFn: async () => {
             try {
-                setIsStateFetching(false);
                 const response = await AxiosInstance.get(getUrl(endpoints.drawingDefined));
                 if (response.data.tirage_definit) {
                     toast({
@@ -93,39 +91,51 @@ export const Settings = () => {
                 }
             }
         }
-    })
-
-    const [isSettingDrawing, setIsSettingDrawing] = useState(false);
-    const { isLoading: isSettingLoading } = useQuery({
-        queryKey: ["drawing start"],
-        enabled: isSettingDrawing,
-        retry: 0,
-        queryFn: async () => {
-            try {
-                setIsSettingDrawing(false);
-                const response = await AxiosInstance.post(getUrl(endpoints.drawingSettings), {
-                    utilisateur_id: user.id,
-                    type_tirage: entries?.type == DrawingType.Random ? 1 : 2,
-                    nombre_de_place: Number(entries?.winners),
-                    tranche_age: entries?.percentage || null,
-                });
-                router.push("/drawing");
-                return response;
-            } catch (error) {
-                toast({
-                    title: "Erreur de connexion",
-                    description: "Nous ne pouvons pas lancer le tirage.",
-                    variant: "destructive",
-                });
-                throw new Error("connection error");
-            }
-        }
     });
 
-    const [entries, setEntries] = useState<z.infer<typeof formSchema> | undefined>(undefined);
+    const { isLoading: isCitiesFetching, isError: isCitiesFetchError, data: cities } = useQuery({
+        queryKey: ["cities"],
+        staleTime: 5 * 60 * 1000,
+        queryFn: async () => {
+            try {
+                const response = await AxiosInstance.get(getUrl(endpoints.profileCitites));
+                const cities = response.data[Object.keys(response.data)[0]]
+                if (cities.length == 0) {
+                    setDisableForm(true);
+                }
+                return cities;
+            } catch (error) {
+                throw new Error("connection erorr");
+            }
+        },
+        retry: 2,
+    });
+
+    const { isPending: isSettingLoading, mutate } = useMutation({
+        retry: 3,
+        mutationKey: ["drawing start"],
+        mutationFn: async (entries: z.infer<typeof formSchema>) => {
+            const response = await AxiosInstance.post(getUrl(endpoints.drawingSettings), {
+                utilisateur_id: user.id,
+                type_tirage: entries?.type == DrawingType.Random ? 1 : 2,
+                nombre_de_place: Number(entries?.winners),
+                tranche_age: entries?.percentage || null,
+            });
+            return response;
+        },
+        onSuccess: () => {
+            router.push("/drawing");
+        },
+        onError: () => {
+            toast({
+                title: "Erreur de connexion",
+                description: "Nous ne pouvons pas lancer le tirage.",
+                variant: "destructive",
+            });
+        }
+    });
     function handleSubmit(values: z.infer<typeof formSchema>) {
-        setEntries(values);
-        setIsSettingDrawing(true);
+        mutate(values)
     }
 
     enum DrawingType {
@@ -133,7 +143,8 @@ export const Settings = () => {
         AgeBased = "age based",
     }
     const [drawingType, setDrawingType] = useState<string>(DrawingType.Random);
-    const formDisabled = disableForm || isStateLoading || isStateError || isSettingLoading;
+    const formDisabled = disableForm || isStateLoading || isStateError || isSettingLoading 
+        || isCitiesFetching || isCitiesFetchError || cities.length == 0;
     return (
         <div className="p-2 md:p-4 rounded-xl md:border md:border-slate-200 grow md:max-w-[65%]">
             <Form {...form}>

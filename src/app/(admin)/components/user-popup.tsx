@@ -27,7 +27,7 @@ export const UserPopup = ({className}: { className?: string }) => {
                     "hidden md:block",
                     poppins.className,
                 )}>
-                    {user.firstName != "" ? `${user.firstName} ${user.lastName}`: "User"}
+                    {user.firstName != "" ? `${user.lastName} ${user.firstName}`: "User"}
                 </span>
                 <IoIosArrowDown className="hidden md:block" />
             </PopoverTrigger>

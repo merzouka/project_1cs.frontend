@@ -13,7 +13,7 @@ import { BsFillPatchCheckFill } from "react-icons/bs";
 import { z } from "zod";
 import { EditableInput } from "./editable-input";
 import { Button } from "@/components/ui/button";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, QueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { AxiosInstance } from "@/config/axios";
@@ -108,6 +108,10 @@ export const ProfileForm = ({ page }: { page: Pages }) => {
                 phone: data.phone,
                 role: getRoleMap(data.role) || "user",
                 image: data.personal_picture,
+            });
+            const queryClient = new QueryClient();
+            queryClient.invalidateQueries({
+                queryKey: ["profile"],
             });
             setHasChanged(false);
             toast({
