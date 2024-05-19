@@ -13,14 +13,10 @@ import {
     AlertDialogAction,
     AlertDialogCancel,
     AlertDialogContent,
-    AlertDialogDescription,
     AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
-import { CardWithForm } from "./CardWithForm"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@radix-ui/react-label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -76,7 +72,7 @@ export function AlertDialogDemo() {
                                 <Label className="mr-[125px] ml-1">Date de départ</Label>
                             </div>
 
-                            <div className="flex justify-between mb-[-20px] ">
+                            <div className="flex justify-between mb-[-10px]  ">
                                 <Popover>
                                     <PopoverTrigger asChild>
                                         <Button

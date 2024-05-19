@@ -1,9 +1,8 @@
 import { Pages } from "@/constants/pages";
 import { useUser } from "@/hooks/use-user";
-import { AlertDialogDemo } from "../components/deg";
-import { DataTableDemo } from "../components/texting";
+import { AlertDialogDemo } from "../components/Cardvol";
+import { DataTableDemo } from "../components/vols";
 import { NavigationMenuDemo } from "../components/page slider";
-import { AlertDialogDemo2 } from "../components/card2";
 
 const BookingsPage = () => {
     // TODO uncomment
@@ -11,7 +10,7 @@ const BookingsPage = () => {
     // validateAccess(Pages.bookings);
 
     return (
-        <DataTableDemo />
+        < DataTableDemo />
     );
 
 }

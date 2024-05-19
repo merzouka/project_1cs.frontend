@@ -1,5 +1,5 @@
-import { Pages } from "@/constants/pages";
-import { useUser } from "@/hooks/use-user";
+
+import { DataTableDemoaf } from "../components/affectations";
 
 const HodjadjPage = () => {
     // TODO uncomment
@@ -7,7 +7,7 @@ const HodjadjPage = () => {
     // validateAccess(Pages.hodjadj);
 
     return (
-        <div>Hello from Hodjadj page</div>
+        <DataTableDemoaf />
     );
 }
 

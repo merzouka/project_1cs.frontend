@@ -6,11 +6,9 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 import {
     NavigationMenu,
-    NavigationMenuContent,
     NavigationMenuItem,
     NavigationMenuLink,
     NavigationMenuList,
-    NavigationMenuTrigger,
     navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 import { Separator } from "@/components/ui/separator"
@@ -35,7 +33,7 @@ export function NavigationMenuDemo() {
                         </div>
                         <Separator orientation="vertical" />
                         <div>
-                            <Link href="/AlertDialogDemo" legacyBehavior passHref>
+                            <Link href="/bookings/hotels" legacyBehavior passHref>
                                 <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                                     Les hotel
                                 </NavigationMenuLink>

@@ -1,6 +1,5 @@
 import React from 'react'
-import { AlertDialogDemo } from '../../components/deg'
-import { DataTableDemo } from '../../components/texting'
+import { DataTableDemo } from '../../components/vols'
 
 const vol = () => {
     return (

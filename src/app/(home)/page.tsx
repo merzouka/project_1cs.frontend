@@ -3,9 +3,9 @@
 
 import Firstsec from "./components/Firstsec";
 import Footer from "./components/Footer";
-import SecondSec from "./components/SecondSec";
-import Thirdsec from "./components/Thirdsec";
+import SecondSec from "./components/secondsec";
 import { SectionWrapper } from "./components/section-wrapper";
+import Thirdsec from "./components/thirdsec";
 
 const HomePage = () => {
     return (
