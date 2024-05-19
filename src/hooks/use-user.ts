@@ -24,6 +24,7 @@ export function useUser() {
     const { toast } = useToast();
     function validateAccess(page: Pages) {
         const { isLoading, isError, data, failureCount } = useQuery({
+            staleTime: Infinity,
             queryKey: ["profile"],
             queryFn: async () => {
                 try {
