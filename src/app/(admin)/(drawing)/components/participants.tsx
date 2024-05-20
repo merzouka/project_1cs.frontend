@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getUrl } from "@/constants/api";
 import { endpoints } from "@/constants/endpoints"

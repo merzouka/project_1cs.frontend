@@ -10,6 +10,7 @@ import { MdOutlinePayment } from "react-icons/md";
 import { MdFlight } from "react-icons/md";
 import { FaRegPenToSquare } from "react-icons/fa6";
 import { LuUpload } from "react-icons/lu";
+import { HiOutlineExclamationTriangle } from "react-icons/hi2";
 
 export const icons = {
     user: (className ?: string) =>  <CiUser className={className}/>,
@@ -25,4 +26,5 @@ export const icons = {
     check:  (className ?: string) => <FaCircleCheck className={className}/>,
     modify: (className ?: string) => <FaRegPenToSquare className={className} />,
     upload: (className ?: string) => <LuUpload className={className}/>,
+    caution: (className ?: string) => <HiOutlineExclamationTriangle className={className}/>,
 }
