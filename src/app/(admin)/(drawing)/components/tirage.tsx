@@ -1,7 +1,6 @@
 "use client";
 import { cn } from "@/lib/utils";
 import React, { useState } from "react";
-import { Pages } from "@/constants/pages";
 import { SearchBar } from "./search-bar";
 import { useDebouncedCallback } from "use-debounce";
 import { Button } from "@/components/ui/button";

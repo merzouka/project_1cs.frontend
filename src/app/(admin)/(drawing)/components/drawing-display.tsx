@@ -7,6 +7,10 @@ import { useToast } from "@/components/ui/use-toast";
 import { AxiosInstance } from "@/config/axios";
 import { getUrl } from "@/constants/api";
 import { endpoints } from "@/constants/endpoints";
+import { useUser } from "@/hooks/use-user";
+import { Pages } from "@/constants/pages";
+import { Spinner } from "@/components/custom/spinner";
+import { icons } from "@/constants/icons";
 
 export interface Winner {
     image: string | null;
@@ -39,90 +43,93 @@ export const DrawingDisplay = ({
         closeModal?: boolean;
         onModalClose?: () => void;
     }) => {
+    const { validateAccess } = useUser();
+    validateAccess(Pages.drawing);
     const [winners, setWinners] = useState<Winner[]>([]);
     const { toast } = useToast();
-    useQuery({
+    const { isLoading, isError } = useQuery({
         staleTime: Infinity,
         queryKey: ["drawing winners"],
         queryFn: async () => {
             try {
-                const predefinedWinners: Winner[] = [
-                    {
-                        firstName: "John",
-                        lastName: "Doe",
-                        image: null,
-                        nin: "123456789",
-                        gender: "male",
-                    },
-                    {
-                        firstName: "Jane",
-                        lastName: "Doe",
-                        image: null,
-                        nin: "987654321",
-                        gender: "female",
-                    },
-                    {
-                        firstName: "Alice",
-                        lastName: "Smith",
-                        image: null,
-                        nin: "456789123",
-                        gender: "female",
-                    },
-                    {
-                        firstName: "Bob",
-                        lastName: "Johnson",
-                        image: null,
-                        nin: "789123456",
-                        gender: "male",
-                    },
-                    {
-                        firstName: "Charlie",
-                        lastName: "Brown",
-                        image: null,
-                        nin: "321654987",
-                        gender: "male",
-                    },
-                    {
-                        firstName: "David",
-                        lastName: "Wilson",
-                        image: null,
-                        nin: "654987321",
-                        gender: "male",
-                    },
-                    {
-                        firstName: "Eva",
-                        lastName: "Green",
-                        image: null,
-                        nin: "147258369",
-                        gender: "female",
-                    },
-                    {
-                        firstName: "Frank",
-                        lastName: "Miller",
-                        image: null,
-                        nin: "963852741",
-                        gender: "male",
-                    },
-                    {
-                        firstName: "Grace",
-                        lastName: "Hopper",
-                        image: null,
-                        nin: "852741963",
-                        gender: "female",
-                    },
-                    {
-                        firstName: "Henry",
-                       lastName: "Ford",
-                        image: null,
-                        nin: "741963852",
-                        gender: "male",
-                    },
-                ];
-                // const respone = AxiosInstance.get(getUrl(endpoints.drawingResult));
-                // const data = response.data.winners.map((winner) => translate(winner));
-                const data = predefinedWinners;
-                // setWinners(data.map((winner) => translate(winner)));
-                setWinners(predefinedWinners);
+                // const predefinedWinners: Winner[] = [
+                //     {
+                //         firstName: "John",
+                //         lastName: "Doe",
+                //         image: null,
+                //         nin: "123456789",
+                //         gender: "male",
+                //     },
+                //     {
+                //         firstName: "Jane",
+                //         lastName: "Doe",
+                //         image: null,
+                //         nin: "987654321",
+                //         gender: "female",
+                //     },
+                //     {
+                //         firstName: "Alice",
+                //         lastName: "Smith",
+                //         image: null,
+                //         nin: "456789123",
+                //         gender: "female",
+                //     },
+                //     {
+                //         firstName: "Bob",
+                //         lastName: "Johnson",
+                //         image: null,
+                //         nin: "789123456",
+                //         gender: "male",
+                //     },
+                //     {
+                //         firstName: "Charlie",
+                //         lastName: "Brown",
+                //         image: null,
+                //         nin: "321654987",
+                //         gender: "male",
+                //     },
+                //     {
+                //         firstName: "David",
+                //         lastName: "Wilson",
+                //         image: null,
+                //         nin: "654987321",
+                //         gender: "male",
+                //     },
+                //     {
+                //         firstName: "Eva",
+                //         lastName: "Green",
+                //         image: null,
+                //         nin: "147258369",
+                //         gender: "female",
+                //     },
+                //     {
+                //         firstName: "Frank",
+                //         lastName: "Miller",
+                //         image: null,
+                //         nin: "963852741",
+                //         gender: "male",
+                //     },
+                //     {
+                //         firstName: "Grace",
+                //         lastName: "Hopper",
+                //         image: null,
+                //         nin: "852741963",
+                //         gender: "female",
+                //     },
+                //     {
+                //         firstName: "Henry",
+                //        lastName: "Ford",
+                //         image: null,
+                //         nin: "741963852",
+                //         gender: "male",
+                //     },
+                // ];
+                // setWinners(predefinedWinners);
+                setEnd(true);
+                const response = await AxiosInstance.get(getUrl(endpoints.drawingResult));
+                const data = response.data.winners.map((winner: any) => translate(winner));
+                setWinners(data);
+                setEnd(false);
                 return data;
             } catch (error) {
                 toast({
@@ -133,7 +140,7 @@ export const DrawingDisplay = ({
                 throw new Error("connection error");
             }
         }
-    })
+    });
     const [modalOpen, setModalOpen] = useState(false);
     const [displayedItems, setDisplayedItems] = useState<Winner[]>([]);
     const [toDisplay, setToDisplay] = useState<React.ReactNode[] | undefined>();
@@ -159,31 +166,52 @@ export const DrawingDisplay = ({
 
     useEffect(() => {
         if (displayed > 0) {
-            displayNext();
+            if (winners.length > 0) {
+                displayNext();
+            }
         }
     }, [displayed]);
 
     return (
         <>
-            <div className="relative w-full flex-grow overflow-y-scroll">
-                <div className="grid grid-cols-1 md:grid-cols-3 grid-flow-row justify-center gap-3 
-                    absolute top-0 right-0 left-0">
-                    {displayedItems?.filter((item) => `${item.firstName} ${item.lastName} ${item.nin}`.includes(term || ""))
-                        ?.map((user, index) => (
-                            <Participant key={index} participant={user} />
-                        ))}
-                </div>
-            </div>
             {
-                toDisplay && !closeModal && modalOpen &&
-                    <Modal close={() => {
-                        setModalOpen(false);
-                        onModalClose && onModalClose();
-                    }}>
-                        <div className="w-full h-full justify-center items-center gap-x-2 flex">
-                            <WinnerDisplay chosen={toDisplay}/>
+                isLoading ?
+                    <div className="w-full h-full items-center justify-center flex">
+                        <Spinner text={"show"} direction={"col"} size={"xl"}/>
+                    </div>
+                    :
+                    isError ?
+                        <div className="w-full flex-grow items-center justify-center flex">
+                            <div className="flex flex-col items-center justify-center md:gap-y-5 gap-y-2 -translate-y-1/2">
+                                {icons.caution("size-32 text-slate-400")}
+                                <span className="text-slate-400 text-2xl font-bold text-center text-wrap">
+                                    {"Seuls les haajs peuvent voir le tirage."}
+                                </span>
+                            </div>
                         </div>
-                    </Modal>
+                        :
+                        <>
+                            <div className="relative w-full flex-grow overflow-y-scroll">
+                                <div className="grid grid-cols-1 md:grid-cols-3 grid-flow-row justify-center gap-3 
+                                    absolute top-0 right-0 left-0">
+                                    {displayedItems?.filter((item) => `${item.firstName} ${item.lastName} ${item.nin}`.includes(term || ""))
+                                        ?.map((user, index) => (
+                                            <Participant key={index} participant={user} />
+                                        ))}
+                                </div>
+                            </div>
+                            {
+                                toDisplay && !closeModal && modalOpen &&
+                                    <Modal close={() => {
+                                        setModalOpen(false);
+                                        onModalClose && onModalClose();
+                                    }}>
+                                        <div className="w-full h-full justify-center items-center gap-x-2 flex">
+                                            <WinnerDisplay chosen={toDisplay}/>
+                                        </div>
+                                    </Modal>
+                            }
+                        </>
             }
         </>
     )

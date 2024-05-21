@@ -9,5 +9,6 @@ export const pageValidators = {
     "profile/doctor": (user: UserInfo) => user.role ==  Role.doctor,
     "profile/admin": (user: UserInfo) => user.role ==  Role.admin,
     "drawing": (user: UserInfo) => user.role == Role.drawingManager || user.role == Role.haaj,
+    "drawing/haaj": (_: UserInfo) => true,
     "drawing/settings": (user: UserInfo) => user.role == Role.drawingManager,
 }
