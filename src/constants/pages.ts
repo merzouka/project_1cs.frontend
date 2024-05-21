@@ -8,6 +8,6 @@ export enum Pages {
     drawingManagerProfile = "profile/drawing-manager",
     paymentManangerProfile = "profile/payment-mananger",
     drawing = "drawing",
-    drawingHaaj = "drawing/haaj",
+    open = "open",
     drawingSettings = "drawing/settings",
 }

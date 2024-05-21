@@ -5,27 +5,13 @@ import { cn } from "@/lib/utils";
 import { useUser } from "@/hooks/use-user";
 import { User } from "./user";
 import { Button } from "@/components/ui/button";
-import { useQuery } from "@tanstack/react-query";
-import { AxiosInstance } from "@/config/axios";
-import { endpoints } from "@/constants/endpoints";
-import { getUrl } from "@/constants/api";
 import { motion, AnimatePresence } from "framer-motion";
 import { fade } from "@/constants/animations";
+import { Pages } from "@/constants/pages";
 
 export const UserActions = () => {
-    const { user } = useUser();
-    const { isLoading } = useQuery({
-        queryKey: ["profile"],
-        queryFn: async () => {
-            try {
-                const response = await AxiosInstance.get(getUrl(endpoints.currentUser));
-                const data = response.data;
-                return data;
-            } catch (error) {
-                throw new Error("error");
-            }
-        }
-    });
+    const { user, validateAccess } = useUser();
+    const { isLoading } = validateAccess(Pages.open);
 
     return (
         <div className="md:absolute md:top-5 md:right-10 min-w-24 flex justify-center items-center">

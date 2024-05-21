@@ -11,7 +11,7 @@ import { Pages } from "@/constants/pages";
 
 export const DisplayWrapper = () => {
     const { validateAccess, user } = useUser();
-    const { isLoading } = validateAccess(Pages.drawingHaaj);
+    const { isLoading } = validateAccess(Pages.open);
     const [displayed, setDisplayed] = useState(0);
     const [closeModal, setCloseModal] = useState(false);
     const timeout = useRef<NodeJS.Timeout | undefined>(undefined);
