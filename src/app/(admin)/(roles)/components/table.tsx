@@ -87,7 +87,18 @@ const ResponsiveTable: React.FC<Props> = ({ data }) => {
     setSelectedCities((prev) => {
       const newSelectedCities = [...prev];
       const newRowCities = [...newSelectedCities[rowIndex]];
-      newRowCities[newRowCities.indexOf(null)] = cities[0]; // Assuming only the first city is selected
+
+      // Prevent duplicate cities
+      const cityToAdd = cities[0]; // Assuming only the first city is selected
+      if (!newRowCities.some((city) => city?.id === cityToAdd.id)) {
+        const nullIndex = newRowCities.indexOf(null);
+        if (nullIndex !== -1) {
+          newRowCities[nullIndex] = cityToAdd;
+        } else {
+          newRowCities.push(cityToAdd); // Add to the end if there are no null values
+        }
+      }
+
       newSelectedCities[rowIndex] = newRowCities;
       return newSelectedCities;
     });
@@ -204,6 +215,11 @@ const ResponsiveTable: React.FC<Props> = ({ data }) => {
                       {showCitySearch[rowIndex] && (
                         <div className="absolute top-10 left-0 z-10">
                           <CitySearch
+                            provinceNumber={
+                              wilayaValues[rowIndex]
+                                ? parseInt(wilayaValues[rowIndex])
+                                : null
+                            }
                             onSelect={(city) =>
                               handleCitySelect(city, rowIndex)
                             }

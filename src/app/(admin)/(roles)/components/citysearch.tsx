@@ -3,7 +3,13 @@ import React, { useState, useRef, useEffect } from "react";
 import { cities } from "@/constants/cities";
 import { City } from "@/constants/cities";
 
-const CitySearch = ({ onSelect }: { onSelect: (cities: City[]) => void }) => {
+const CitySearch = ({
+  provinceNumber,
+  onSelect,
+}: {
+  provinceNumber: number | null;
+  onSelect: (cities: City[]) => void;
+}) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [results, setResults] = useState<City[]>([]);
   const [position, setPosition] = useState({ top: 0, left: 0 });
@@ -36,8 +42,10 @@ const CitySearch = ({ onSelect }: { onSelect: (cities: City[]) => void }) => {
     const value = event.target.value;
     setSearchTerm(value);
     if (value) {
-      const filteredCities = cities.filter((city) =>
-        city.name.toLowerCase().includes(value.toLowerCase())
+      const filteredCities = cities.filter(
+        (city) =>
+          city.name.toLowerCase().includes(value.toLowerCase()) &&
+          (provinceNumber === null || city.province === provinceNumber)
       );
       setResults(filteredCities);
     } else {
@@ -46,7 +54,7 @@ const CitySearch = ({ onSelect }: { onSelect: (cities: City[]) => void }) => {
   };
 
   const handleCityClick = (city: City) => {
-    onSelect([...results, city]);
+    onSelect([city]);
     setResults([]);
     setSearchTerm("");
   };

@@ -138,7 +138,7 @@ const DisplayWinners: React.FC<DisplayWinnersProps> = ({
 
   return (
     <div className="px-4 w-full h-full">
-      <div className="flex justify-between items-center px-10">
+      <div className="flex justify-between items-center px-[84px]">
         <input
           type="text"
           placeholder="Search by name or NIN..."
