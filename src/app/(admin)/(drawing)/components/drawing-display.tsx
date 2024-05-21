@@ -177,7 +177,7 @@ export const DrawingDisplay = ({
             {
                 isLoading ?
                     <div className="w-full h-full items-center justify-center flex">
-                        <Spinner text={"show"} direction={"col"} size={"xl"}/>
+                        <Spinner text={"show"} direction={"col"} size={"xl"} className="text-slate-400"/>
                     </div>
                     :
                     isError ?
