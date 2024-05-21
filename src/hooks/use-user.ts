@@ -42,7 +42,9 @@ export function useUser() {
         useEffect(() => {
             try {
                 if (isError) {
-                    router.replace("/login");
+                    if (page != Pages.drawingHaaj) {
+                        router.replace("/login");
+                    }
                     return;
                 }
                 if (data) {
