@@ -20,4 +20,6 @@ export const endpoints = {
     profile: (id: number | string) => `profile/${id}`,
     profileUpdate: "auth/update-profile",
     currentUser : "auth/currently_user",
+    // appointment
+    patients: "patients",
 }
