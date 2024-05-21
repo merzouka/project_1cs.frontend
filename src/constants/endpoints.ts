@@ -15,6 +15,7 @@ export const endpoints = {
     drawingDefined: "check-tirage",
     participants: "participants_tirage",
     drawingSettings: "associate-tirage",
+    drawingResult: "fetch-winners",
     // profile
     profile: (id: number | string) => `profile/${id}`,
     profileUpdate: "auth/update-profile",

@@ -24,6 +24,7 @@ export function useUser() {
     const { toast } = useToast();
     function validateAccess(page: Pages) {
         const { isLoading, isError, data, failureCount } = useQuery({
+            staleTime: Infinity,
             queryKey: ["profile"],
             queryFn: async () => {
                 try {
@@ -41,7 +42,9 @@ export function useUser() {
         useEffect(() => {
             try {
                 if (isError) {
-                    router.replace("/login");
+                    if (page != Pages.open) {
+                        router.replace("/login");
+                    }
                     return;
                 }
                 if (data) {

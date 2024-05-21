@@ -36,7 +36,7 @@ export default function Page() {
         <TabsContent value="participants" className="h-full">
           <Participants />
         </TabsContent>
-        <TabsContent value="drawing" className="flex flex-row">
+        <TabsContent value="drawing" className="flex flex-row flex-grow">
           <Tirage />
         </TabsContent>
       </Tabs>

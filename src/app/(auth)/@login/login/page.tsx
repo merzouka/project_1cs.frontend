@@ -32,7 +32,7 @@ import { Role, getRole, useUserStore } from "@/stores/user-store";
 
 import BottomMessage from "@/app/(auth)/components/bottom-message";
 import { Toaster } from "@/components/ui/toaster";
-import { QueryClient, useMutation } from "@tanstack/react-query";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { AxiosError, isAxiosError } from "axios";
 import { getUrl } from "@/constants/api";
 import { endpoints } from "@/constants/endpoints";
@@ -76,7 +76,7 @@ export default function LoginPage() {
     const { toast } = useToast();
 
     const setUser = useUserStore((state) => state.setUser);
-    const queryClient = new QueryClient();
+    const queryClient = useQueryClient();
     const { isPending: isLoginingIn, mutate } = useMutation({
         mutationFn: async (values: z.infer<typeof loginFormSchema>) => {
             const response = await AxiosInstance.post(getUrl(endpoints.login), {
@@ -88,7 +88,6 @@ export default function LoginPage() {
             return response.data;
         },
         onSuccess: async (data) => {
-            await  queryClient.cancelQueries({ queryKey: ["profile"] });
             queryClient.setQueryData(["profile"], data);
             const loggedInUser = {
                 role: data.role,

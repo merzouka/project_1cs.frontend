@@ -13,7 +13,7 @@ import { BsFillPatchCheckFill } from "react-icons/bs";
 import { z } from "zod";
 import { EditableInput } from "./editable-input";
 import { Button } from "@/components/ui/button";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { AxiosInstance } from "@/config/axios";
@@ -69,6 +69,7 @@ export const UserProfileForm = ({ page }: { page: Pages }) => {
 
     const { toast } = useToast();
     const [phone, setPhone] = useState(user.phone);
+    const queryClient = useQueryClient();
     const { isPending: isProfileUpdateLoading, mutate: profileMutate } = useMutation({
         retry: 3,
         mutationFn: async (entries: z.infer<typeof formSchema>) => {
@@ -110,6 +111,7 @@ export const UserProfileForm = ({ page }: { page: Pages }) => {
                 role: getRoleMap(data.role) || "user",
                 image: data.personal_picture,
             });
+            queryClient.setQueryData(["profile"], data);
             setHasChanged(false);
             toast({
                 description: "Votre profile a été modifié avec succés.",
