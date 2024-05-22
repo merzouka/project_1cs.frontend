@@ -4,7 +4,7 @@ import { icons } from "@/constants/icons";
 import { Button } from "@/components/ui/button";
 import { FaCheckCircle } from "react-icons/fa";
 import { IoIosCloseCircle } from "react-icons/io";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 
 export const ChoicePopup = (
     {

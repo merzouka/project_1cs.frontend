@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Participants } from "@/app/(admin)/(drawing)/components/participants";
-import { Cities } from "@/app/(admin)/(drawing)/components/cities";
+import { Cities } from "@/app/(admin)/components/cities";
 import Tirage from "@/app/(admin)/(drawing)/components/tirage";
 
 export default function Page() {

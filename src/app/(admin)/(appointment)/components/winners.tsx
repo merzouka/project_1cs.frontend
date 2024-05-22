@@ -167,10 +167,7 @@ export const Winners = (
             };
         },
         onSuccess: (_, __, context) => {
-            if (!winners) {
-                return;
-            }
-            const newWinners = [...winners];
+            const newWinners = [...(queryClient.getQueryData(["winners", itemsEndpoint]) as (WinnerInfo & { disabled: boolean })[])];
             newWinners[context?.index] = {
                 ...newWinners[context?.index],
                 disabled: false,
@@ -178,24 +175,30 @@ export const Winners = (
             queryClient.setQueryData(["winners", itemsEndpoint], newWinners);
         },
         onError: (_, __, context) => {
-            if (!winners || !context) {
+            if (!context) {
                 return;
             }
-            const oldWinners = [...winners];
-            oldWinners[context?.index] = context?.winner;
-            queryClient.setQueryData(["winners", itemsEndpoint], oldWinners);
+            const winners = [...(queryClient.getQueryData(["winners", itemsEndpoint]) as (WinnerInfo & { disabled: boolean })[])];
+            winners[context?.index] = {
+                ...context?.winner,
+                disabled: false,
+            };
+            queryClient.setQueryData(["winners", itemsEndpoint], winners);
             toast({
                 variant: "destructive",
                 title: "Erreur de connexion",
                 description: `La mise à jour du status du pèlerin #${context?.winner.id} à échoué`,
             });
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ["winners", itemsEndpoint] });
         }
     });
 
     return (
         <div className="flex flex-col items-center justify-center gap-y-3 w-full h-full p-3">
             <SearchBar onChange={setTerm} className="w-full"/>
-            <div className="flex-grow w-full flex relative items-center justify-center">
+            <div className="flex-grow w-full flex relative items-center justify-center overflow-y-scroll">
                 {
                     isLoading ?
                         <Spinner size={"xl"} text={"show"} direction={"col"} className="text-slate-400"/>:

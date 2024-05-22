@@ -30,7 +30,7 @@ export const Winner = (
                 "flex w-full max-w-96 gap-x-2 bg-white shadow-xl px-5 py-3 rounded-xl border-2 border-transparent items-center justify-center",
                 winnerInfo.status == true ? (disabled ? "border-emerald-200" : "border-emerald-400" ): (winnerInfo.status === false && (disabled ? "border-red-200" :  "border-red-400")),
                 "hover:cursor-pointer",
-                disabled && "bg-slate-100 hover:cursor-default",
+                disabled && "bg-slate-100/45 hover:cursor-default shadow-none",
             )}>
             <div className="size-14">
                 {
