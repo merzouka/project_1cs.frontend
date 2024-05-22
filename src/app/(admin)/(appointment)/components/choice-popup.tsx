@@ -14,24 +14,21 @@ export const ChoicePopup = (
         onDeny,
     }: {
         winnerInfo: WinnerInfo 
-        onClose?: () => void;
+        onClose: () => void;
         onAccept: () => void;
         onDeny: () => void;
     }) => {
     const ref = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        const handler = () => {
-            onClose && onClose();
-        }
-        ref.current?.addEventListener("click", handler);
-        return () => {
-            ref.current?.removeEventListener("click", handler);
-        }
-    }, []);
-
     return (
         <div 
+            ref={ref}
+            onKeyDown={(e) => {
+                console.log(e.key);
+                if (e.key == "Escape") {
+                    onClose();
+                }
+            }}
             onClick={() => onClose && onClose()}
             className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-black/45 z-[9999]"
         >
