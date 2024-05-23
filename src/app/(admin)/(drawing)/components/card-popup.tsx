@@ -17,6 +17,7 @@ export const CardPopup = ({
             {
                 items.map((item, i) => (
                     <motion.div
+                        key={i}
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         transition={{ delay: (delay || 0) + i * duration }}

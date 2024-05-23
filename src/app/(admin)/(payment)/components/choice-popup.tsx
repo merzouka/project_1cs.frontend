@@ -27,7 +27,8 @@ export const ChoicePopup = (
     useEffect(() => {
         ref.current?.focus();
         ref.current?.addEventListener("keydown", handler);
-        return () => ref.current?.removeEventListener("keydown", handler);
+        const divRef = ref.current
+        return () => divRef?.removeEventListener("keydown", handler);
     }, []);
     return (
         <motion.div 
