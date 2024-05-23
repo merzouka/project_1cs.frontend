@@ -34,8 +34,8 @@ export const Winners = (
         updateEndpoint: string;
         page: Pages
     }) => {
-    // const { validateAccess } = useUser();
-    // validateAccess(page);
+    const { validateAccess } = useUser();
+    validateAccess(page);
 
     const [term, setTerm] = useState("");
     const [winner, setWinner] = useState<WinnerInfo | undefined>(undefined);
@@ -45,29 +45,9 @@ export const Winners = (
         queryKey: ["winners", itemsEndpoint],
         queryFn: async () => {
             try {
-
-                const winners: WinnerInfo[] = [
-                    { image: null, firstName: "John", lastName: "Doe", id: 1, status: true, disabled: false },
-                    { image: null, firstName: "Jane", lastName: "Smith", id: 2, status: null, disabled: false },
-                    { image: null, firstName: "Alice", lastName: "Johnson", id: 3, status: true, disabled: false },
-                    { image: null, firstName: "Bob", lastName: "Brown", id: 4, status: null, disabled: false },
-                    { image: null, firstName: "Carol", lastName: "Williams", id: 5, status: true, disabled: false },
-                    { image: null, firstName: "David", lastName: "Jones", id: 6, status: null, disabled: false },
-                    { image: null, firstName: "Eve", lastName: "Garcia", id: 7, status: true, disabled: false },
-                    { image: null, firstName: "Frank", lastName: "Miller", id: 8, status: true, disabled: false },
-                    { image: null, firstName: "Grace", lastName: "Davis", id: 9, status: null, disabled: false },
-                    { image: null, firstName: "Hank", lastName: "Martinez", id: 10, status: true, disabled: false },
-                    { image: null, firstName: "Ivy", lastName: "Lopez", id: 11, status: null, disabled: false },
-                    { image: null, firstName: "Jack", lastName: "Gonzalez", id: 12, status: true, disabled: false },
-                    { image: null, firstName: "Kate", lastName: "Wilson", id: 13, status: true, disabled: false },
-                    { image: null, firstName: "Leo", lastName: "Anderson", id: 14, status: null, disabled: false },
-                    { image: null, firstName: "Mia", lastName: "Thomas", id: 15, status: true, disabled: false }
-                ];
-
+                const response = await AxiosInstance.get(getUrl(itemsEndpoint));
+                const winners = response.data.winners.map((winner: any) => translate(winner)) as (WinnerInfo & { disabled: boolean })[];
                 return winners;
-                // const response = await AxiosInstance.get(getUrl(itemsEndpoint));
-                // const winners = response.data.winners.map((winner: any) => translate(winner)) as (WinnerInfo & { disabled: boolean })[];
-                // return winners;
             } catch (error) {
                 if (failureCount < 3) {
                     throw new Error("failure");

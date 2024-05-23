@@ -2,7 +2,6 @@ import { WinnerInfo } from "./winner";
 import Image from "next/image";
 import { icons } from "@/constants/icons";
 import { Button } from "@/components/ui/button";
-import { FaCheckCircle } from "react-icons/fa";
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
