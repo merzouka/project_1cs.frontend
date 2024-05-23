@@ -212,7 +212,7 @@ export const Winners = (
                                     </span>
                                 </div>
                             </div>:
-                            <div tabIndex={-1} className="grid grid-cols-1 md:grid-cols-3 items-start justify-start absolute top-0 right-0 left-0 gap-3 p-2">
+                            <div tabIndex={-1} className="grid grid-cols-1 md:grid-cols-3 items-start justify-start absolute top-0 right-0 left-0 gap-3 p-2 overflow-x-visible">
                                 {
                                     winners?.filter(
                                         (winner)=> `${winner.lastName} ${winner.firstName} ${winner.id}`.toLowerCase().includes(term)
