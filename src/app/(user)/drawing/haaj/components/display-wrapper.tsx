@@ -10,7 +10,7 @@ import { Spinner } from "@/components/custom/spinner";
 import { Pages } from "@/constants/pages";
 
 export const DisplayWrapper = () => {
-    const { validateAccess, user } = useUser();
+    const { useValidateAccess: validateAccess, user } = useUser();
     const { isLoading } = validateAccess(Pages.open);
     const [displayed, setDisplayed] = useState(0);
     const [closeModal, setCloseModal] = useState(false);

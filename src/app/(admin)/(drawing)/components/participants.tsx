@@ -15,7 +15,7 @@ import { SearchBar } from "@/app/components/search-bar";
 
 
 export const Participants = () => {
-    const { validateAccess } = useUser();
+    const { useValidateAccess: validateAccess } = useUser();
     // validateAccess(Pages.drawing);
     const { toast } = useToast();
     const { isLoading, data, isError, failureCount } = useQuery({

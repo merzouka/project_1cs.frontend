@@ -43,7 +43,7 @@ export const DrawingDisplay = ({
         closeModal?: boolean;
         onModalClose?: () => void;
     }) => {
-    const { validateAccess } = useUser();
+    const { useValidateAccess: validateAccess } = useUser();
     validateAccess(Pages.drawing);
     const [winners, setWinners] = useState<Winner[]>([]);
     const { toast } = useToast();

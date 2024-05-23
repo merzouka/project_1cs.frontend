@@ -21,7 +21,7 @@ export function useUser() {
 
     const router = useRouter();
     const { toast } = useToast();
-    function validateAccess(page: Pages) {
+    function useValidateAccess(page: Pages) {
         const { isLoading, isError, data, failureCount } = useQuery({
             staleTime: Infinity,
             queryKey: ["profile"],
@@ -95,6 +95,6 @@ export function useUser() {
         isLoggedIn,
         role,
         hasRole,
-        validateAccess,
+        useValidateAccess,
     }
 }

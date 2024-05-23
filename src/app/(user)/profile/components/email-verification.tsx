@@ -7,7 +7,7 @@ import { icons } from "@/constants/icons";
 import { Pages } from "@/constants/pages";
 
 export const EmailVerification = () => {
-    const { user, validateAccess } = useUser();
+    const { user, useValidateAccess: validateAccess } = useUser();
     const { isLoading } = validateAccess(Pages.open);
     const [closed, setClosed] = useState(false);
     return (

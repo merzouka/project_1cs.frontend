@@ -34,7 +34,7 @@ export const Winners = (
         updateEndpoint: string;
         page: Pages
     }) => {
-    const { validateAccess } = useUser();
+    const { useValidateAccess: validateAccess } = useUser();
     validateAccess(page);
 
     const [term, setTerm] = useState("");

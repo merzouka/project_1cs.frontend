@@ -53,7 +53,7 @@ const formSchema = z.object({
 });
 
 export const Settings = () => {
-    const { user, validateAccess } = useUser();
+    const { user, useValidateAccess: validateAccess } = useUser();
     validateAccess(Pages.drawingSettings);
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),

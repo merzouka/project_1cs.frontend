@@ -52,7 +52,7 @@ const formSchema = z.object({
     }),
 });
 export const ProfileForm = ({ page }: { page: Pages }) => {
-    const { user, validateAccess } = useUser();
+    const { user, useValidateAccess: validateAccess } = useUser();
     const { isLoading } = validateAccess(page);
 
     const setUser = useUserStore((state) => state.setUser);

@@ -10,7 +10,7 @@ import { fade } from "@/constants/animations";
 import { Pages } from "@/constants/pages";
 
 export const UserActions = () => {
-    const { user, validateAccess } = useUser();
+    const { user, useValidateAccess: validateAccess } = useUser();
     const { isLoading } = validateAccess(Pages.open);
 
     return (
