@@ -24,6 +24,7 @@ export function useUser() {
     const { toast } = useToast();
     function validateAccess(page: Pages) {
         const { isLoading, isError, data, failureCount } = useQuery({
+            staleTime: Infinity,
             queryKey: ["profile"],
             queryFn: async () => {
                 try {
@@ -34,18 +35,6 @@ export function useUser() {
                     if (failureCount < 3) {
                         throw new Error("fetch fail");
                     }
-                    if (isAxiosError(error) && error.response) {
-                        toast({
-                            description: "Non autorisé",
-                            variant: "destructive",
-                        });
-                        throw new Error("unauthorized acess");
-                    }
-                    toast({
-                        title: "Erreur de connexion",
-                        description: "Nous ne pouvons pas connecter au serveur.",
-                        variant: "destructive",
-                    });
                     throw new Error("connection error");
                 }
             }
@@ -53,7 +42,9 @@ export function useUser() {
         useEffect(() => {
             try {
                 if (isError) {
-                    router.replace("/login");
+                    if (page != Pages.open) {
+                        router.replace("/login");
+                    }
                     return;
                 }
                 if (data) {

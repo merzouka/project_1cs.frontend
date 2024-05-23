@@ -96,12 +96,12 @@ const StepCard = ({
 }: {
         step: Step;
     }) => {
-    // TODO: make link
+    // TODO: make into link element to article page
     return (
         <div 
             key={step.id}
             className={cn(
-                "rounded-2xl relative h-full flex-grow"
+                "rounded-2xl relative h-full flex-grow group"
             )}
         >
             <Image 
@@ -111,18 +111,18 @@ const StepCard = ({
                 className="object-cover rounded-2xl z-[-3]"
                 sizes="(max-width: 768px) 50vw, (max-width: 1024px) 70vw, 100vw"
             />
-            <div className="absolute top-0 right-0 bottom-0 left-0 bg-gradient-to-t from-black/65 rounded-2xl z-[-2]"></div>
+            <div className="absolute top-0 right-0 bottom-0 left-0 bg-gradient-to-t from-black/65 group-hover:bg-black/35 rounded-2xl z-[-2] transition-all group-hover:transition-all"></div>
             <div className={cn(
-                "absolute top-0 right-0 bottom-0 left-0 flex justify-end items-center flex-col p-4 group",
+                "absolute top-0 right-0 bottom-0 left-0 flex justify-end items-center flex-col p-4",
             )}>
                 <MdArrowOutward className={cn(
-                    "absolute top-5 right-5 group-hover:text-orange-400/100 transition-all", 
-                    "group-hover:transition-all size-6 text-orange-400/0",
+                    "absolute top-5 right-5 group-hover:text-white/100 transition-all", 
+                    "group-hover:transition-all size-6 text-white/0",
                     "-translate-x-1/2 translate-y-1/2 group-hover:translate-x-0 group-hover:translate-y-0",
                 )}/>
                 <div>
-                    <h3 className="font-bold text-xl mb-3 text-wrap capitalize text-white group-hover:text-orange-400 transition-all group-hover:transition-all">{step.title}</h3>
-                    <p className="text-wrap text-xs text-white group-hover:text-orange-500 transition-all group-hover:transition-all">{step.brief}</p>
+                    <h3 className="font-bold text-xl mb-3 text-wrap capitalize text-white transition-all group-hover:transition-all">{step.title}</h3>
+                    <p className="text-wrap text-xs text-white transition-all group-hover:transition-all">{step.brief}</p>
                 </div>
             </div>
         </div>
