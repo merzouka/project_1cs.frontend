@@ -13,7 +13,7 @@ const PaymentPage = () => {
                 <Winners 
                     itemsEndpoint={endpoints.paymentWinners} 
                     updateEndpoint={endpoints.paymentStatusUpdate} 
-                    page={Pages.appointment}
+                    page={Pages.payment}
                 />
             </div>
         </div>

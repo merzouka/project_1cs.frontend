@@ -6,7 +6,7 @@ export enum Pages {
     adminProfile = "profile/admin",
     doctorProfile = "profile/doctor",
     drawingManagerProfile = "profile/drawing-manager",
-    paymentManangerProfile = "profile/payment-mananger",
+    paymentManangerProfile = "profile/payment-manager",
     drawing = "drawing",
     open = "open",
     drawingSettings = "drawing/settings",
