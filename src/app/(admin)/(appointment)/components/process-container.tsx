@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { LuMinimize2 } from "react-icons/lu";
 import { LuMaximize2 } from "react-icons/lu";
 import { icons } from "@/constants/icons";
+import { motion, AnimatePresence } from "framer-motion";
 
 export const ProcessContainer = (
     {
@@ -31,8 +32,8 @@ export const ProcessContainer = (
     }, [pingCount]);
 
     return (
-        <div>
-            <div className={cn(
+        <div className="w-full h-full flex flex-col justify-end">
+            <motion.div layout className={cn(
                 "rounded-t-2xl p-3 flex items-center justify-start bg-black text-white gap-x-3",
                 minimized && "rounded-b-2xl",
                 className,
@@ -73,12 +74,28 @@ export const ProcessContainer = (
                 >
                     {icons.close("size-full")}
                 </Button>
-            </div>
-            {children}
-            {
-                !minimized &&
-                    <div className="bg-black h-4 rounded-b-2xl w-full"></div>
-            }
+            </motion.div>
+            <AnimatePresence initial={true}>
+                {
+                    !minimized &&
+                        <>
+                            <motion.div 
+                                initial={{ flexGrow: 0 }}
+                                animate={{ flexGrow: 1 }}
+                                exit={{ flexGrow: 0 }}
+                                className="flex flex-col"
+                            >
+                                {children}
+                            </motion.div>
+                            <motion.div 
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "1rem", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                className="bg-black h-4 rounded-b-2xl w-full"
+                            ></motion.div>
+                        </>
+                }
+            </AnimatePresence>
         </div>
     );
 }

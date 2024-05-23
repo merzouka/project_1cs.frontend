@@ -11,10 +11,9 @@ export interface ProcessData {
 }
 
 export const Process = ({ status, text, updated = false }: { status: boolean | null; text: string; updated?: boolean; }) => {
-    // TODO remove border styles from parent element
     return (
         <div className={cn(
-            "flex items-center justify-center bg-white text-black w-full p-3 gap-x-2",
+            "flex items-center justify-center text-black w-full p-3 gap-x-2",
             status === null && "text-slate-400"
         )}>
             <div className={cn(
