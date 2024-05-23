@@ -21,8 +21,8 @@ export const endpoints = {
     profileUpdate: "auth/update-profile",
     currentUser : "auth/currently_user",
     // appointment
-    appointmentWinners: "appointment/winners",
-    appointmentStatusUpdate: "appointment/patch",
+    appointmentWinners: "winners_by_baladiya",
+    appointmentStatusUpdate: "visite_status/",
     // payment
     paymentWinners: "winners",
 }

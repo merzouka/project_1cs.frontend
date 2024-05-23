@@ -1,9 +1,10 @@
 import { Title } from "@/app/(admin)/components/title";
 import { Winners } from "../components/winners";
 import { endpoints } from "@/constants/endpoints";
+import { Pages } from "@/constants/pages";
 
 
-const PatientPage = () => {
+const AppointmentPage = () => {
 
     return (
         <div className="md:px-4 p-2 flex flex-col w-full h-full">
@@ -12,10 +13,11 @@ const PatientPage = () => {
                 <Winners 
                     itemsEndpoint={endpoints.appointmentWinners} 
                     updateEndpoint={endpoints.appointmentStatusUpdate} 
+                    page={Pages.appointment}
                 />
             </div>
         </div>
     );
 };
 
-export default PatientPage;
+export default AppointmentPage;

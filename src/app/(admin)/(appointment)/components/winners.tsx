@@ -10,10 +10,12 @@ import { ChoicePopup } from "./choice-popup";
 import { Spinner } from "@/components/custom/spinner";
 import { icons } from "@/constants/icons";
 import { AnimatePresence } from "framer-motion";
+import { useUser } from "@/hooks/use-user";
+import { Pages } from "@/constants/pages";
 
 function translate(winner: any): WinnerInfo & { disabled: boolean } {
     return {
-        id: winner.id,
+        id: winner.id_winner,
         firstName: winner.first_name,
         lastName: winner.last_name,
         image: winner.profile_picture,
@@ -26,105 +28,30 @@ export const Winners = (
     {
         itemsEndpoint,
         updateEndpoint,
+        page,
     }: {
         itemsEndpoint: string;
         updateEndpoint: string;
+        page: Pages
     }) => {
+    const { validateAccess } = useUser();
+    validateAccess(page);
+
     const [term, setTerm] = useState("");
     const [winner, setWinner] = useState<WinnerInfo | undefined>(undefined);
     const [modalOpen, setModalOpen] = useState(false);
     const { toast } = useToast();
-    const { isLoading, isError, data: winners} = useQuery({
+    const { isLoading, isError, data: winners, failureCount} = useQuery({
         queryKey: ["winners", itemsEndpoint],
         queryFn: async () => {
             try {
-                const data: (WinnerInfo & { disabled: boolean; })[] = [
-                    {
-                        id: 1,
-                        firstName: "John",
-                        lastName: "Doe",
-                        image: null,
-                        status: false,
-                        disabled: false,
-                    },
-                    {
-                        id: 2,
-                        firstName: "Jane",
-                        lastName: "Doe",
-                        image: null,
-                        status: null,
-                        disabled: false,
-                    },
-                    {
-                        id: 3,
-                        firstName: "Alice",
-                        lastName: "Smith",
-                        image: null,
-                        status: null,
-                        disabled: false,
-                    },
-                    {
-                        id: 4,
-                        firstName: "Bob",
-                        lastName: "Johnson",
-                        image: null,
-                        status: true,
-                        disabled: false,
-                    },
-                    {
-                        id: 5,
-                        firstName: "Charlie",
-                        lastName: "Brown",
-                        image: null,
-                        status: null,
-                        disabled: false,
-                    },
-                    {
-                        id: 6,
-                        firstName: "David",
-                        lastName: "Wilson",
-                        image: null,
-                        status: false,
-                        disabled: false,
-                    },
-                    {
-                        id: 7,
-                        firstName: "Eva",
-                        lastName: "Green",
-                        image: null,
-                        status: true,
-                        disabled: false,
-                    },
-                    {
-                        id: 8,
-                        firstName: "Frank",
-                        lastName: "Miller",
-                        image: null,
-                        status: null,
-                        disabled: false,
-                    },
-                    {
-                        id: 9,
-                        firstName: "Grace",
-                        lastName: "Hopper",
-                        image: null,
-                        status: true,
-                        disabled: false,
-                    },
-                    {
-                        id: 10,
-                        firstName: "Henry",
-                        lastName: "Ford",
-                        image: null,
-                        status: true,
-                        disabled: false,
-                    },
-                ];
-                return data;
-                // const response = await AxiosInstance.get(getUrl(itemsEndpoint));
-                // const winners = response.data.winners.map((winner) => translate(winner));
-                // return winners;
+                const response = await AxiosInstance.get(getUrl(itemsEndpoint));
+                const winners = response.data.winners.map((winner: any) => translate(winner)) as (WinnerInfo & { disabled: boolean })[];
+                return winners;
             } catch (error) {
+                if (failureCount < 3) {
+                    throw new Error("failure");
+                }
                 toast({
                     variant: "destructive",
                     title: "Erreur de connexion",
@@ -141,7 +68,7 @@ export const Winners = (
         retry: 3,
         mutationFn: async (winnerStatus: { id: number, status: boolean | null }) => {
             const response = await AxiosInstance.patch(getUrl(updateEndpoint), {
-                id: winnerStatus.id,
+                id_winner: winnerStatus.id,
                 status: winnerStatus.status,
             });
             return response.data;
@@ -205,10 +132,10 @@ export const Winners = (
                         <Spinner size={"xl"} text={"show"} direction={"col"} className="text-slate-400"/>:
                         isError ?
                             <div className="w-full flex-grow items-center justify-center flex">
-                                <div className="flex flex-col items-center justify-center md:gap-y-5 gap-y-2 -translate-y-1/2">
+                                <div className="flex flex-col items-center justify-center md:gap-y-5 gap-y-2">
                                     {icons.caution("size-32 text-slate-400")}
                                     <span className="text-slate-400 text-2xl font-bold text-center text-wrap">
-                                        {"Seuls les haajs peuvent voir le tirage."}
+                                        {"Nous ne pouvons pas récupérer les pèlerins."}
                                     </span>
                                 </div>
                             </div>:
@@ -243,7 +170,7 @@ export const Winners = (
 
                 }
             </div>
-            <AnimatePresence intial={true}>
+            <AnimatePresence initial={true}>
                 {
                     winner && modalOpen &&
                         <ChoicePopup 
