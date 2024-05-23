@@ -3,7 +3,6 @@ import { useRouter } from "next/navigation";
 import { Pages } from "@/constants/pages";
 import { pageValidators } from "@/constants/page-validators";
 import { useQuery } from "@tanstack/react-query";
-import { isAxiosError } from "axios";
 import { getUrl } from "@/constants/api";
 import { endpoints } from "@/constants/endpoints";
 import { useToast } from "@/components/ui/use-toast";
@@ -49,6 +48,7 @@ export function useUser() {
                 }
                 if (data) {
                     const loggedInUser = {
+                        id: data.id,
                         role: data.role,
                         email: data.email,
                         firstName: data.first_name,

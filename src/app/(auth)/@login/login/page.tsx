@@ -90,6 +90,7 @@ export default function LoginPage() {
         onSuccess: async (data) => {
             queryClient.setQueryData(["profile"], data);
             const loggedInUser = {
+                id: data.id,
                 role: data.role,
                 email: data.email,
                 firstName: data.first_name,
