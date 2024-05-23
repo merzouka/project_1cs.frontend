@@ -53,7 +53,7 @@ const formSchema = z.object({
 });
 export const UserProfileForm = ({ page }: { page: Pages }) => {
     const { user, validateAccess } = useUser();
-    // const { isLoading } = validateAccess(page);
+    const { isLoading } = validateAccess(page);
 
     const setUser = useUserStore((state) => state.setUser);
     const form = useForm<z.infer<typeof formSchema>>({
@@ -159,7 +159,7 @@ export const UserProfileForm = ({ page }: { page: Pages }) => {
     return (
         <>
             {
-                true ? <UserProfileFormSkeleton /> :
+                isLoading ? <UserProfileFormSkeleton /> :
                     <div className="w-full flex items-center justify-center">
                         <div className={cn(
                             "flex flex-col items-start justify-center w-full max-w-[64rem] mt-2 md:mt-4",
