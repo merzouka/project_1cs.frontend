@@ -145,6 +145,7 @@ export const Winners = (
                                         (winner)=> `${winner.lastName} ${winner.firstName} ${winner.id}`.toLowerCase().includes(term)
                                     ).map((winner) => (
                                         <Winner
+                                            key={winner.id}
                                             winnerInfo={{
                                                 id: winner.id,
                                                 status: winner.status,
