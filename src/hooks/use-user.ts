@@ -78,7 +78,7 @@ export function useUser() {
                 toast({
                     description: "Erreur interne de serveur.",
                     variant: "destructive",
-                })
+                });
             }
             
         }, [data, isError]);

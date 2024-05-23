@@ -1,3 +1,4 @@
+""
 import { DrawingNavBar } from "@/app/(admin)/(drawing)/components/nav-bar";
 import { ManagerLayout } from "@/app/(admin)/components/manager-layout";
 

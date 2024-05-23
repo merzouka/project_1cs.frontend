@@ -66,14 +66,14 @@ export const Winners = (
     // check winners before mutation
     const { mutate } = useMutation({
         retry: 3,
-        mutationFn: async (winnerStatus: { id: number, status: boolean | null }) => {
+        mutationFn: async (winnerStatus: { id: number, status: true | null }) => {
             const response = await AxiosInstance.patch(getUrl(updateEndpoint), {
                 id_winner: winnerStatus.id,
                 status: winnerStatus.status,
             });
             return response.data;
         },
-        onMutate: (variables: { id: number, status: boolean | null }) => {
+        onMutate: (variables: { id: number, status: true | null }) => {
             if (!winners) {
                 return;
             }
@@ -177,7 +177,6 @@ export const Winners = (
                         <ChoicePopup 
                             onClose={() => setModalOpen(false)}
                             onAccept={() => mutate({ id: winner.id, status: winner.status === true ? null : true })}
-                            onDeny={() => mutate({ id: winner.id, status: winner.status === false ? null : false })}
                             winnerInfo={winner}
                         />
                 }

@@ -1,8 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-import AccepterComponent from "./accepter";
-import RejeterComponent from "./rejeter";
-import RefusedModal from "./refused";
-
 interface ParticipantType {
   image: string | null;
   firstName: string;
@@ -10,13 +6,13 @@ interface ParticipantType {
   nin: string;
 }
 
-interface PatientModalProps {
+interface PayModalProps {
   isOpen: boolean;
   onClose: () => void;
   participant: ParticipantType;
 }
 
-const PatientModal: React.FC<PatientModalProps> = ({
+const PayModal: React.FC<PayModalProps> = ({
   isOpen,
   onClose,
   participant,
@@ -37,16 +33,10 @@ const PatientModal: React.FC<PatientModalProps> = ({
     onClose();
   };
 
-  const handleAccept = () => {
+  const handlePay = () => {
+    // Handle the pay action here
+    console.log("Payé button clicked");
     handleClose();
-  };
-
-  const handleReject = () => {
-    setShowRefusedModal(true);
-  };
-
-  const handleCloseRefusedModal = () => {
-    setShowRefusedModal(false);
   };
 
   useEffect(() => {
@@ -79,7 +69,7 @@ const PatientModal: React.FC<PatientModalProps> = ({
               <div className="flex flex-col items-center">
                 <img
                   src={participant.image || "auth\\Rectangle 4547.jpg"}
-                  alt="Image"
+                  alt="Participant"
                   style={{
                     width: "162px",
                     height: "162px",
@@ -87,31 +77,26 @@ const PatientModal: React.FC<PatientModalProps> = ({
                     marginBottom: "0.5rem",
                   }}
                 />
-                <div className="mt-2">
-                  <p className="font-montserrat font-semibold text-30">
+                <div className="mt-2 text-center">
+                  <p className="font-montserrat font-semibold text-2xl">
                     {participant.firstName} {participant.lastName}
                   </p>
                 </div>
               </div>
             </div>
-            <div className="flex justify-between mt-8">
-              <a href="#" onClick={handleAccept}>
-                <AccepterComponent />
-              </a>
-              <a href="#" onClick={handleReject}>
-                <RejeterComponent />
-              </a>
+            <div className="flex justify-center mt-8">
+              <button
+                onClick={handlePay}
+                className="bg-black text-white py-2 px-6 rounded-lg text-xl font-semibold w-[482px]"
+              >
+                Payé
+              </button>
             </div>
           </>
         )}
       </div>
-
-      <RefusedModal
-        isOpen={showRefusedModal}
-        onClose={handleCloseRefusedModal}
-      />
     </>
   );
 };
 
-export default PatientModal;
+export default PayModal;

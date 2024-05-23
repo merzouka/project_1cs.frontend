@@ -24,7 +24,7 @@ const Page = () => {
   return (
     <div>
       <div className="w-full pt-3 mb-4 lg:mb-8">
-        <h4 className="text-xl md:text-4xl font-semibold mb-1 md:mb-2">
+        <h4 className="py-[20px] px-4 text-left border-b-0 font-medium text-gray-800 text-[28px]">
           Les utilisateurs
         </h4>
       </div>

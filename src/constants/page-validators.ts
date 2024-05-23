@@ -12,4 +12,5 @@ export const pageValidators = {
     "drawing": (user: UserInfo) => user.role == Role.drawingManager || user.role == Role.haaj,
     "drawing/settings": (user: UserInfo) => user.role == Role.drawingManager,
     "appointment": (user: UserInfo) => user.role == Role.doctor,
+    "payment": (user: UserInfo) => user.role == Role.paymentManager,
 }
