@@ -11,7 +11,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { AxiosInstance } from "@/config/axios";
 import { useUser } from "@/hooks/use-user";
 import { Pages } from "@/constants/pages";
-import { SearchBar } from "./search-bar";
+import { SearchBar } from "@/app/components/search-bar";
 
 
 export const Participants = () => {

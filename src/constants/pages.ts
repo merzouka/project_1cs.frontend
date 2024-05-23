@@ -10,4 +10,5 @@ export enum Pages {
     drawing = "drawing",
     open = "open",
     drawingSettings = "drawing/settings",
+    appointment = "appointment",
 }

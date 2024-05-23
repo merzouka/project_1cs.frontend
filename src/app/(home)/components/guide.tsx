@@ -96,7 +96,7 @@ const StepCard = ({
 }: {
         step: Step;
     }) => {
-    // TODO: make link
+    // TODO: make into link element to article page
     return (
         <div 
             key={step.id}

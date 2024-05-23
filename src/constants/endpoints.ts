@@ -20,4 +20,9 @@ export const endpoints = {
     profile: (id: number | string) => `profile/${id}`,
     profileUpdate: "auth/update-profile",
     currentUser : "auth/currently_user",
+    // appointment
+    appointmentWinners: "winners_by_baladiya",
+    appointmentStatusUpdate: "visite_status/",
+    // payment
+    paymentWinners: "winners",
 }
