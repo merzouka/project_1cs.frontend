@@ -2,14 +2,13 @@ import Image from "next/image";
 import { VscAccount } from "react-icons/vsc";
 import { cn } from "@/lib/utils";
 import { IoIosCheckmarkCircleOutline } from "react-icons/io";
-import { IoIosCloseCircleOutline } from "react-icons/io";
 
 export interface WinnerInfo {
     image: string | null;
     firstName: string;
     lastName: string;
     id: number;
-    status: boolean | null;
+    status: true | null;
 }
 
 export const Winner = (
@@ -36,7 +35,7 @@ export const Winner = (
             className={cn(
                 "flex w-full max-w-96 gap-x-2 bg-white shadow-xl px-5 py-3 rounded-xl border-2 border-transparent items-center justify-center",
                 !disabled && "hover:scale-105 hover:transition-all transition-all",
-                winnerInfo.status == true ? (disabled ? "border-emerald-200" : "border-emerald-400" ): (winnerInfo.status === false && (disabled ? "border-red-200" :  "border-red-400")),
+                winnerInfo.status == true && (disabled ? "border-emerald-200" : "border-emerald-400" ),
                 "hover:cursor-pointer",
                 disabled && "bg-slate-100/45 hover:cursor-default shadow-none",
                 "focus-visible:ring-2 focus-visible:ring-offset-4"
@@ -69,17 +68,11 @@ export const Winner = (
                     <IoIosCheckmarkCircleOutline className={cn(
                         "text-transparent size-8",
                     )}/>:
-                    (
-                        winnerInfo.status == true?
-                            <IoIosCheckmarkCircleOutline className={cn(
-                                "text-emerald-400 size-8 transition-all",
-                                disabled && "text-emerald-200",
-                            )}/>:
-                            <IoIosCloseCircleOutline className={cn(
-                                "text-red-400 size-8 transition-all",
-                                disabled && "text-red-200",
-                            )}/>
-                    )
+                    <IoIosCheckmarkCircleOutline className={cn(
+                        "text-emerald-400 size-8 transition-all",
+                        disabled && "text-emerald-200",
+                    )}/>
+
             }
         </div>
     );

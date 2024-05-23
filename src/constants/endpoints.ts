@@ -24,5 +24,6 @@ export const endpoints = {
     appointmentWinners: "winners_by_baladiya",
     appointmentStatusUpdate: "visite_status/",
     // payment
-    paymentWinners: "winners",
+    paymentWinners: "winners_accepted/",
+    paymentStatusUpdate: "payment_status/",
 }
