@@ -4,14 +4,16 @@ import { useUser } from "@/hooks/use-user";
 import Link from "next/link";
 import { useState } from "react";
 import { icons } from "@/constants/icons";
+import { Pages } from "@/constants/pages";
 
 export const EmailVerification = () => {
-    const { user } = useUser();
+    const { user, validateAccess } = useUser();
+    const { isLoading } = validateAccess(Pages.open);
     const [closed, setClosed] = useState(false);
     return (
         <>
             {
-                !closed && !user.emailVerified && 
+                !isLoading && !closed && !user.emailVerified && 
                     <div className="flex justify-between items-center bg-black
                         md:absolute md:-top-2 md:left-1/2 md:-translate-x-1/2 
                         text-white px-3 md:rounded-b-2xl w-full md:w-fit py-2 md:py-0">

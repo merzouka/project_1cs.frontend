@@ -27,6 +27,7 @@ import { ImagePicker } from "./image-picker";
 import { Pages } from "@/constants/pages";
 import { getCityName, getCityNameId } from "@/constants/cities";
 import { ProfileFormSkeleton } from "./profile-form-skeleton";
+import { Input } from "@/components/ui/input";
 
 const formSchema = z.object({
     firstName: z.string({ required_error: "Veuillez saisir votre prénom." }),
@@ -170,11 +171,57 @@ export const ProfileForm = ({ page }: { page: Pages }) => {
                             }}
                         />
                         <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)} className="md:row-span-2">
-                                <div className={cn(
-                                    "flex flex-col w-full max-w-[33rem] items-stretch md:items-center justify-stretch gap-x-3",
-                                    "md:flex-row md:items-stretch"
-                                )}>
+                            <form onSubmit={form.handleSubmit(onSubmit)} className="md:row-span-2 px-5 pt-5">
+                                <div className="grid grid-flow-col grid-rows-4 grid-cols-1 md:grid-cols-2 gap-x-12 items-start justify-center mb-2 md:mb-6">
+                                    <FormField 
+                                        name=""
+                                        render={({ }) => (
+                                            <FormItem className="mb-2 pt-2">
+                                                <FormLabel>
+                                                    {"Identifiant partageable"}
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <Input 
+                                                        disabled
+                                                        className={cn(
+                                                            "max-w-[33rem] rounded-xl bg-slate-100 border border-slate-300 text-slate-300",
+                                                            "disabled:bg-slate-100 disabled:text-slate-500 disabled:opacity-100 disabled:cursor-default",
+                                                        )}
+                                                        value={user.id}
+                                                    />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField 
+                                        control={form.control}
+                                        name="email"
+                                        render={({ field }) => (
+                                            <FormItem className="mb-2">
+                                                <FormLabel>{"Email"}</FormLabel>
+                                                <FormControl>
+                                                    <div className="flex items-center gap-x-2 w-full max-w-[33rem] relative">
+                                                        <EditableInput 
+                                                            className="max-w-[33rem]"
+                                                            onChange={(value) => {
+                                                                setHasChanged(true);
+                                                                field.onChange(value);
+                                                            }}
+                                                            value={field.value}
+                                                            disabled={field.disabled}
+                                                        />
+                                                        <BsFillPatchCheckFill 
+                                                            className={cn(
+                                                                "absolute right-0 translate-x-[120%] md:translate-x-[150%]" ,
+                                                                user.emailVerified ? "text-emerald-400" : "text-slate-200",
+                                                            )} 
+                                                        />
+                                                    </div>
+                                                </FormControl>
+                                                <FormMessage className="text-xs"/>
+                                            </FormItem>
+                                        )}
+                                    />
                                     <FormField 
                                         control={form.control}
                                         name="lastName"
@@ -217,132 +264,103 @@ export const ProfileForm = ({ page }: { page: Pages }) => {
                                             </FormItem>
                                         )}
                                     />
-                                </div>
-                                <FormField 
-                                    control={form.control}
-                                    name="email"
-                                    render={({ field }) => (
-                                        <FormItem className="mb-2">
-                                            <FormLabel>{"Email"}</FormLabel>
-                                            <FormControl>
-                                                <div className="flex items-center gap-x-2 w-full max-w-[33rem] relative">
-                                                    <EditableInput 
-                                                        className="max-w-[33rem]"
-                                                        onChange={(value) => {
-                                                            setHasChanged(true);
-                                                            field.onChange(value);
-                                                        }}
-                                                        value={field.value}
-                                                        disabled={field.disabled}
-                                                    />
-                                                    <BsFillPatchCheckFill 
-                                                        className={cn(
-                                                            "absolute right-0 translate-x-[120%] md:translate-x-[150%]" ,
-                                                            user.emailVerified ? "text-emerald-400" : "text-slate-200",
-                                                        )} 
-                                                    />
-                                                </div>
-                                            </FormControl>
-                                            <FormMessage className="text-xs"/>
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField 
-                                    control={form.control}
-                                    name="phone"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <PhoneInput 
-                                                onPhoneChange={(value) => {
-                                                    setHasChanged(true);
-                                                    setPhone(value);
-                                                }}
-                                                onPhoneNumberChange={field.onChange}
-                                                phoneValue={field.value}
-                                                disabled={field.disabled}
-                                                control={(children) => (
-                                                    <FormControl>
-                                                        {children}
-                                                    </FormControl>
+                                    <FormField 
+                                        control={form.control}
+                                        name="phone"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <PhoneInput 
+                                                    onPhoneChange={(value) => {
+                                                        setHasChanged(true);
+                                                        setPhone(value);
+                                                    }}
+                                                    onPhoneNumberChange={field.onChange}
+                                                    phoneValue={field.value}
+                                                    disabled={field.disabled}
+                                                    control={(children) => (
+                                                        <FormControl>
+                                                            {children}
+                                                        </FormControl>
+                                                    )}
+                                                    styles={{
+                                                        container: "mb-2 md:mb-4"
+                                                    }}
+                                                />
+                                                <FormMessage className="text-xs"/>
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <div className="row-span-3">
+                                        <span className="text-sm font-medium mb-2 block">
+                                            {"Région"}
+                                        </span>
+                                        <div className={cn(
+                                            "p-2 md:p-4 md:pt-5 pt-5 border border-slate-300 rounded-2xl flex-grow max-w-[33rem] relative",
+                                            "mb-2 md:mb-3"
+                                        )}>
+                                            <div className="flex items-center justify-end absolute top-0 right-2">
+                                                <Toggle 
+                                                    onPressedChange={() => setDisableRegion(!disableRegion)}
+                                                    size={"sm"}
+                                                    className="bg-transparent hover:bg-transparent [state=on]:text-black text-slate-400
+                                                    data-[state=on]:bg-transparent"
+                                                >
+                                                    {icons.modify("size-5")}
+                                                </Toggle>
+                                            </div>
+                                            <FormField 
+                                                control={form.control}
+                                                name="province"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>{"Wilaya"}</FormLabel>
+                                                        <ProvinceSelect
+                                                            onChange={handleProvinceChange((value) => {
+                                                                setHasChanged(true);
+                                                                field.onChange(value);
+                                                            })}
+                                                            defaultValue={`${field.value}`}
+                                                            control={(children) => (
+                                                                <FormControl>
+                                                                    {children}
+                                                                </FormControl>
+                                                            )}
+                                                            disabled={disableRegion}
+                                                            className="rounded-xl"
+                                                        />
+                                                        <FormMessage className="text-xs" />
+                                                    </FormItem>
                                                 )}
-                                                styles={{
-                                                    container: "mb-2 md:mb-4"
-                                                }}
                                             />
-                                            <FormMessage className="text-xs"/>
-                                        </FormItem>
-                                    )}
-                                />
-                                <>
-                                    <span className="text-sm font-medium mb-2 block">
-                                        {"Région"}
-                                    </span>
-                                    <div className={cn(
-                                        "p-2 md:p-4 md:pt-5 pt-5 border border-slate-300 rounded-2xl flex-grow max-w-[33rem] relative",
-                                        "mb-2 md:mb-3"
-                                    )}>
-                                        <div className="flex items-center justify-end absolute top-0 right-2">
-                                            <Toggle 
-                                                onPressedChange={() => setDisableRegion(!disableRegion)}
-                                                size={"sm"}
-                                                className="bg-transparent hover:bg-transparent [state=on]:text-black text-slate-400
-                                                data-[state=on]:bg-transparent"
-                                            >
-                                                {icons.modify("size-5")}
-                                            </Toggle>
+                                            <FormField 
+                                                control={form.control}
+                                                name="city"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>{"Commune"}</FormLabel>
+                                                        <CitySelect
+                                                            onChange={handleCityChange((value) => {
+                                                                setHasChanged(true);
+                                                                field.onChange(value);
+                                                            })}
+                                                            province={province || user.province}
+                                                            defaultValue={`${field.value}`}
+                                                            control={(children) => (
+                                                                <FormControl>
+                                                                    {children}
+                                                                </FormControl>
+                                                            )}
+                                                            disabled={disableRegion}
+                                                            className="rounded-xl"
+                                                        />
+                                                        <FormMessage className="text-xs" />
+                                                    </FormItem>
+                                                )}
+                                            />
                                         </div>
-                                        <FormField 
-                                            control={form.control}
-                                            name="province"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>{"Wilaya"}</FormLabel>
-                                                    <ProvinceSelect
-                                                        onChange={handleProvinceChange((value) => {
-                                                            setHasChanged(true);
-                                                            field.onChange(value);
-                                                        })}
-                                                        defaultValue={`${field.value}`}
-                                                        control={(children) => (
-                                                            <FormControl>
-                                                                {children}
-                                                            </FormControl>
-                                                        )}
-                                                        disabled={disableRegion}
-                                                        className="rounded-xl"
-                                                    />
-                                                    <FormMessage className="text-xs" />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField 
-                                            control={form.control}
-                                            name="city"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>{"Commune"}</FormLabel>
-                                                    <CitySelect
-                                                        onChange={handleCityChange((value) => {
-                                                            setHasChanged(true);
-                                                            field.onChange(value);
-                                                        })}
-                                                        province={province || user.province}
-                                                        defaultValue={`${field.value}`}
-                                                        control={(children) => (
-                                                            <FormControl>
-                                                                {children}
-                                                            </FormControl>
-                                                        )}
-                                                        disabled={disableRegion}
-                                                        className="rounded-xl"
-                                                    />
-                                                    <FormMessage className="text-xs" />
-                                                </FormItem>
-                                            )}
-                                        />
                                     </div>
-                                </>
 
+                                </div>
                                 <Button 
                                     disabled={!hasChanged || isProfileUpdateLoading}
                                     className="max-w-[33rem] bg-black hover:bg-black/75 w-full font-bold rounded-2xl"
