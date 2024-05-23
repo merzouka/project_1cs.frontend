@@ -1,15 +1,12 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Participants } from "@/app/(admin)/(drawing)/components/participants";
-import { Cities } from "@/app/(admin)/components/cities";
+import { Title } from "@/app/(admin)/components/title";
 import { Settings } from "@/app/(admin)/(drawing)/components/settings";
 
 export default function Page() {
     return (
         <div className="flex flex-col pt-16 md:pt-8 p-2 md:p-8 size-full">
-            <div className="w-full pt-3 mb-4 lg:mb-8">
-                <h1 className="text-3xl md:text-4xl font-semibold mb-1 md:mb-2">Le tirage au sort</h1>
-                <Cities />
-            </div>
+            <Title title={"Le tirage au sort"} />
             <Tabs defaultValue="participants" className="flex flex-col grow">
                 <TabsList className="w-full justify-between mb-3 lg:mb-5 bg-transparent">
                     <div className="flex">

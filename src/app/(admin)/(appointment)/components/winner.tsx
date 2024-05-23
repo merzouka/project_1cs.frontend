@@ -25,12 +25,20 @@ export const Winner = (
 ) => {
     return (
         <div 
+            tabIndex={0}
+            onKeyDownCapture={(e) => {
+                if (e.key == "Enter") {
+                    e.preventDefault();
+                    openPopup(winnerInfo);
+                }
+            }}
             onClick={() => !disabled && openPopup(winnerInfo)}
             className={cn(
                 "flex w-full max-w-96 gap-x-2 bg-white shadow-xl px-5 py-3 rounded-xl border-2 border-transparent items-center justify-center",
                 winnerInfo.status == true ? (disabled ? "border-emerald-200" : "border-emerald-400" ): (winnerInfo.status === false && (disabled ? "border-red-200" :  "border-red-400")),
                 "hover:cursor-pointer",
                 disabled && "bg-slate-100/45 hover:cursor-default shadow-none",
+                "focus-visible:ring-2 focus-visible:ring-offset-4"
             )}>
             <div className="size-14">
                 {

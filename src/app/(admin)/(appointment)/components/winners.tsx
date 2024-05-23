@@ -9,6 +9,7 @@ import { Winner, WinnerInfo } from "./winner";
 import { ChoicePopup } from "./choice-popup";
 import { Spinner } from "@/components/custom/spinner";
 import { icons } from "@/constants/icons";
+import { AnimatePresence } from "framer-motion";
 
 function translate(winner: any): WinnerInfo & { disabled: boolean } {
     return {
@@ -211,7 +212,7 @@ export const Winners = (
                                     </span>
                                 </div>
                             </div>:
-                            <div className="grid grid-cols-1 md:grid-cols-3 items-start justify-start absolute top-0 right-0 left-0 gap-3">
+                            <div tabIndex={-1} className="grid grid-cols-1 md:grid-cols-3 items-start justify-start absolute top-0 right-0 left-0 gap-3 p-2">
                                 {
                                     winners?.filter(
                                         (winner)=> `${winner.lastName} ${winner.firstName} ${winner.id}`.toLowerCase().includes(term)
@@ -242,15 +243,17 @@ export const Winners = (
 
                 }
             </div>
-            {
-                winner && modalOpen &&
-                    <ChoicePopup 
-                        onClose={() => setModalOpen(false)}
-                        onAccept={() => mutate({ id: winner.id, status: winner.status === true ? null : true })}
-                        onDeny={() => mutate({ id: winner.id, status: winner.status === false ? null : false })}
-                        winnerInfo={winner}
-                    />
-            }
+            <AnimatePresence intial={true}>
+                {
+                    winner && modalOpen &&
+                        <ChoicePopup 
+                            onClose={() => setModalOpen(false)}
+                            onAccept={() => mutate({ id: winner.id, status: winner.status === true ? null : true })}
+                            onDeny={() => mutate({ id: winner.id, status: winner.status === false ? null : false })}
+                            winnerInfo={winner}
+                        />
+                }
+            </AnimatePresence>
         </div>
     );
 }
