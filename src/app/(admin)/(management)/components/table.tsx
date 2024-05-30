@@ -41,7 +41,6 @@ const ResponsiveTable: React.FC<Props> = ({ data }) => {
   const [selectedCities, setSelectedCities] = useState<
     (CityInterface | null)[][]
   >(Array(data.length).fill(Array(MAX_CITIES_PER_ROW).fill(null)));
-    console.log(selectedCities);
 
   // State variable to track the visibility of the city search for each row
   const [showCitySearch, setShowCitySearch] = useState<boolean[]>(
@@ -85,7 +84,6 @@ const ResponsiveTable: React.FC<Props> = ({ data }) => {
 
   // Handle city selection
   const handleCitySelect = (cities: CityInterface[], rowIndex: number) => {
-        console.log(selectedCities);
     setSelectedCities((prev) => {
       const newSelectedCities = [...prev];
       const newRowCities = [...newSelectedCities[rowIndex]];
@@ -115,7 +113,9 @@ const ResponsiveTable: React.FC<Props> = ({ data }) => {
     });
   };
 
+  // Handle action button click
   const handleActionClick = (rowIndex: number) => {
+    // Handle the action click event here
     console.log(`Action clicked for row ${rowIndex}`);
   };
 
