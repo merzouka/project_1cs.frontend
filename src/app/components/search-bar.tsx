@@ -22,7 +22,7 @@ export const SearchBar = ({ onChange, className }: { onChange: (value: string) =
             <Input 
                 ref={inputRef}
                 className="w-full border-0 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
-                placeholder="Rechercer"
+                placeholder="Rechercher"
                 value={value}
                 onChange={(e) => {
                     setValue(e.target.value);
