@@ -1,38 +1,19 @@
-"use client";
 import React from "react";
-import ResponsiveTable from "../components/table";
+import { UsersDisplay } from "../components/users-display";
 
 const Page = () => {
-  // Sample data array
-  const data = [
-    ["Da", "HALLOUCHE Abdessamed", "Data 6", "", "", "", "", ""],
-    ["Data 4", "Data 5", "Data 6", "", "", "", "", ""],
-    ["Data 1", "Data 2", "Data 3", "", "", "", "", ""],
-    ["Data 1", "Data 2", "Data 3", "", "", "", "", ""],
-    ["Data 1", "Data 2", "Data 3", "", "", "", "", ""],
-    ["Data 1", "Data 2", "Data 3", "", "", "", "", ""],
-    ["Data 1", "Data 2", "Data 3", "", "", "", "", ""],
-    ["Data 1", "Data 2", "Data 3", "", "", "", "", ""],
-    ["Data 1", "Data 2", "Data 3", "", "", "", "", ""],
-    ["Data 1", "Data 2", "Data 3", "", "", "", "", ""],
-    ["Data 1", "Data 2", "Data 3", "", "", "", "", ""],
-    ["Data 1", "Data 2", "Data 3", "", "", "", "", ""],
-    ["Data 1", "Data 2", "Data 3", "", "", "", "", ""],
-    ["Data 1", "Data 2", "Data 3", "", "", "", "", ""],
-  ];
-
-  return (
-    <div>
-      <div className="w-full pt-3 mb-4 lg:mb-8">
-        <h4 className="py-[20px] px-4 text-left border-b-0 font-medium text-gray-800 text-[28px]">
-          Les utilisateurs
-        </h4>
-      </div>
-      <div className="px-4">
-        <ResponsiveTable data={data} />
-      </div>
-    </div>
-  );
+    return (
+        <div className="px-2 md:px-4 py-6 pb-8 flex w-full h-full flex-col relative">
+            <div className="w-full pt-3 mb-2 md:mb-6">
+                <h4 className="px-4 text-left border-b-0 text-gray-800 text-[28px] font-semibold">
+                    Les Utilisateurs
+                </h4>
+            </div>
+            <div className="px-4 flex-grow flex">
+                <UsersDisplay />
+            </div>
+        </div>
+    );
 };
 
 export default Page;

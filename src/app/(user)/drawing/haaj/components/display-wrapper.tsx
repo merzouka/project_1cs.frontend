@@ -4,10 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { displayLoadingTime } from "@/app/(admin)/(drawing)/components/winner-diplay";
 import { useUser } from "@/hooks/use-user";
 import { Role } from "@/stores/user-store";
-import { icons } from "@/constants/icons";
 import { Toaster } from "@/components/ui/toaster";
 import { Spinner } from "@/components/custom/spinner";
 import { Pages } from "@/constants/pages";
+import { ErrorDisplay } from "@/app/components/error-display";
 
 export const DisplayWrapper = () => {
     const { useValidateAccess: validateAccess, user } = useUser();
@@ -43,14 +43,7 @@ export const DisplayWrapper = () => {
                         <DrawingDisplay displayed={displayed} closeModal={closeModal} setEnd={(_) => {
                             clearInterval(interval.current)
                         }} onModalClose={() => clearTimeout(timeout.current)} />:
-                        <div className="w-full h-full items-center justify-center flex">
-                            <div className="flex flex-col items-center justify-center md:gap-y-5 gap-y-2 -translate-y-1/2">
-                                {icons.caution("size-32 text-slate-400")}
-                                <span className="text-slate-400 text-2xl font-bold text-center text-wrap">
-                                    {"Seuls les haajs peuvent voir le tirage."}
-                                </span>
-                            </div>
-                        </div>
+                        <ErrorDisplay />
             }
             <Toaster />
         </>

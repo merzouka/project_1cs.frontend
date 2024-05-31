@@ -26,4 +26,6 @@ export const endpoints = {
     // payment
     paymentWinners: "winners_accepted/",
     paymentStatusUpdate: "payment_status/",
+    // roles
+    users: "users",
 }

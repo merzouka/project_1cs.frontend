@@ -10,7 +10,7 @@ import { endpoints } from "@/constants/endpoints";
 import { useUser } from "@/hooks/use-user";
 import { Pages } from "@/constants/pages";
 import { Spinner } from "@/components/custom/spinner";
-import { icons } from "@/constants/icons";
+import { ErrorDisplay } from "@/app/components/error-display";
 
 export interface Winner {
     image: string | null;
@@ -108,14 +108,7 @@ export const DrawingDisplay = ({
                     </div>
                     :
                     isError ?
-                        <div className="w-full flex-grow items-center justify-center flex">
-                            <div className="flex flex-col items-center justify-center md:gap-y-5 gap-y-2 -translate-y-1/2">
-                                {icons.caution("size-32 text-slate-400")}
-                                <span className="text-slate-400 text-2xl font-bold text-center text-wrap">
-                                    {"Seuls les haajs peuvent voir le tirage."}
-                                </span>
-                            </div>
-                        </div>
+                        <ErrorDisplay />
                         :
                         <>
                             <div className="relative w-full flex-grow overflow-y-scroll">
