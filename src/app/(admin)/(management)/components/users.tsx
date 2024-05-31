@@ -13,6 +13,7 @@ import { endpoints } from "@/constants/endpoints";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { ErrorDisplay } from "@/app/components/error-display";
+import { User } from "./user";
 
 export const Users = (
     {
@@ -24,7 +25,6 @@ export const Users = (
     const { data, isLoading, isError } = useQuery({
         queryKey: ["users", query],
         queryFn: async () => {
-                throw new Error("connetion erorr");
             try {
                 // const response = AxiosInstance.get(endpoints.users);
                 // return response;
