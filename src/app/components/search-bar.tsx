@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 export const SearchBar = ({ onChange, className }: { onChange: (value: string) => void; className?: string }) => {
     const inputRef = useRef<HTMLInputElement>(null);
-    const [value, setValue] = useState<string | undefined>(undefined);
+    const [value, setValue] = useState<string>("");
     const handleChange = useDebouncedCallback((value: string) => {
         onChange(value);
     }, 500);
