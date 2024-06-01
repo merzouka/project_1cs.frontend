@@ -66,6 +66,11 @@ export const UserRow = (
         setSelectedCities([...selectedCities, Number(value)]);
     }
 
+    function handleCityRemove(value: number) {
+        const newCities = [...selectedCities].filter(id => id != value);
+        setSelectedCities(newCities);
+    }
+
     function handleSave() {
     }
 
@@ -144,29 +149,24 @@ export const UserRow = (
                 <TableCell className="max-w-[20%] flex flex-wrap w-full">
                     <div className="flex flex-wrap gap-1">
                         {
-                            selectedCities.length > 0 && selectedCities.slice(0, 3).map((selected, index) => <CityTag 
+                            selectedCities.length > 0 && selectedCities.slice(0, 3).map((selected) => <CityTag 
                                 key={selected} 
                                 cityId={selected} 
-                                onClick={() => {
-                                    const newCities = [...selectedCities];
-                                    newCities.splice(index);
-                                    setSelectedCities(newCities);
-                                }}
+                                onClick={() => handleCityRemove(selected)}
                             />)
                         }
                         {selectedCities.length > 3 && 
                             <Tooltip>
                                 <TooltipTrigger>
-                                    <Button variant="outline">...</Button>
+                                    <Button variant="outline" className="border-0 hover:bg-transparent bg-transparent hover:text-slate-400 font-bold text-xl">
+                                        ...
+                                    </Button>
                                 </TooltipTrigger>
-                                <TooltipContent className="flex flex-wrap max-w-40">
-                                    {selectedCities.slice(3).map((selected, index) => (
+                                <TooltipContent className="flex flex-wrap max-w-60 gap-2 items-center justify-center">
+                                    {selectedCities.slice(3).map((selected) => (
                                         <CityTag 
-                                            onClick={() => {
-                                                const newCities = [...selectedCities];
-                                                newCities.splice(index);
-                                                setSelectedCities(newCities);
-                                            }}
+                                            className="m-1"
+                                            onClick={() => handleCityRemove(selected)}
                                             key={selected} 
                                             cityId={selected} 
                                         />
@@ -211,11 +211,14 @@ export const UserRow = (
     );
 }
 
-function CityTag({ cityId, onClick }: { cityId: number, onClick: () => void; }) {
+function CityTag({ cityId, onClick, className }: { cityId: number; onClick: () => void; className?: string; }) {
     return (
         <Button 
             onClick={onClick}
-            className="text-black bg-white hover:text-white hover:bg-red-400 rounded-xl shadow-md font-semibold"
+            className={cn(
+                "text-black bg-white hover:text-white hover:bg-red-400 rounded-xl shadow-md font-semibold",
+                className,
+            )}
         >
             {getCityName(mappedCities.find(city => city.id == cityId))}
         </Button>
