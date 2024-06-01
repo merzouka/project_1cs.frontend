@@ -51,6 +51,16 @@ export const UsersDisplay = () => {
         (value: string) => { setParam('query', value); }
     , 500);
 
+    const [filters, setFilters] = useState<{
+        role?: string;
+        provinceId?: string;
+        cityId?: string;
+    }>({
+        role: params.get('role') || undefined,
+        provinceId: params.get('province') || undefined,
+        cityId: params.get('city') || undefined,
+    });
+
     const handleFilter = useDebouncedCallback(
         (
             {
@@ -64,21 +74,28 @@ export const UsersDisplay = () => {
                 cityId?: string;
             }
         ) => {
+            const newParams = new URLSearchParams(params);
             if (role) {
-                setParam('role', role);
+                newParams.set('role', role);
+            } else {
+                newParams.delete('role');
             }
             if (provinceId) {
-                setParam('province', provinceId);
+                newParams.set('province', provinceId);
+            } else {
+                newParams.delete('province');
             }
             if (cityId) {
-                setParam('city', cityId);
+                newParams.set('city', cityId);
+            } else {
+                newParams.delete('city');
             }
+            replace(`roles?${newParams.toString()}`)
         }
     , 600)
 
     const className= "flex-grow rounded-2xl";
     const inputRef = useRef<HTMLInputElement>(null);
-    const [province, setProvince] = useState(params.get('province') || "");
 
     return (
         <div className="flex flex-col items-stretch justify-stretch w-full h-full">
@@ -101,7 +118,7 @@ export const UsersDisplay = () => {
                     />
                 </div>
                 <Popover>
-                    <PopoverTrigger>
+                    <PopoverTrigger asChild>
                         <Button
                             className="rounded-xl shadow-md text-white bg-orange-400 hover:bg-orange-300"
                             size={"icon"}
@@ -111,7 +128,11 @@ export const UsersDisplay = () => {
                     </PopoverTrigger>
                     <PopoverContent>
                         <Label>{"Role"}</Label>
-                        <Select value={params.get('role') || undefined} onValueChange={(value) => handleFilter({ role: value })}>
+                        <Select defaultValue={filters.role} onValueChange={(value) => {
+                            const newFilters = { ...filters, role: value };
+                            setFilters(newFilters);
+                            handleFilter(newFilters);
+                        }}>
                             <SelectTrigger className="shadow-md rounded-2xl">
                                 <SelectValue placeholder={"Sélectionner"} />
                             </SelectTrigger>
@@ -124,9 +145,10 @@ export const UsersDisplay = () => {
                             </SelectContent>
                         </Select>
                         <Label>{"Wilaya"}</Label>
-                        <Select value={params.get('province') || undefined} onValueChange={(value) => {
-                            setProvince(value);
-                            handleFilter({ provinceId: value });
+                        <Select defaultValue={filters.provinceId} onValueChange={(value) => {
+                            const newFilters = { ...filters, provinceId: value };
+                            setFilters(newFilters);
+                            handleFilter(newFilters);
                         }}>
                             <SelectTrigger className="shadow-md rounded-2xl">
                                 <SelectValue placeholder={"Sélectionner"} />
@@ -142,9 +164,13 @@ export const UsersDisplay = () => {
                             </SelectContent>
                         </Select>
                         <Label>{"Commune"}</Label>
-                        <Select value={params.get('city') || undefined} 
-                            onValueChange={(value) => handleFilter({ cityId: value })}
-                            disabled={!params.get('province')}
+                        <Select defaultValue={filters.cityId} 
+                            onValueChange={(value) => {
+                                const newFilters = { ...filters, cityId: value };
+                                setFilters(newFilters);
+                                handleFilter(newFilters);
+                            }}
+                            disabled={!filters.provinceId}
                         >
                             <SelectTrigger className="shadow-md rounded-2xl">
                                 <SelectValue placeholder={"Sélectionner"} />
@@ -152,7 +178,7 @@ export const UsersDisplay = () => {
                             <SelectContent>
                                 {
                                     cities
-                                    .filter(city => city.province == Number(province))
+                                    .filter(city => city.province == Number(filters.provinceId))
                                     .map(city => (
                                         <SelectItem key={city.id} value={`${city.id}`}>
                                             {city.name}
