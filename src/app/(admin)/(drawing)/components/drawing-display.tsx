@@ -16,7 +16,7 @@ export interface Winner {
     image: string | null;
     firstName: string;
     lastName: string;
-    nin: string;
+    city: string;
     gender: "female" | "male";
 }
 
@@ -25,7 +25,7 @@ function translate(winner: any): Winner {
         firstName: winner.first_name,
         lastName: winner.last_name,
         gender: winner.gender == "F" ? "female": "male",
-        nin: winner?.NIN || "000000",
+        city: winner.city,
         image: winner.personal_picture,
     }
 }
