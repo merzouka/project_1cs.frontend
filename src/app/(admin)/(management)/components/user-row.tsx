@@ -26,6 +26,10 @@ import { cn } from "@/lib/utils";
 import { City, mappedCities } from "@/constants/mapped-cities";
 import { SearchBar } from "@/app/components/search-bar";
 import { FiPlusCircle } from "react-icons/fi";
+import { useMutation } from "@tanstack/react-query";
+import { AxiosInstance } from "@/config/axios";
+import { getUrl } from "@/constants/api";
+import { endpoints } from "@/constants/endpoints";
 
 export interface User {
     id: number;
@@ -44,6 +48,20 @@ function getCityName(city: City | undefined): string {
     return `${city.province.name}/${city.name}`
 }
 
+function getRole(value: string): Role {
+    const roles = [
+        Role.user,
+        Role.haaj,
+        Role.drawingManager,
+        Role.superAdmin,
+        Role.doctor,
+        Role.paymentManager,
+        Role.admin,
+    ];
+    const index = Number(value);
+    return index >= 0 && index < roles.length ? roles[index] : roles[0];
+}
+
 export const UserRow = (
     {
         info,
@@ -55,6 +73,7 @@ export const UserRow = (
 ) => {
     const [selectedProvinces, setSelectedProvinces] = useState<number[]>(info.provinces || []);
     const [selectedCities, setSelectedCities] = useState<number[]>(info.cities || []);
+    const [role, setRole] = useState(info.role || undefined);
     const [cityTerm, setCityTerm] = useState<string>("");
     const [provinceTerm, setProvinceTerm] = useState<string>("");
 
@@ -71,20 +90,68 @@ export const UserRow = (
         setSelectedCities(newCities);
     }
 
+    const { isPending, mutate } = useMutation({
+        mutationKey: ["assign privilege", info.id],
+        mutationFn: async () => {
+            const response = await AxiosInstance.patch(getUrl(endpoints.assignPrivilege));
+            return response.data;
+        },
+        onMutate: () => {
+
+        },
+        onSuccess: () => {
+
+        },
+        onError: () => {
+
+        }
+    });
+
     function handleSave() {
     }
 
+    const disabled = true;
+    const overlay = <div className="absolute right-0 bottom-0 left-0 top-0 bg-slate-100/50 z-[10]"></div>;
+
     return (
         <TooltipProvider>
-            <TableRow>
-                <TableCell>{index}</TableCell>
-                <TableCell>{info.lastName}</TableCell>
-                <TableCell>{info.firstName}</TableCell>
-                <TableCell>{info.email}</TableCell>
-                <TableCell>
-                    <Select>
+            <TableRow className="relative">
+                <TableCell className="relative">
+                    {
+                        disabled &&
+                            overlay
+                    }
+                    {index}
+                </TableCell>
+                <TableCell className="relative">
+                    {
+                        disabled &&
+                            overlay
+                    }
+                    {info.lastName}
+                </TableCell>
+                <TableCell className="relative">
+                    {
+                        disabled &&
+                            overlay
+                    }
+                    {info.firstName}
+                </TableCell>
+                <TableCell className="relative">
+                    {
+                        disabled &&
+                            overlay
+                    }
+                    {info.email}
+                </TableCell>
+                <TableCell className="relative">
+                    {
+                        disabled &&
+                            overlay
+                    }
+                    <Select onValueChange={(value) => setRole(getRole(value))}>
                         <SelectTrigger className="shadow-md rounded-2xl">
-                            <SelectValue placeholder={"Sélectionner"} defaultValue={info.role}/>
+                            <SelectValue placeholder={"Sélectionner"} defaultValue={role}/>
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value={Role.admin.toString()}>{"Admin"}</SelectItem>
@@ -95,7 +162,11 @@ export const UserRow = (
                         </SelectContent>
                     </Select>
                 </TableCell>
-                <TableCell>
+                <TableCell className="relative">
+                    {
+                        disabled &&
+                            overlay
+                    }
                     <Tooltip>
                         <Select onValueChange={handleProvinceSelect}>
                             {
@@ -146,7 +217,11 @@ export const UserRow = (
                         </TooltipContent>
                     </Tooltip>
                 </TableCell>
-                <TableCell className="max-w-[20%] flex flex-wrap w-full">
+                <TableCell className=" flex flex-wrap w-full relative justify-center items-center">
+                    {
+                        disabled &&
+                            overlay
+                    }
                     <div className="flex flex-wrap gap-1">
                         {
                             selectedCities.length > 0 && selectedCities.slice(0, 3).map((selected) => <CityTag 
@@ -157,10 +232,8 @@ export const UserRow = (
                         }
                         {selectedCities.length > 3 && 
                             <Tooltip>
-                                <TooltipTrigger>
-                                    <Button variant="outline" className="border-0 hover:bg-transparent bg-transparent hover:text-slate-400 font-bold text-xl">
-                                        ...
-                                    </Button>
+                                <TooltipTrigger className="border-0 hover:bg-transparent bg-transparent hover:text-slate-400 font-bold text-xl px-2">
+                                    ...
                                 </TooltipTrigger>
                                 <TooltipContent className="flex flex-wrap max-w-60 gap-2 items-center justify-center">
                                     {selectedCities.slice(3).map((selected) => (
@@ -175,10 +248,10 @@ export const UserRow = (
                             </Tooltip>
                         }
                         <Select onValueChange={handleCitySelect}>
-                            <SelectTrigger className="[&>svg]:hidden p-0 border-0 w-fit">
-                                <Button size={"icon"} className="shadow-md rounded-xl text-slate-400 bg-white hover:bg-white hover:text-slate-500 px-2">
+                            <SelectTrigger className={"[&>svg]:hidden border-0 w-fit shadow-md rounded-xl text-slate-400 bg-white hover:bg-white hover:text-slate-500 aspect-square flex items-center justify-center"}>
+                                <div>
                                     <FiPlusCircle className="size-5"/>
-                                </Button>
+                                </div>
                             </SelectTrigger>
                             <SelectContent className="shadow-lg">
                                 <SearchBar 
@@ -201,7 +274,11 @@ export const UserRow = (
                         </Select>
                     </div>
                 </TableCell>
-                <TableCell>
+                <TableCell className="relative">
+                    {
+                        disabled &&
+                            overlay
+                    }
                     <Button className="rounded-full bg-pink-300 text-black font-semibold" size={"sm"}>
                         {"Sauvegarder"}
                     </Button>
