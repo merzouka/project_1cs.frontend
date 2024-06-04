@@ -8,10 +8,10 @@ import { useToast } from "@/components/ui/use-toast";
 import { Winner, WinnerInfo } from "./winner";
 import { ChoicePopup } from "./choice-popup";
 import { Spinner } from "@/components/custom/spinner";
-import { icons } from "@/constants/icons";
 import { AnimatePresence } from "framer-motion";
 import { useUser } from "@/hooks/use-user";
 import { Pages } from "@/constants/pages";
+import { ErrorDisplay } from "@/app/components/error-display";
 
 function translate(winner: any): WinnerInfo & { disabled: boolean } {
     return {
@@ -131,14 +131,7 @@ export const Winners = (
                     isLoading ?
                         <Spinner size={"xl"} text={"show"} direction={"col"} className="text-slate-400"/>:
                         isError ?
-                            <div className="w-full flex-grow items-center justify-center flex">
-                                <div className="flex flex-col items-center justify-center md:gap-y-5 gap-y-2">
-                                    {icons.caution("size-32 text-slate-400")}
-                                    <span className="text-slate-400 text-2xl font-bold text-center text-wrap">
-                                        {"Nous ne pouvons pas récupérer les pèlerins."}
-                                    </span>
-                                </div>
-                            </div>:
+                            <ErrorDisplay />:
                             <div tabIndex={-1} className="grid grid-cols-1 md:grid-cols-3 items-start justify-start absolute top-0 right-0 left-0 gap-3 p-2 overflow-x-visible">
                                 {
                                     winners?.filter(

@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 export const SearchBar = ({ onChange, className }: { onChange: (value: string) => void; className?: string }) => {
     const inputRef = useRef<HTMLInputElement>(null);
-    const [value, setValue] = useState<string | undefined>(undefined);
+    const [value, setValue] = useState<string>("");
     const handleChange = useDebouncedCallback((value: string) => {
         onChange(value);
     }, 500);
@@ -22,7 +22,7 @@ export const SearchBar = ({ onChange, className }: { onChange: (value: string) =
             <Input 
                 ref={inputRef}
                 className="w-full border-0 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
-                placeholder="Rechercer"
+                placeholder="Rechercher"
                 value={value}
                 onChange={(e) => {
                     setValue(e.target.value);
