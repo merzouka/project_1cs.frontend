@@ -12,7 +12,8 @@ export const Participant = ({
             image: string | null;
             firstName: string;
             lastName: string;
-            city: string;
+            city?: string;
+            nin?: string;
         };
         className?: string;
     }) => {
@@ -39,7 +40,7 @@ export const Participant = ({
             </div>
             <div className="flex flex-col py-3 justify-between text-sm">
                 <p className="font-bold">{`${participant.firstName} ${participant.lastName}`}</p>
-                <p className="text-gray-600">{participant.city}</p>
+                <p className="text-gray-600">{participant.city || participant.nin}</p>
             </div>
         </div>
     );

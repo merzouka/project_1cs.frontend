@@ -43,13 +43,13 @@ export const DrawingDisplay = ({
         closeModal?: boolean;
         onModalClose?: () => void;
     }) => {
-    const { useValidateAccess: validateAccess } = useUser();
+    const { useValidateAccess: validateAccess, user } = useUser();
     validateAccess(Pages.drawing);
     const [index, setIndex] = useState<number>(0);
     const { toast } = useToast();
     const { data: winners, isLoading, isError } = useQuery({
         staleTime: Infinity,
-        queryKey: ["drawing winners"],
+        queryKey: ["drawing winners", user.email],
         queryFn: async () => {
             try {
                 setEnd(true);

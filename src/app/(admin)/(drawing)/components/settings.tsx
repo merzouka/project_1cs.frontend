@@ -67,7 +67,7 @@ export const Settings = () => {
 
     const [disableForm, setDisableForm] = useState(false);
     const { isLoading: isStateLoading, isError: isStateError, failureCount } = useQuery({
-        queryKey: ["drawing state"],
+        queryKey: ["drawing state", user.email],
         staleTime: 5 * 60 * 1000,
         queryFn: async () => {
             try {
@@ -94,7 +94,7 @@ export const Settings = () => {
     });
 
     const { isLoading: isCitiesFetching, isError: isCitiesFetchError, data: cities } = useQuery({
-        queryKey: ["cities"],
+        queryKey: ["cities", user.email],
         staleTime: 5 * 60 * 1000,
         queryFn: async () => {
             try {

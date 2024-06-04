@@ -166,7 +166,7 @@ export const UserProfileForm = ({ page }: { page: Pages }) => {
                         )}>
                             <ImagePicker 
                                 className=" mb-2"
-                                imageSrc={user.image}
+                                imageSrc={user.image || imageSrc}
                                 onImageSrcChange={setImageSrc}
                                 onImageChange={(image) => {
                                     setHasChanged(true);

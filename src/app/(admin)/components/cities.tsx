@@ -7,11 +7,13 @@ import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Toaster } from "@/components/ui/toaster";
 import { AxiosInstance } from "@/config/axios";
+import { useUser } from "@/hooks/use-user";
 
 export const Cities = () => {
     const { toast } = useToast();
+    const { user } = useUser();
     const { isLoading, isError, data, failureCount } = useQuery({
-        queryKey: ["cities"],
+        queryKey: ["cities", user.email],
         queryFn: async () => {
             try {
                 const response = await AxiosInstance.get(getUrl(endpoints.profileCitites));

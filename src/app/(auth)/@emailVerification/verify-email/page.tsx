@@ -52,30 +52,25 @@ export default function Step() {
     });
 
     const { toast } = useToast();
-    const [sendingEmail, setSendingEmail] = useState(true);
-    const { isLoading: isEmailLoading, isError: isEmailError, isSuccess: isEmailSuccess } = useQuery({
-        queryKey: ["verfication email"],
-        queryFn: async () => {
-            setSendingEmail(false);
-            try {
-                const response = await axios.post(getUrl(endpoints.verificationEmail), { email: email});
-                toast({
-                    description: "Un email de vérification vous a été envoyé.",
-                });
-                return JSON.parse(response.data);
-            } catch (error) {
-                toast({
-                    title: "Erreur",
-                    description: "L'e-mail n'a pas pu être envoyé.",
-                    variant: "destructive",
-                });
-                throw new Error("connection error");
-            }
+    const { isPending: isEmailLoading, isError: isEmailError, isSuccess: isEmailSuccess, mutate: sendEmail } = useMutation({
+        mutationKey: ["verfication email"],
+        mutationFn: async () => {
+            const response = await axios.post(getUrl(endpoints.verificationEmail), { email: email});
+            return response;
         },
-        enabled: sendingEmail,
-        retry: false,
+        onSuccess: () => {
+            toast({
+                description: "Un email de vérification vous a été envoyé.",
+            });
+        },
+        onError: () => {
+            toast({
+                title: "Erreur",
+                description: "L'e-mail n'a pas pu être envoyé.",
+                variant: "destructive",
+            });
+        }
     });
-
 
     const { next } = useMultiStep(MultiStepKeys.register);
     const { isPending: isOTPLoading, mutate: otpMutate } = useMutation({
@@ -203,7 +198,7 @@ export default function Step() {
             >
                 <p className="flex flex-wrap justify-center items-center text-xs">
                     {"Vous n'avez pas reçu un e-mail?"}
-                    <Button variant="link" size="sm" onClick={() => setSendingEmail(true)} disabled={sendingEmail}
+                    <Button variant="link" size="sm" onClick={() => sendEmail()} disabled={isEmailLoading}
                         className="font-bold focus-visible:ring-blue-400 p-1 ms-5 my-2 h-5 rounded-none text-xs">
                         Cliquez pour renvoyer
                     </Button>
