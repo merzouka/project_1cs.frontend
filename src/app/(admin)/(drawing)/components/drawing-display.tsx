@@ -45,11 +45,9 @@ export const DrawingDisplay = ({
     }) => {
     const { useValidateAccess: validateAccess } = useUser();
     validateAccess(Pages.drawing);
-    const [winners, setWinners] = useState<Winner[]>([]);
+    const [index, setIndex] = useState<number>(0);
     const { toast } = useToast();
-    const renderCount = useRef(0).current++;
-    console.log(`render count ${renderCount}`);
-    const { isLoading, isError } = useQuery({
+    const { data: winners, isLoading, isError } = useQuery({
         staleTime: Infinity,
         queryKey: ["drawing winners"],
         queryFn: async () => {
@@ -57,7 +55,6 @@ export const DrawingDisplay = ({
                 setEnd(true);
                 const response = await AxiosInstance.get(getUrl(endpoints.drawingResult));
                 const data = response.data.winners.map((winner: any) => translate(winner));
-                setWinners(data);
                 setEnd(false);
                 return data;
             } catch (error) {
@@ -75,20 +72,19 @@ export const DrawingDisplay = ({
     const [toDisplay, setToDisplay] = useState<React.ReactNode[] | undefined>();
 
     const displayNext = () => {
-        const chosenIndex = 0;
-        const chosenItems = [winners[chosenIndex]];
-        let newWinners = [...winners];
+        let nextIndex = index;
+        const chosenItems = [winners[index]];
         if (chosenItems[0].gender == "female") {
-            chosenItems.push(winners[chosenIndex + 1]);
-            newWinners.splice(chosenIndex, 2);
+            chosenItems.push(winners[index + 1]);
+            nextIndex += 2;
         } else {
-            newWinners.splice(chosenIndex, 1);
+            nextIndex += 1;
         }
-        setWinners(newWinners);
+        setIndex(nextIndex);
         setToDisplay(chosenItems.map((winner) => <Participant className="shadow-none" key={`winner${winner.lastName}`} participant={winner}/>))
         setDisplayedItems([...displayedItems, ...chosenItems]);
         setModalOpen(true);
-        if (newWinners.length == 0) {
+        if (nextIndex == winners.length) {
             setEnd(true);
         }
     }
