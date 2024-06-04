@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Participant } from "./participant";
 import { Modal } from "./modal";
 import { WinnerDisplay } from "./winner-diplay";
@@ -47,6 +47,8 @@ export const DrawingDisplay = ({
     validateAccess(Pages.drawing);
     const [winners, setWinners] = useState<Winner[]>([]);
     const { toast } = useToast();
+    const renderCount = useRef(0).current++;
+    console.log(`render count ${renderCount}`);
     const { isLoading, isError } = useQuery({
         staleTime: Infinity,
         queryKey: ["drawing winners"],

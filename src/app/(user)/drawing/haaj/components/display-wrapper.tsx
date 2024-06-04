@@ -8,6 +8,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Spinner } from "@/components/custom/spinner";
 import { Pages } from "@/constants/pages";
 import { ErrorDisplay } from "@/app/components/error-display";
+import { useInterval } from "usehooks-ts";
 
 export const DisplayWrapper = () => {
     const { useValidateAccess: validateAccess, user } = useUser();
@@ -15,21 +16,16 @@ export const DisplayWrapper = () => {
     const [displayed, setDisplayed] = useState(0);
     const [closeModal, setCloseModal] = useState(false);
     const timeout = useRef<NodeJS.Timeout | undefined>(undefined);
-    const interval = useRef<NodeJS.Timeout | undefined>(undefined);
+    const [end, setEnd] = useState(false);
 
-    useEffect(() => {
-        interval.current = setInterval(() => {
+    useInterval(() => {
             setDisplayed((current) => current + 1);
             setCloseModal(false);
             timeout.current = setTimeout(() => {
                 setCloseModal(true);
             }, displayLoadingTime + 3 * 1000);
-        }, displayLoadingTime + 4 * 1000);
-        return () => {
-            clearInterval(interval.current)
-            clearTimeout(timeout.current);
-        }
-    }, []);
+        }, !end? displayLoadingTime + 4 * 1000 : null,
+    );
 
     return (
         <>
@@ -40,9 +36,8 @@ export const DisplayWrapper = () => {
                     </div>
                     :
                     user.isLoggedIn && user.role == Role.haaj ?
-                        <DrawingDisplay displayed={displayed} closeModal={closeModal} setEnd={(_) => {
-                            clearInterval(interval.current)
-                        }} onModalClose={() => clearTimeout(timeout.current)} />:
+                        <DrawingDisplay displayed={displayed} closeModal={closeModal} setEnd={setEnd}
+                            onModalClose={() => clearTimeout(timeout.current)} />:
                         <ErrorDisplay />
             }
             <Toaster />
