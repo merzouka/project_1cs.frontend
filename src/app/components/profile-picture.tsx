@@ -8,7 +8,6 @@ import { VscAccount } from "react-icons/vsc";
 
 export const ProfilePicture = ({ className }: { className?: string }) => {
     const { user } = useUser();
-
     return (
         <Button 
             className={cn(

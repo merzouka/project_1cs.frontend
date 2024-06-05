@@ -21,7 +21,7 @@ export const pages: NavPage[] = [
     },
     {
         id: "drawing",
-        link: "/drawing",
+        link: "/drawing/haaj",
         display: "Tirage",
         icon: <GiCardPickup className={styles} />,
     },

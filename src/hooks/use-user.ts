@@ -3,7 +3,6 @@ import { useRouter } from "next/navigation";
 import { Pages } from "@/constants/pages";
 import { pageValidators } from "@/constants/page-validators";
 import { useQuery } from "@tanstack/react-query";
-import { isAxiosError } from "axios";
 import { getUrl } from "@/constants/api";
 import { endpoints } from "@/constants/endpoints";
 import { useToast } from "@/components/ui/use-toast";
@@ -22,8 +21,9 @@ export function useUser() {
 
     const router = useRouter();
     const { toast } = useToast();
-    function validateAccess(page: Pages) {
+    function useValidateAccess(page: Pages) {
         const { isLoading, isError, data, failureCount } = useQuery({
+            staleTime: Infinity,
             queryKey: ["profile"],
             queryFn: async () => {
                 try {
@@ -34,18 +34,6 @@ export function useUser() {
                     if (failureCount < 3) {
                         throw new Error("fetch fail");
                     }
-                    if (isAxiosError(error) && error.response) {
-                        toast({
-                            description: "Non autorisé",
-                            variant: "destructive",
-                        });
-                        throw new Error("unauthorized acess");
-                    }
-                    toast({
-                        title: "Erreur de connexion",
-                        description: "Nous ne pouvons pas connecter au serveur.",
-                        variant: "destructive",
-                    });
                     throw new Error("connection error");
                 }
             }
@@ -53,11 +41,14 @@ export function useUser() {
         useEffect(() => {
             try {
                 if (isError) {
-                    router.replace("/login");
+                    if (page != Pages.open) {
+                        router.replace("/login");
+                    }
                     return;
                 }
                 if (data) {
                     const loggedInUser = {
+                        id: data.id,
                         role: data.role,
                         email: data.email,
                         firstName: data.first_name,
@@ -67,7 +58,7 @@ export function useUser() {
                         province: data.province,
                         city: getCityNameId(data.city),
                         gender: data.gender == "M" ? "male" : "female",
-                        image: data?.image || undefined,
+                        image: data?.personal_picture || undefined,
                         emailVerified: data?.is_email_verified || false,
                         isLoggedIn: true,
                     };
@@ -87,7 +78,7 @@ export function useUser() {
                 toast({
                     description: "Erreur interne de serveur.",
                     variant: "destructive",
-                })
+                });
             }
             
         }, [data, isError]);
@@ -104,6 +95,6 @@ export function useUser() {
         isLoggedIn,
         role,
         hasRole,
-        validateAccess,
+        useValidateAccess,
     }
 }
