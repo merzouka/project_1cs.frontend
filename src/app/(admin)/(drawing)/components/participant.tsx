@@ -12,13 +12,14 @@ export const Participant = ({
             image: string | null;
             firstName: string;
             lastName: string;
-            city: string;
+            city?: string;
+            nin?: string;
         };
         className?: string;
     }) => {
     return (
         <div className={cn(
-            "bg-white rounded-lg shadow-md shadow-slate-300 p-3 flex items-center w-[339px] h-[93px] gap-x-2",
+            "bg-white rounded-lg shadow-md shadow-slate-300 p-3 flex items-center w-[339px] h-[93px] gap-x-2 relative z-[10]",
             className,
         )}>
             <div className="rounded-md flex justify-center items-center h-full aspect-square">
@@ -39,7 +40,7 @@ export const Participant = ({
             </div>
             <div className="flex flex-col py-3 justify-between text-sm">
                 <p className="font-bold">{`${participant.firstName} ${participant.lastName}`}</p>
-                <p className="text-gray-600">{participant.city}</p>
+                <p className="text-gray-600">{participant.city || participant.nin}</p>
             </div>
         </div>
     );
