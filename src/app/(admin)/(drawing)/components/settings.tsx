@@ -38,7 +38,7 @@ const formSchema = z.object({
     .regex(new RegExp(/[0-9]+/), {
         message: "Veuillez saisir un numéro.",
     }),
-    type: z.enum(["random", "age based"], { required_error: "Veuillez choisir le type du tirage." }),
+    type: z.enum(["random", "age based"], { required_error: "Veuillez choisir le type du tirage." }).optional(),
     percentage: z.string({
         required_error: "Veuillez remplir le nombre de places.",
         invalid_type_error: "Veuillez saisir un pourcentage valide.",
@@ -55,46 +55,59 @@ const formSchema = z.object({
 export const Settings = () => {
     const { user, useValidateAccess: validateAccess } = useUser();
     validateAccess(Pages.drawingSettings);
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            winners: undefined,
-            type: undefined,
-        }
-    });
     const { toast } = useToast();
     const router = useRouter();
 
     const [disableForm, setDisableForm] = useState(false);
-    const { isLoading: isStateLoading, isError: isStateError, failureCount } = useQuery({
-        queryKey: ["drawing state"],
-        staleTime: 5 * 60 * 1000,
+    const { data, isLoading: isStateLoading, failureCount } = useQuery({
+        queryKey: ["drawing state", user.email],
         queryFn: async () => {
             try {
-                const response = await AxiosInstance.get(getUrl(endpoints.drawingDefined));
-                if (response.data.tirage_definit) {
-                    toast({
-                        description: "Le tirage à été déja definit.",
-                        variant: "destructive",
-                    });
-                    setDisableForm(true);
-                }
-                return response.data;
+                setDisableForm(true);
+                const response = await AxiosInstance.get(getUrl(endpoints.getDrawing));
+                toast({
+                    description: "Le tirage à été déja definit.",
+                    variant: "destructive",
+                });
+                setDisableForm(true);
+                const drawingType = response.data.type_tirage == 1 ? DrawingType.Random : DrawingType.AgeBased;
+                setDrawingType(drawingType);
+                return {
+                    winners: response.data.nombre_de_place,
+                    waiting: response.data.nombre_waiting,
+                    type: drawingType,
+                    percentage: response.data.tranche_age,
+                };
             } catch (error) {
                 if (isAxiosError(error) && failureCount == 2) {
+                    if (error.status == 404) {
+                        setDisableForm(false);
+                        return {
+                            message: 'no drawing found',
+                        }
+                    }
                     toast({
                         title: "Erreur de connexion",
                         description: "Nous ne pouvons pas connecter au serveur.",
                         variant: "destructive",
                     });
+                    setDisableForm(true);
                     throw new Error("connection error");
                 }
             }
         }
     });
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        values: {
+            winners: data?.winners,
+            type: data?.type,
+            percentage: data?.percentage
+        }
+    });
 
     const { isLoading: isCitiesFetching, isError: isCitiesFetchError, data: cities } = useQuery({
-        queryKey: ["cities"],
+        queryKey: ["cities", user.email],
         staleTime: 5 * 60 * 1000,
         queryFn: async () => {
             try {
@@ -143,7 +156,7 @@ export const Settings = () => {
         AgeBased = "age based",
     }
     const [drawingType, setDrawingType] = useState<string>(DrawingType.Random);
-    const formDisabled = disableForm || isStateLoading || isStateError || isSettingLoading 
+    const formDisabled = disableForm || isStateLoading || isSettingLoading 
         || isCitiesFetching || isCitiesFetchError || cities.length == 0;
     return (
         <div className="p-2 md:p-4 rounded-xl md:border md:border-slate-200 grow md:max-w-[65%]">
@@ -180,7 +193,7 @@ export const Settings = () => {
                                         onValueChange={(value) => {
                                             setDrawingType(value)
                                             field.onChange(value)
-                                        }} defaultValue={field.value}>
+                                        }} value={field.value}>
                                         <FormControl>
                                             <SelectTrigger  className={cn(
                                                 "rounded-2xl",

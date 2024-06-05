@@ -1,6 +1,6 @@
 "use client";
 import { DrawingDisplay } from "@/app/(admin)/(drawing)/components/drawing-display";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { displayLoadingTime } from "@/app/(admin)/(drawing)/components/winner-diplay";
 import { useUser } from "@/hooks/use-user";
 import { Role } from "@/stores/user-store";

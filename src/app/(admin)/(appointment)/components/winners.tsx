@@ -34,7 +34,7 @@ export const Winners = (
         updateEndpoint: string;
         page: Pages
     }) => {
-    const { useValidateAccess: validateAccess } = useUser();
+    const { useValidateAccess: validateAccess, user } = useUser();
     validateAccess(page);
 
     const [term, setTerm] = useState("");
@@ -42,7 +42,7 @@ export const Winners = (
     const [modalOpen, setModalOpen] = useState(false);
     const { toast } = useToast();
     const { isLoading, isError, data: winners, failureCount} = useQuery({
-        queryKey: ["winners", itemsEndpoint],
+        queryKey: ["winners", itemsEndpoint, user.email],
         queryFn: async () => {
             try {
                 const response = await AxiosInstance.get(getUrl(itemsEndpoint));
