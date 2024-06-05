@@ -8,32 +8,32 @@ export default function BottomMessage({
     link,
     className,
     params,
-    }: {
-        action: string;
-        prompt: string;
-        link: string;
-        className?: {
-            wrapper?: string,
-            button?: string,
-            link?: string,
-        },
-        params?: URLSearchParams,
-    }) {
+}: {
+    action: string;
+    prompt: string;
+    link: string;
+    className?: {
+        wrapper?: string,
+        button?: string,
+        link?: string,
+    },
+    params?: URLSearchParams,
+}) {
     return (
         <p className={cn(
             "text-xs flex items-center justify-center flex-wrap",
             className?.wrapper
         )}>
             {prompt}
-            <Button 
-                tabIndex={-1} 
-                variant="link" 
+            <Button
+                tabIndex={-1}
+                variant="link"
                 className={cn(
                     "font-bold text-black text-base",
                     className?.button,
                 )}>
                 <Link className={cn(
-                    "text-xs" 
+                    "text-xs"
                 )} href={`${link}?${params?.toString()}`}>
                     {action}
                 </Link>

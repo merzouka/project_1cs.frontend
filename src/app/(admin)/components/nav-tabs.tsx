@@ -15,7 +15,7 @@ export const NavTabs = ({ tabs }: { tabs: Tab[] }) => {
     const pathname = usePathname();
 
     return (
-        <ul className="flex flex-col gap-y-2" aria-orientation="vertical" role="tablist">
+        <ul className="flex flex-col" aria-orientation="vertical" role="tablist">
             {
                 tabs.map((tab, index) => {
                     return (
