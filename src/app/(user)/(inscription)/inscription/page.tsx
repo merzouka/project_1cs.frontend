@@ -25,7 +25,7 @@ export default function Homee() {
             commune: user.city,
         });
     }, [user])
-    
+
     return (
         <>
             <div
