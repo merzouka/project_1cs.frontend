@@ -27,8 +27,7 @@ export function getRole(role: string): Role {
     if (!Object.keys(roleMapping).includes(role)) {
         throw new Error("invalid role");
     }
-    /* @ts-ignore above if statement handles error */
-    return roleMapping[role];
+    return roleMapping[role as keyof typeof roleMapping];
 }
 
 export interface UserInfo {

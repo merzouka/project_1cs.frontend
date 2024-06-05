@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Participant } from "./participant";
 import { Modal } from "./modal";
 import { WinnerDisplay } from "./winner-diplay";
@@ -10,13 +10,13 @@ import { endpoints } from "@/constants/endpoints";
 import { useUser } from "@/hooks/use-user";
 import { Pages } from "@/constants/pages";
 import { Spinner } from "@/components/custom/spinner";
-import { icons } from "@/constants/icons";
+import { ErrorDisplay } from "@/app/components/error-display";
 
 export interface Winner {
     image: string | null;
     firstName: string;
     lastName: string;
-    nin: string;
+    city: string;
     gender: "female" | "male";
 }
 
@@ -25,7 +25,7 @@ function translate(winner: any): Winner {
         firstName: winner.first_name,
         lastName: winner.last_name,
         gender: winner.gender == "F" ? "female": "male",
-        nin: winner?.NIN || "000000",
+        city: winner.city,
         image: winner.personal_picture,
     }
 }
@@ -45,9 +45,9 @@ export const DrawingDisplay = ({
     }) => {
     const { useValidateAccess: validateAccess } = useUser();
     validateAccess(Pages.drawing);
-    const [winners, setWinners] = useState<Winner[]>([]);
+    const [index, setIndex] = useState<number>(0);
     const { toast } = useToast();
-    const { isLoading, isError } = useQuery({
+    const { data: winners, isLoading, isError } = useQuery({
         staleTime: Infinity,
         queryKey: ["drawing winners"],
         queryFn: async () => {
@@ -55,7 +55,6 @@ export const DrawingDisplay = ({
                 setEnd(true);
                 const response = await AxiosInstance.get(getUrl(endpoints.drawingResult));
                 const data = response.data.winners.map((winner: any) => translate(winner));
-                setWinners(data);
                 setEnd(false);
                 return data;
             } catch (error) {
@@ -73,20 +72,19 @@ export const DrawingDisplay = ({
     const [toDisplay, setToDisplay] = useState<React.ReactNode[] | undefined>();
 
     const displayNext = () => {
-        const chosenIndex = 0;
-        const chosenItems = [winners[chosenIndex]];
-        let newWinners = [...winners];
+        let nextIndex = index;
+        const chosenItems = [winners[index]];
         if (chosenItems[0].gender == "female") {
-            chosenItems.push(winners[chosenIndex + 1]);
-            newWinners.splice(chosenIndex, 2);
+            chosenItems.push(winners[index + 1]);
+            nextIndex += 2;
         } else {
-            newWinners.splice(chosenIndex, 1);
+            nextIndex += 1;
         }
-        setWinners(newWinners);
+        setIndex(nextIndex);
         setToDisplay(chosenItems.map((winner) => <Participant className="shadow-none" key={`winner${winner.lastName}`} participant={winner}/>))
         setDisplayedItems([...displayedItems, ...chosenItems]);
         setModalOpen(true);
-        if (newWinners.length == 0) {
+        if (nextIndex == winners.length) {
             setEnd(true);
         }
     }
@@ -108,14 +106,7 @@ export const DrawingDisplay = ({
                     </div>
                     :
                     isError ?
-                        <div className="w-full flex-grow items-center justify-center flex">
-                            <div className="flex flex-col items-center justify-center md:gap-y-5 gap-y-2 -translate-y-1/2">
-                                {icons.caution("size-32 text-slate-400")}
-                                <span className="text-slate-400 text-2xl font-bold text-center text-wrap">
-                                    {"Seuls les haajs peuvent voir le tirage."}
-                                </span>
-                            </div>
-                        </div>
+                        <ErrorDisplay />
                         :
                         <>
                             <div className="relative w-full flex-grow overflow-y-scroll">

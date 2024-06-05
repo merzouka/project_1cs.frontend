@@ -15,10 +15,11 @@ const Tirage = () => {
     const handleSearch = useDebouncedCallback((value: string) => {
         setTerm(value)
     }, 500);
+    console.log(displayed);
     
 
     const handleButtonClick = () => {
-        setDisplayed(displayed + 1);
+        setDisplayed(current => current + 1);
     }
 
     return (
