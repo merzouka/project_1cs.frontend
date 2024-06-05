@@ -7,9 +7,7 @@ import { slideInRightExitLeft } from "@/constants/animations";
 import { MultiStepKeys, useMultiStep } from "@/app/(auth)/hooks/use-mutli-step-register";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
-import { useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useRegisterStore } from "@/app/(auth)/stores/register-store";
+import { useMutation } from "@tanstack/react-query";
 
 // components
 import { Spinner } from "@/components/custom/spinner";
@@ -200,7 +198,7 @@ export default function Step() {
                     {"Vous n'avez pas reçu un e-mail?"}
                     <Button variant="link" size="sm" onClick={() => sendEmail()} disabled={isEmailLoading}
                         className="font-bold focus-visible:ring-blue-400 p-1 ms-5 my-2 h-5 rounded-none text-xs">
-                        Cliquez pour renvoyer
+                        {"Cliquez pour renvoyer"}
                     </Button>
                 </p>
             </motion.div>

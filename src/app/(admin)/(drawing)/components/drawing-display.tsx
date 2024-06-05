@@ -13,20 +13,25 @@ import { Spinner } from "@/components/custom/spinner";
 import { ErrorDisplay } from "@/app/components/error-display";
 
 export interface Winner {
+    id: number;
     image: string | null;
     firstName: string;
     lastName: string;
-    city: string;
+    city?: string;
+    nin?: string;
     gender: "female" | "male";
+    mahramId?: number;
 }
 
 function translate(winner: any): Winner {
     return {
+        id: id,
         firstName: winner.first_name,
         lastName: winner.last_name,
         gender: winner.gender == "F" ? "female": "male",
         city: winner.city,
         image: winner.personal_picture,
+        mahramId: winner.maahram_id
     }
 }
 
@@ -75,6 +80,7 @@ export const DrawingDisplay = ({
         let nextIndex = index;
         const chosenItems = [winners[index]];
         if (chosenItems[0].gender == "female") {
+            mahram = winners.find((winner) => winner.id)
             chosenItems.push(winners[index + 1]);
             nextIndex += 2;
         } else {

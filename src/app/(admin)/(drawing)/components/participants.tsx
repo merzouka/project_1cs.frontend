@@ -69,7 +69,7 @@ export const Participants = () => {
                         }
                         {
                             !isLoading && !isError &&
-                                participants?.map((participant: any) => <Participant key={participant.id} participant={{
+                                participants?.map((participant: any, index: number) => <Participant key={index} participant={{
                                     image: participant.personal_picture,
                                     firstName: participant.first_name,
                                     lastName: participant.last_name,
