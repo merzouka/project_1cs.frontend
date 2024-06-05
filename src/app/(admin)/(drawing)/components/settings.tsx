@@ -61,25 +61,27 @@ export const Settings = () => {
     const [disableForm, setDisableForm] = useState(false);
     const { data, isLoading: isStateLoading, failureCount } = useQuery({
         queryKey: ["drawing state", user.email],
-        staleTime: 5 * 60 * 1000,
         queryFn: async () => {
             try {
+                setDisableForm(true);
                 const response = await AxiosInstance.get(getUrl(endpoints.getDrawing));
                 toast({
                     description: "Le tirage à été déja definit.",
                     variant: "destructive",
                 });
                 setDisableForm(true);
-
+                const drawingType = response.data.type_tirage == 1 ? DrawingType.Random : DrawingType.AgeBased;
+                setDrawingType(drawingType);
                 return {
                     winners: response.data.nombre_de_place,
                     waiting: response.data.nombre_waiting,
-                    type: response.data.type_tirage == 1 ? DrawingType.Random : DrawingType.AgeBased,
+                    type: drawingType,
                     percentage: response.data.tranche_age,
                 };
             } catch (error) {
                 if (isAxiosError(error) && failureCount == 2) {
                     if (error.status == 404) {
+                        setDisableForm(false);
                         return {
                             message: 'no drawing found',
                         }

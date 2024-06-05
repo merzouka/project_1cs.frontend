@@ -19,7 +19,7 @@ export const Participant = ({
     }) => {
     return (
         <div className={cn(
-            "bg-white rounded-lg shadow-md shadow-slate-300 p-3 flex items-center w-[339px] h-[93px] gap-x-2",
+            "bg-white rounded-lg shadow-md shadow-slate-300 p-3 flex items-center w-[339px] h-[93px] gap-x-2 relative z-[10]",
             className,
         )}>
             <div className="rounded-md flex justify-center items-center h-full aspect-square">
