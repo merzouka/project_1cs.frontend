@@ -8,7 +8,7 @@ import { Filter } from "./filter";
 import { TablePagination } from "./table-pagination";
 
 export const UsersDisplay = () => {
-    const { data, isLoading, isError } = useQuery({
+    const { data: tmp, isLoading, isError } = useQuery({
         queryKey: ["users"],
         queryFn: async () => {
             try {

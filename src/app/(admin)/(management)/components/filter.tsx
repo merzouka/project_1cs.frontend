@@ -93,13 +93,13 @@ export const Filter = (
     return (
         <div className="flex gap-x-3 items-center justify-center w-full mb-2 md:mb-4">
             <div className={cn(
-                "flex items-center border border-slate-100 rounded-lg px-2 focus-within:ring-2",
+                "flex items-center border border-slate-100 rounded-lg px-2 focus-within:ring-2 overflow-clip",
                 "focus-within:ring-black focus-within:ring-offset-2",
-                "shadow-md shadow-slate-200",
-                "flex-grow rounded-2xl",
+                "flex-grow rounded-full border-slate-200 border",
+                "px-4",
                 className
             )}>
-                <LuSearch className="size-7 text-slate-400" onClick={() => inputRef.current?.focus()}/>
+                <LuSearch className="size-6 text-slate-500" onClick={() => inputRef.current?.focus()}/>
                 <Input 
                     ref={inputRef}
                     className="w-full border-0 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
