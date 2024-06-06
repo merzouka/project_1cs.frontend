@@ -34,6 +34,8 @@ import {
 } from "@/components/ui/table";
 import { AlertDialogDemo } from "./Cardvol";
 import { NavigationMenuDemo } from "./page slider";
+import { useQuery } from "@tanstack/react-query";
+import { useUser } from "@/hooks/use-user";
 
 export type vl = {
     N: string;
@@ -44,57 +46,30 @@ export type vl = {
     Nombre_de_place: number;
 };
 
-const initialData: vl[] = [
-    {
-        N: "1",
-        Vols: "alger",
-        Date_de_départ: "10-09-2024 a 16:00 h",
-        Date_darrivée: "10-09-2024 a 16:00 h",
-        Aéroport: "Houari boumadien",
-        Nombre_de_place: 200,
-    },
-    {
-        N: "2",
-        Vols: "tlemcen",
-        Date_de_départ: "10-09-2024 a 16:00 h",
-        Date_darrivée: "10-09-2024 a 16:00 h",
-        Aéroport: "Houari boumadien",
-        Nombre_de_place: 200,
-    },
-    {
-        N: "3",
-        Vols: "oran",
-        Date_de_départ: "10-09-2024 a 16:00 h",
-        Date_darrivée: "10-09-2024 a 16:00 h",
-        Aéroport: "Houari boumadien",
-        Nombre_de_place: 200,
-    },
-    {
-        N: "4",
-        Vols: "annaba",
-        Date_de_départ: "10-09-2024 a 16:00 h",
-        Date_darrivée: "10-09-2024 a 16:00 h",
-        Aéroport: "Houari boumadien",
-        Nombre_de_place: 200,
-    },
-    {
-        N: "5",
-        Vols: "oran",
-        Date_de_départ: "10-09-2024 a 16:00 h",
-        Date_darrivée: "10-09-2024 a 16:00 h",
-        Aéroport: "Houari boumadien",
-        Nombre_de_place: 200,
-    },
-];
-function getData(): vl[] {
-    return initialData;
-}
-
-const datav = getData();
-console.log(datav);
-
 export function DataTableDemo() {
-    const [data, setData] = React.useState<vl[]>(initialData);
+    const { user } = useUser();
+    const { data, isLoading, isError } = useQuery({
+        staleTime: 5 * 60 * 1000,
+        queryKey: ["flights", user.email],
+        queryFn: async () => {
+            const response = AxiosInstance.get(getUrl(endpoints.flights));
+            return response.data.map(())
+        }
+    });
+
+    const { toast } = useToast();
+
+    useEffect(
+        () => {
+            if (isError) {
+                toast({
+                    description: "Nous ne pouvons pas récupérer les vols",
+                    title: "Erreur de connexion",
+                    variant: "destructive",
+                });
+            }
+        }
+    , [isError])
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -172,7 +147,7 @@ export function DataTableDemo() {
     ];
 
     const table = useReactTable({
-        data,
+        data: data || [],
         columns,
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
@@ -236,58 +211,37 @@ export function DataTableDemo() {
                             ))}
                         </TableHeader>
                         <TableBody>
-                            {table.getRowModel().rows?.length ? (
-                                table.getRowModel().rows.map((row) => (
-                                    <TableRow
-                                        key={row.id}
-                                        data-state={row.getIsSelected() && "selected"}
-                                    >
-                                        {row.getVisibleCells().map((cell) => (
-                                            <TableCell key={cell.id}>
-                                                {flexRender(
-                                                    cell.column.columnDef.cell,
-                                                    cell.getContext()
-                                                )}
+                            {
+                                table.getRowModel().rows?.length ? (
+                                    table.getRowModel().rows.map((row) => (
+                                        <TableRow
+                                            key={row.id}
+                                            data-state={row.getIsSelected() && "selected"}
+                                        >
+                                            {row.getVisibleCells().map((cell) => (
+                                                <TableCell key={cell.id}>
+                                                    {flexRender(
+                                                        cell.column.columnDef.cell,
+                                                        cell.getContext()
+                                                    )}
+                                                </TableCell>
+                                            ))}
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                        <TableRow>
+                                            <TableCell
+                                                colSpan={columns.length}
+                                                className="h-24 text-center font-bold text-2xl"
+                                            >
+                                                {
+                                                    isLoading ? "Chargement...": (isError && "Erreur")
+                                                }
                                             </TableCell>
-                                        ))}
-                                    </TableRow>
-                                ))
-                            ) : (
-                                <TableRow>
-                                    <TableCell
-                                        colSpan={columns.length}
-                                        className="h-24 text-center"
-                                    >
-                                        No results.
-                                    </TableCell>
-                                </TableRow>
-                            )}
+                                        </TableRow>
+                                    )}
                         </TableBody>
                     </Table>
-                </div>
-                <div className="flex items-center justify-end space-x-2 py-4">
-                    <div className="flex-1 text-sm text-muted-foreground">
-                        {table.getFilteredSelectedRowModel().rows.length} of{" "}
-                        {table.getFilteredRowModel().rows.length} row(s) selected.
-                    </div>
-                    <div className="space-x-2">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => table.previousPage()}
-                            disabled={!table.getCanPreviousPage()}
-                        >
-                            Previous
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => table.nextPage()}
-                            disabled={!table.getCanNextPage()}
-                        >
-                            Next
-                        </Button>
-                    </div>
                 </div>
             </div>
         </>
