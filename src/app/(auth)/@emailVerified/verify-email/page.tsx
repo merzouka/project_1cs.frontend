@@ -7,36 +7,10 @@ import { BsPatchCheck } from "react-icons/bs";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useUser } from "@/hooks/use-user";
-import { Role } from "@/stores/user-store";
 import { MultiStepKeys, useMultiStep } from "@/app/(auth)/hooks/use-mutli-step-register";
-import { useEffect } from "react";
 
 export default function Step() {
-    const { role } = useUser();
-
-    let profile = "/";
-    useEffect(() => {
-        switch (role) {
-            case Role.haaj:
-                profile = "/profile/haaj";
-                break;
-            case Role.drawingManager:
-                profile = "/profile/drawing-manager";
-                break;
-            case Role.doctor:
-                profile = "/profile/doctor"
-                break;
-            case Role.user:
-                profile = "/profile";
-                break;
-            case Role.paymentManager:
-                profile = "/profile/payment-manager";
-                break;
-            case Role.admin:
-                profile = "/profile/admin";
-                break;
-        }
-    }, [role])
+    const { profile } = useUser();
 
     const { setStep } = useMultiStep(MultiStepKeys.verifyEmail);
     return (

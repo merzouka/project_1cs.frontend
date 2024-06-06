@@ -5,33 +5,11 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { VscAccount } from "react-icons/vsc";
-import { useEffect } from "react";
-import { Role } from "@/stores/user-store";
 
-function getProfile(role: Role) {
-    switch (role) {
-        case Role.haaj:
-            return "/profile/haaj";
-        case Role.drawingManager:
-            return "/profile/drawing-manager";
-        case Role.doctor:
-            return "/profile/doctor"
-        case Role.user:
-            return "/profile";
-        case Role.paymentManager:
-            return "/profile/payment-manager";
-        case Role.admin:
-            return "/profile/admin";
-    }
-}
 
 export const ProfilePicture = ({ className }: { className?: string }) => {
-    const { user, role } = useUser();
+    const { user, profile } = useUser();
 
-    let profile = "/";
-    useEffect(() => {
-        profile = getProfile(role);
-    }, [role])
     return (
         <Button 
             className={cn(
