@@ -17,7 +17,27 @@ const InscriptionPage2 = () => {
     const handlePhotoChange = (e: any) => {
         setPhoto([e.target.files[0]])
     }
+    const handleInputChange2 = (e: any) => {
+        const { name, value } = e.target;
 
+        if (name === 'dateExpirationPassport') {
+            const enteredDate = new Date(value);
+            const currentDate = new Date();
+            const minDate = new Date(currentDate.setMonth(currentDate.getMonth() + 6));
+
+            if (enteredDate < minDate) {
+                // Date is less than 6 months from the current date
+                alert('Please enter a date that is at least 6 months from today.');
+                // Reset the input field value to an empty string or the minimum allowed date
+                e.target.value = '';
+                // or e.target.value = minDate.toISOString().split('T')[0];
+            } else {
+                setField(name, value);
+            }
+        } else {
+            setField(name, value);
+        }
+    };
     const formData = useInscriptionStore((state => state.form))
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
@@ -64,7 +84,7 @@ const InscriptionPage2 = () => {
                     </div>
                     <div className="w-10">
                         <label htmlFor="DEP" className="mb-1.5 block text-left text-sm w-40 mt-[1.8px]">  Date d’expiration </label>
-                        <input name="dateExpirationPassport" value={dateExpirationPassport} onChange={handleInputChange} className="py-4 border-gray-100 shadow-md focus:border-blue w-[340px] h-7 rounded-lg border p-2 text-left text-slate-500 focus:outline-[#EBA565]" type="date" placeholder="Date d’expiration" id="DEP" required />
+                        <input name="dateExpirationPassport" value={dateExpirationPassport} onChange={handleInputChange2} className="py-4 border-gray-100 shadow-md focus:border-blue w-[340px] h-7 rounded-lg border p-2 text-left text-slate-500 focus:outline-[#EBA565]" type="date" placeholder="Date d’expiration" id="DEP" required />
                     </div>
                 </div>
                 <div className="flex justify-center space-x-[400px] mr-[710px] mb-6">
