@@ -19,7 +19,7 @@ const tabs: Tab[] = [
         icon: (className) => icons.flight(cn(styles, className)),
         display: "Vols et hotels",
         id: "bookings",
-        link: "/bookings",
+        link: "/bookings/vols",
     },
     {
         icon: (className) => <FaKaaba className={cn(styles, className)} />,
