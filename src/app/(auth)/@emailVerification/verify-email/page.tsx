@@ -7,7 +7,8 @@ import { slideInRightExitLeft } from "@/constants/animations";
 import { MultiStepKeys, useMultiStep } from "@/app/(auth)/hooks/use-mutli-step-register";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 // components
 import { Spinner } from "@/components/custom/spinner";
@@ -52,7 +53,7 @@ export default function Step() {
     const { toast } = useToast();
     const { isPending: isEmailLoading, isError: isEmailError, isSuccess: isEmailSuccess, mutate: sendEmail } = useMutation({
         mutationKey: ["verfication email"],
-        mutationFn: async () => {
+        mutationFn: async (email: string) => {
             const response = await axios.post(getUrl(endpoints.verificationEmail), { email: email});
             return response;
         },
@@ -70,13 +71,17 @@ export default function Step() {
         }
     });
 
-    const { next } = useMultiStep(MultiStepKeys.register);
+    const queryClient = useQueryClient();
+    const { next } = useMultiStep(MultiStepKeys.verifyEmail);
     const { isPending: isOTPLoading, mutate: otpMutate } = useMutation({
         mutationFn: async (code: string) => {
             const response = await axios.post(getUrl(endpoints.otpVerification), { email: email, code: code })
             return response.data;
         },
         onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["profile"],
+            })
             next();
         },
         onError: (error) => {
@@ -98,6 +103,12 @@ export default function Step() {
     function onSubmit(values: z.infer<typeof verifyEmailSchema>) {
         otpMutate(values.code);
     }
+
+    useEffect(() => {
+        if (user.email != '') {
+            sendEmail(user.email);
+        }
+    } , [user])
 
     return (
         <>
@@ -196,7 +207,7 @@ export default function Step() {
             >
                 <p className="flex flex-wrap justify-center items-center text-xs">
                     {"Vous n'avez pas reçu un e-mail?"}
-                    <Button variant="link" size="sm" onClick={() => sendEmail()} disabled={isEmailLoading}
+                    <Button variant="link" size="sm" onClick={() => sendEmail(user.email)} disabled={isEmailLoading}
                         className="font-bold focus-visible:ring-blue-400 p-1 ms-5 my-2 h-5 rounded-none text-xs">
                         {"Cliquez pour renvoyer"}
                     </Button>
