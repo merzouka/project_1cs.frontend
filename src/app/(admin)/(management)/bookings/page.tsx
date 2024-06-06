@@ -3,6 +3,7 @@ import { useUser } from "@/hooks/use-user";
 import { AlertDialogDemo } from "../components/Cardvol";
 import { DataTableDemo } from "../components/vols";
 import { NavigationMenuDemo } from "../components/page slider";
+import { AlertDialogDemoh } from "../components/Cardhotel";
 
 const BookingsPage = () => {
     // TODO uncomment
@@ -10,7 +11,7 @@ const BookingsPage = () => {
     // validateAccess(Pages.bookings);
 
     return (
-        < DataTableDemo />
+        < AlertDialogDemo />
     );
 
 }
