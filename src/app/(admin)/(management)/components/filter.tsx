@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce";
 import { useRef, useState } from "react";
+import { getRoleMap } from "@/stores/user-store";
 
 export const Filter = (
     {
@@ -122,7 +123,7 @@ export const Filter = (
                 <PopoverContent>
                     <Label>{"Role"}</Label>
                     <Select defaultValue={filters.role} onValueChange={(value) => {
-                        const newFilters = { ...filters, role: value };
+                        const newFilters = { ...filters, role: getRoleMap(value) };
                         setFilters(newFilters);
                         handleFilter(newFilters);
                     }}>

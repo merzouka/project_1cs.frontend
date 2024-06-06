@@ -10,14 +10,17 @@ import { useToast } from "@/components/ui/use-toast";
 import { useEffect } from "react";
 import { ErrorDisplay } from "@/app/components/error-display";
 import { UserRow, User } from "./user-row";
+import { Spinner } from "@/components/custom/spinner";
 
 export const Users = (
     {
         users,
         isError,
+        isLoading
     }: {
-        users: User[];
+        users?: User[];
         isError?: boolean;
+        isLoading?: boolean;
     }
 ) => {
 
@@ -57,6 +60,10 @@ export const Users = (
             </div>
             {isError && 
                 <ErrorDisplay text={"Nous ne pouvons pas récupérer les utilisateurs."} />
+            }
+            {
+                isLoading &&
+                    <span className="text-5xl font-bold text-center w-full text-black">{"Chargement..."}</span>
             }
         </div>
     );

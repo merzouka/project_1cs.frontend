@@ -27,7 +27,7 @@ export const TablePagination = (
                     <PaginationItem>
                         <PaginationPrevious className={cn(
                             previous === null && "hover:bg-transparent hover:text-slate-300 text-slate-300 hover:cursor-default"
-                        )} href={previous || undefined} />
+                        )} href={`/roles?${(new URL(previous || 'http://localhost:8000')).searchParams.toString()}` || undefined} />
                     </PaginationItem>
                     <PaginationItem>
                         <PaginationLink>{params.get('page') || "1"}</PaginationLink>
@@ -35,7 +35,7 @@ export const TablePagination = (
                     <PaginationItem>
                         <PaginationNext className={cn(
                             next === null && "hover:bg-transparent hover:text-slate-300 text-slate-300 hover:cursor-default"
-                        )} href={next || undefined} />
+                        )} href={`/roles?${(new URL(next || 'http://localhost:8000')).searchParams.toString()}` || undefined} />
                     </PaginationItem>
                 </PaginationContent>
             </Pagination>
