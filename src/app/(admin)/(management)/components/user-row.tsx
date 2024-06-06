@@ -178,13 +178,10 @@ export const UserRow = (
             return response.data;
         },
         onMutate: () => {
-
         },
         onSuccess: () => {
-
         },
         onError: () => {
-
         }
     });
 
