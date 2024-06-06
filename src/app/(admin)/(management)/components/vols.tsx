@@ -1,5 +1,6 @@
 "use client";
 import * as React from "react";
+
 import {
     ColumnDef,
     ColumnFiltersState,
@@ -16,7 +17,6 @@ import { MoreHorizontal, SearchIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
-
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/table";
 import { AlertDialogDemo } from "./Cardvol";
 import { NavigationMenuDemo } from "./page slider";
+import { useQuery } from "@tanstack/react-query";
 
 export type vl = {
     N: string;
@@ -44,65 +45,39 @@ export type vl = {
     Nombre_de_place: number;
 };
 
-const initialData: vl[] = [
-    {
-        N: "1",
-        Vols: "alger",
-        Date_de_départ: "10-09-2024 a 16:00 h",
-        Date_darrivée: "10-09-2024 a 16:00 h",
-        Aéroport: "Houari boumadien",
-        Nombre_de_place: 200,
-    },
-    {
-        N: "2",
-        Vols: "tlemcen",
-        Date_de_départ: "10-09-2024 a 16:00 h",
-        Date_darrivée: "10-09-2024 a 16:00 h",
-        Aéroport: "Houari boumadien",
-        Nombre_de_place: 200,
-    },
-    {
-        N: "3",
-        Vols: "oran",
-        Date_de_départ: "10-09-2024 a 16:00 h",
-        Date_darrivée: "10-09-2024 a 16:00 h",
-        Aéroport: "Houari boumadien",
-        Nombre_de_place: 200,
-    },
-    {
-        N: "4",
-        Vols: "annaba",
-        Date_de_départ: "10-09-2024 a 16:00 h",
-        Date_darrivée: "10-09-2024 a 16:00 h",
-        Aéroport: "Houari boumadien",
-        Nombre_de_place: 200,
-    },
-    {
-        N: "5",
-        Vols: "oran",
-        Date_de_départ: "10-09-2024 a 16:00 h",
-        Date_darrivée: "10-09-2024 a 16:00 h",
-        Aéroport: "Houari boumadien",
-        Nombre_de_place: 200,
-    },
-];
-function getData(): vl[] {
-    return initialData;
-}
-
-const datav = getData();
-console.log(datav);
+const fetchData = async () => {
+    const response = await fetch("http://localhost:8000/administrateur/voles-list");
+    if (!response.ok) {
+        throw new Error("Network response was not ok");
+    }
+    return response.json();
+};
 
 export function DataTableDemo() {
-    const [data, setData] = React.useState<vl[]>(initialData);
+    const { data, isLoading, error } = useQuery({
+        queryKey: ["fetchData"],
+        queryFn: fetchData,
+    });
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
 
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return <div>Error: {error.message}</div>;
+    }
+
+    if (!data) {
+        return <div>No data available</div>;
+    }
+
     const handleDelete = (id: string) => {
-        const newData = data.filter(item => item.N !== id);
-        setData(newData);
+        const newData = data.filter((item: vl) => item.N !== id);
+        // Update the data state with the new data
     };
 
     const columns: ColumnDef<vl>[] = [
@@ -169,10 +144,10 @@ export function DataTableDemo() {
                 );
             },
         },
-    ];
+    ];;
 
     const table = useReactTable({
-        data,
+        data: data || [],
         columns,
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,

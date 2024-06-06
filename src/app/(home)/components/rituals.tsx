@@ -20,7 +20,7 @@ interface Ritual {
 const rituals: Ritual[] = [
     {
         id: "ihram",
-        title: "Iharm",
+        title: "Ihram",
         paragraph: "État de sacralisation, l’ihram doit se faire avant de pénétrer dans le territoire sacré. Sacralisation morale : les hommes et les femmes expriment, selon des formulations précises, leur intention d’accomplir le Hajj. Sacralisation corporelle : les hommes s’habillent d’un pagne non cousu et d’un morceau d’étoffe qui recouvre les épaules, et portent des sandales. Les femmes gardent leurs habits et se découvrent le visage et les mains.",
         image: ihram,
         alt: "ihram image",
@@ -53,6 +53,7 @@ export const Rituals = () => {
     const [hovered, setHovered] = useState<number | undefined>(undefined);
 
     const cycleTime = 5 * 1000;
+    const interval = useRef<NodeJS.Timeout | undefined>(undefined);
     const mouseEnterEventListener = useCallback((ritual: number) => {
         clearInterval(interval.current);
         setCurrentRitual(ritual);
@@ -66,7 +67,6 @@ export const Rituals = () => {
         }, cycleTime);
     }, [])
 
-    const interval = useRef<NodeJS.Timeout | undefined>(undefined);
     useEffect(() => {
         interval.current = setInterval(
             () => setCurrentRitual((ritual) => (ritual + 1) % rituals.length),
@@ -86,11 +86,11 @@ export const Rituals = () => {
     }, []);
 
     return (
-        <div className="">
-            <p className="text-center mb-3 md:mb-6">
+        <div className="w-full flex flex-col items-center">
+            <p className="text-center mb-3 md:mb-6 max-w-[66ch]">
                 {"Les bénéfices du Hajj sont multiples et de dimensions tant confessionnelles que personnelles, sociétales, morales et pédagogiques. Le Hajj est l’un des cinq piliers de l’Islam et a été prescrit pendant l’an 9 de l’Hégire."}
             </p>
-            <div className="flex h-96 gap-x-3">
+            <div className="flex h-96 gap-x-3 w-full">
                 {
                     rituals.map((ritual, i) => (
                         <motion.div 
@@ -115,7 +115,7 @@ export const Rituals = () => {
                                 sizes="(max-width: 768px) 50vw, 100vw"
                             />
                             <motion.div 
-                                className="absolute top-0 right-0 left-0 bottom-0 flex flex-col items-center justify-end p-5"
+                                className="absolute top-0 right-0 left-0 bottom-0 flex flex-col items-center justify-end p-5 overflow-x-hidden"
                                 layout
                             >
                                 {

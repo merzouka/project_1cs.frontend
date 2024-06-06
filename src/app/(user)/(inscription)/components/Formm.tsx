@@ -7,11 +7,16 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { submitInscriptionData } from '../api';
 import { useUser } from '@/hooks/use-user';
+import { format } from 'date-fns';
 
 const InscriptionPage1 = () => {
     const { nomArabe, prenomArabe, prenomPere, prenomMere, sexe, paysResidence, nin, dateExpirationNin } = useInscriptionStore((state) => state.form);
     const setField = useInscriptionStore((state) => state.setField)
-
+    const getMinDate = () => {
+        const today = new Date();
+        const sixMonthsLater = new Date(today.setMonth(today.getMonth() + 6));
+        return format(sixMonthsLater, 'yyyy-MM-dd');
+    };
 
     const handleInputChange = (e: any) => {
         setField(e.target.name, e.target.value)
@@ -103,7 +108,7 @@ const InscriptionPage1 = () => {
                         </div>
                         <div className="w-10">
                             <label htmlFor="DE" className="mb-1.5 block text-left text-sm w-40">  Date d’expiration </label>
-                            <input name="dateExpirationNin" value={dateExpirationNin} onChange={handleInputChange} className="py-4 border-gray-100 shadow-md focus:border-blue w-[340px] h-7 rounded-lg border p-2 text-left text-slate-500 focus:outline-[#EBA565]" type="date" placeholder="Date d’expiration" id="DE" required />
+                            <input min={getMinDate()} name="dateExpirationNin" value={dateExpirationNin} onChange={handleInputChange} className="py-4 border-gray-100 shadow-md focus:border-blue w-[340px] h-7 rounded-lg border p-2 text-left text-slate-500 focus:outline-[#EBA565]" type="date" placeholder="Date d’expiration" id="DE" required />
                         </div>
                     </div>
 

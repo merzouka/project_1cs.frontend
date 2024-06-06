@@ -1,92 +1,46 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { Participant } from "@/app/(admin)/(drawing)/components/participant";
-import MyModal from "./mymodal";
-import Modal from "react-modal";
-import { useUser } from "@/hooks/use-user";
-import { Pages } from "@/constants/pages";
-import { AxiosInstance } from "@/config/axios";
+import { cn } from "@/lib/utils";
+import React, { useState } from "react";
+import { SearchBar } from "@/app/components/search-bar";
+import { useDebouncedCallback } from "use-debounce";
+import { Button } from "@/components/ui/button";
+import { DrawingDisplay } from "./drawing-display";
 
-function translate(obj: any) {
-    return {
-        firstName: obj.first_name,
-        lastName: obj.last_name,
-        image: obj.personal_picture,
-    }
-}
 
 const Tirage = () => {
-  const { validateAccess, user } = useUser();
-  validateAccess(Pages.drawingSettings);
-  const [isOpen, setIsOpen] = useState(false);
-  const [chosenUsers, setChosenUsers] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0); // Index of the current winner being displayed
+    const [term, setTerm] = useState<string>("");
+    const [end, setEnd] = useState(false);
+    const [displayed, setDisplayed] = useState(0);
 
-  useEffect(() => {
-    // Fetch winners for user ID 3 when the component mounts
-    fetchWinners(user.id);
-  }, []);
+    const handleSearch = useDebouncedCallback((value: string) => {
+        setTerm(value)
+    }, 500);
+    console.log(displayed);
+    
 
-  const closeModal = () => {
-    setIsOpen(false);
-    setCurrentIndex(currentIndex + 1); // Move to the next winner
-  };
-  //@ts-ignore
-  const fetchWinners = async (userId) => {
-    try {
-      const response = await AxiosInstance.get(
-        `http://localhost:8000/fetch-winners/`
-      );
-      const winners = response.data.winners;
-      setChosenUsers(winners);
-      setIsOpen(true); // Open the modal to display the first winner
-    } catch (error) {
-      console.error("Error fetching winners:", error);
+    const handleButtonClick = () => {
+        setDisplayed(current => current + 1);
     }
-  };
 
-    const [count, setCount] = useState(0);
-  const handleMelangerClick = () => {
-    setCurrentIndex(Math.round(Math.random())); // Reset currentIndex to start from the first winner
-        setCount(count + 1);
-    setIsOpen(true); // Open the modal
-  };
-
-  return (
-    <div className="px-4 w-full h-full">
-      <div className="flex justify-between">
-        <button
-          className="bg-white text-orange-500 border border-orange-500 rounded-full px-4 py-2 hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-colors h-10"
-          onClick={handleMelangerClick}
-                    disabled={count == chosenUsers.length - 1}
-        >
-          Melanger
-        </button>
-      </div>
-
-      <div className="flex flex-wrap justify-center gap-4 pt-6">
-        {/* Display current winner if chosenUsers[currentIndex] is defined */}
-        {isOpen && chosenUsers[currentIndex] && (
-          <Participant
-            //@ts-ignore
-
-            key={chosenUsers[currentIndex].id}
-            participant={chosenUsers[currentIndex]}
-          />
-        )}
-      </div>
-      <Modal isOpen={isOpen} onRequestClose={closeModal}>
-        {/* Pass the current chosen user to the modal if chosenUsers[currentIndex] is defined */}
-        {isOpen && chosenUsers[currentIndex] && (
-          <MyModal
-            isOpen={isOpen}
-            onClose={closeModal}
-            participant={translate(chosenUsers[currentIndex])}
-          />
-        )}
-      </Modal>
-    </div>
-  );
+    return (
+        <div className="w-full h-full flex flex-col items-stretch justify-center">
+            <div className="flex items-center w-full gap-x-2 justify-center relative mb-1 md:mb-4">
+                <SearchBar onChange={handleSearch} className="flex-grow md:mb-0"/>
+                <Button
+                    className={cn(
+                        "bg-white text-orange-500 border border-orange-500 rounded-full ",
+                        "hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-colors",
+                        "md:absolute md:right-0 md:-top-20 font-bold"
+                    )}
+                    onClick={handleButtonClick}
+                    disabled={end}
+                >
+                    {"Mélanger"}
+                </Button>
+            </div>
+            <DrawingDisplay term={term} setEnd={setEnd} displayed={displayed} />
+        </div>
+    );
 };
 
 export default Tirage;

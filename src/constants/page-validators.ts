@@ -1,6 +1,7 @@
 import { UserInfo, Role } from "@/stores/user-store";
 
 export const pageValidators = {
+    "open": (_: UserInfo) => true,
     "inscription": (user: UserInfo) => user.isLoggedIn,
     "profile": (user: UserInfo) => user.role == Role.user,
     "profile/haaj": (user: UserInfo) => user.role ==  Role.haaj,
@@ -13,4 +14,7 @@ export const pageValidators = {
     "roles": (user: UserInfo) => user.role == Role.admin,
     "hodjadj": (user: UserInfo) => user.role == Role.admin,
     "bookings": (user: UserInfo) => user.role == Role.admin,
+    "appointment": (user: UserInfo) => user.role == Role.doctor,
+    "payment": (user: UserInfo) => user.role == Role.paymentManager,
 }
+

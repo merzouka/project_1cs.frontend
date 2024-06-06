@@ -6,10 +6,13 @@ import { UserActions } from "./user-actions";
 import { motion } from "framer-motion";
 import { Toggle } from "@/components/ui/toggle";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 export const MobileNav = () => {
     const [isOpen, setIsOpen] = useState(false);
     const animate = isOpen ? { x: 0 } : { x: "-100%" };
+    const pathname = usePathname();
 
     return (
         <>
@@ -28,10 +31,12 @@ export const MobileNav = () => {
                         pages.map((page) => (
                             <li key={page.id} className="font-semibold text-gray-600 hover:text-orange-400 w-full">
                                 <Link href={page.link} 
-                                    className="flex justify-between items-center w-full p-2 
-                                    border-b-2 border-b-transparent transition-all hover:transition-all
-                                    hover:border-b-orange-400 hover:text-orange-400"
-                                >
+                                    className={cn(
+                                        "flex justify-between items-center w-full p-2",
+                                        "border-b-2 border-b-transparent transition-all hover:transition-all",
+                                        "hover:border-b-orange-400 hover:text-orange-400",
+                                        page.link == pathname && "text-orange-400",
+                                    )}                                >
                                     <span className="text-3xl">{page.display}</span>
                                     {page.icon}
                                 </Link>

@@ -27,8 +27,7 @@ export function getRole(role: string): Role {
     if (!Object.keys(roleMapping).includes(role)) {
         throw new Error("invalid role");
     }
-    /* @ts-ignore above if statement handles error */
-    return roleMapping[role];
+    return roleMapping[role as keyof typeof roleMapping];
 }
 
 export interface UserInfo {
@@ -67,6 +66,7 @@ interface Actions {
         emailVerified?: boolean;
         isLoggedIn: boolean;
     }) => void;
+    emptyUser: () => void;
 }
 
 export const useUserStore = create<User & Actions>((set) => ({
@@ -87,6 +87,22 @@ export const useUserStore = create<User & Actions>((set) => ({
     },
     setUser: (user) => set({ user: {
         ...user,
-        role: getRole(user.role)
+        role: getRole(user.role),
     } }),
+    emptyUser: () => set({ user: { 
+        id: undefined,
+        email: "",
+        role: Role.user,
+        firstName: "",
+        lastName: "",
+        phone: "",
+        dateOfBirth: undefined,
+        city: undefined,
+        province: undefined,
+        gender: undefined,
+        image: undefined,
+        emailVerified: false,
+        isLoggedIn: false,
+    }})
 }));
+

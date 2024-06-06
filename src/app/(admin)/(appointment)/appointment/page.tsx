@@ -1,30 +1,23 @@
-"use client";
-import React, { useState } from "react";
-import PatientModal from "../components/patient";
-import WinnersComponent from "../components/winners";
-const PatientPage = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+import { Title } from "@/app/(admin)/components/title";
+import { Winners } from "../components/winners";
+import { endpoints } from "@/constants/endpoints";
+import { Pages } from "@/constants/pages";
 
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+const AppointmentPage = () => {
 
-  return (
-    <div className="flex justify-center items-center h-screen">
-      <WinnersComponent />
-      <button
-        onClick={handleOpenModal}
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-      >
-        Open Modal
-      </button>
-      <PatientModal isOpen={isModalOpen} onClose={handleCloseModal} />
-    </div>
-  );
+    return (
+        <div className="md:px-4 p-2 flex flex-col w-full h-full">
+            <Title title={"Les pèlerins"} />
+            <div className="flex justify-center items-center flex-grow">
+                <Winners 
+                    itemsEndpoint={endpoints.appointmentWinners} 
+                    updateEndpoint={endpoints.appointmentStatusUpdate} 
+                    page={Pages.appointment}
+                />
+            </div>
+        </div>
+    );
 };
 
-export default PatientPage;
+export default AppointmentPage;

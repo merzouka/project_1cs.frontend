@@ -32,7 +32,7 @@ import { Role, getRole, useUserStore } from "@/stores/user-store";
 
 import BottomMessage from "@/app/(auth)/components/bottom-message";
 import { Toaster } from "@/components/ui/toaster";
-import { QueryClient, useMutation } from "@tanstack/react-query";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { AxiosError, isAxiosError } from "axios";
 import { getUrl } from "@/constants/api";
 import { endpoints } from "@/constants/endpoints";
@@ -44,17 +44,17 @@ import { getCityNameId } from "@/constants/cities";
 function routeByRole(role: string) {
     switch (getRole(role)) {
         case Role.haaj:
-            return "profile/haaj";
+            return "/";
         case Role.user:
-            return "profile";
+            return "/";
         case Role.paymentManager:
-            return "profile/payment-manager";
+            return "/profile/payment-manager";
         case Role.drawingManager:
-            return "profile/drawing-manager";
+            return "/profile/drawing-manager";
         case Role.doctor:
-            return "profile/doctor";
+            return "/profile/doctor";
         case Role.admin:
-            return "profile/admin";
+            return "/profile/admin";
         default:
             throw new Error("invalid role");
     }
@@ -76,18 +76,21 @@ export default function LoginPage() {
     const { toast } = useToast();
 
     const setUser = useUserStore((state) => state.setUser);
-    const queryClient = new QueryClient();
+    const queryClient = useQueryClient();
     const { isPending: isLoginingIn, mutate } = useMutation({
         mutationFn: async (values: z.infer<typeof loginFormSchema>) => {
-            const response = await AxiosInstance.post(getUrl(endpoints.login), values, {
+            const response = await AxiosInstance.post(getUrl(endpoints.login), {
+                ...values,
+                remember: values.persist,
+            }, {
                 withCredentials: true,
             });
             return response.data;
         },
         onSuccess: async (data) => {
-            await  queryClient.cancelQueries({ queryKey: ["profile"] });
             queryClient.setQueryData(["profile"], data);
             const loggedInUser = {
+                id: data.id,
                 role: data.role,
                 email: data.email,
                 firstName: data.first_name,
@@ -97,7 +100,7 @@ export default function LoginPage() {
                 province: data.province,
                 city: getCityNameId(data.city),
                 gender: data.gender == "M" ? "male" : "female",
-                image: data?.image || undefined,
+                image: data?.personal_picture || undefined,
                 emailVerified: data?.is_email_verified || false,
                 isLoggedIn: true,
             };
