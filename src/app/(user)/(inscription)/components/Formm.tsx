@@ -16,6 +16,27 @@ const InscriptionPage1 = () => {
     const handleInputChange = (e: any) => {
         setField(e.target.name, e.target.value)
     }
+    const handleInputChange2 = (e: any) => {
+        const { name, value } = e.target;
+
+        if (name === 'dateExpirationNin') {
+            const enteredDate = new Date(value);
+            const currentDate = new Date();
+            const minDate = new Date(currentDate.setMonth(currentDate.getMonth() + 6));
+
+            if (enteredDate < minDate) {
+                // Date is less than 6 months from the current date
+                alert('Please enter a date that is at least 6 months from today.');
+                // Reset the input field value to an empty string or the minimum allowed date
+                e.target.value = '';
+                // or e.target.value = minDate.toISOString().split('T')[0];
+            } else {
+                setField(name, value);
+            }
+        } else {
+            setField(name, value);
+        }
+    };
 
     const router = useRouter()
     const handleSubmit = (e: FormEvent) => {
@@ -103,7 +124,7 @@ const InscriptionPage1 = () => {
                         </div>
                         <div className="w-10">
                             <label htmlFor="DE" className="mb-1.5 block text-left text-sm w-40">  Date d’expiration </label>
-                            <input name="dateExpirationNin" value={dateExpirationNin} onChange={handleInputChange} className="py-4 border-gray-100 shadow-md focus:border-blue w-[340px] h-7 rounded-lg border p-2 text-left text-slate-500 focus:outline-[#EBA565]" type="date" placeholder="Date d’expiration" id="DE" required />
+                            <input name="dateExpirationNin" value={dateExpirationNin} onChange={handleInputChange2} className="py-4 border-gray-100 shadow-md focus:border-blue w-[340px] h-7 rounded-lg border p-2 text-left text-slate-500 focus:outline-[#EBA565]" type="date" placeholder="Date d’expiration" id="DE" required />
                         </div>
                     </div>
 
