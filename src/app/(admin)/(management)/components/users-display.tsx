@@ -8,6 +8,7 @@ import { TablePagination } from "./table-pagination";
 import { useSearchParams } from "next/navigation";
 import { User } from "./user-row";
 import { getUrl } from "@/constants/api";
+import { useToast } from "@/components/ui/use-toast";
 
 interface PaginatedResponse {
     next: string | null;
@@ -17,13 +18,21 @@ interface PaginatedResponse {
 
 export const UsersDisplay = () => {
     const params = useSearchParams();
-    const { data, isLoading, isError } = useQuery({
+    const { toast } = useToast();
+    const { data, isLoading, isError, failureCount } = useQuery({
         queryKey: ["users", params.toString()],
         queryFn: async () => {
             try {
                 const response = await AxiosInstance.get(getUrl(endpoints.users(params)));
                 return response.data as PaginatedResponse;
             } catch (error) {
+                if (failureCount > 3) {
+                    toast({
+                        title: "Erreur de connexion",
+                        description: "Nous ne pouvons pas récupérer les utilisateurs",
+                        variant: "destructive",
+                    });
+                }
                 throw new Error("connetion erorr");
             }
         },

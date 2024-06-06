@@ -24,7 +24,6 @@ import { Province, provinces } from "@/constants/provinces";
 import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import { City, mappedCities } from "@/constants/mapped-cities";
-import { SearchBar } from "@/app/components/search-bar";
 import { FiPlusCircle } from "react-icons/fi";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosInstance } from "@/config/axios";
@@ -32,6 +31,7 @@ import { getUrl } from "@/constants/api";
 import { endpoints } from "@/constants/endpoints";
 import { cities } from "@/constants/cities";
 import { motion } from "framer-motion";
+import { useQueryClient } from "@tanstack/react-query";
 
 export interface User {
     id: number;
@@ -171,6 +171,9 @@ export const UserRow = (
         setSelectedPlaces(newPlaces);
     }
 
+    const params = useSearchParams();
+    const [disabled, setDisabled] = useState(false);
+    const queryClient = useQueryClient();
     const { isPending, mutate } = useMutation({
         mutationKey: ["assign privilege", info.id],
         mutationFn: async () => {
@@ -178,20 +181,24 @@ export const UserRow = (
             return response.data;
         },
         onMutate: () => {
-
+            setDisabled(true);
         },
         onSuccess: () => {
-
+            setDisabled(false);
+            queryClient.invalidateQueries({
+                queryKey: ["users", params.toString()],
+            });
         },
         onError: () => {
-
+            queryClient.invalidateQueries({
+                queryKey: ["users", params.toString()],
+            });
         }
     });
 
     function handleSave() {
     }
 
-    const disabled = false;
     const overlay = <div className="absolute right-0 bottom-0 left-0 top-0 bg-slate-100/50 z-[10]"></div>;
 
     const provinceSelectItems = useMemo(
