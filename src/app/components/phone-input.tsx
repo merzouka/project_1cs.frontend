@@ -1,4 +1,4 @@
-import CountrySelect from "@/app/(auth)/components/country-select";
+import CountrySelect from "@/app/(admin)/(auth)/components/country-select";
 import { icons } from "@/constants/icons";
 import { Toggle } from "@/components/ui/toggle";
 import { Input } from "@/components/ui/input";
@@ -14,17 +14,17 @@ export const PhoneInput = ({
     control,
     styles,
 }: {
-        onPhoneNumberChange: (value: string) => void;
-        onPhoneChange: (value: string) => void;
-        disabled?: boolean;
-        phoneValue: string;
-        countryDefault?: string;
-        control: (children: React.ReactNode) => React.ReactNode;
-        styles?: {
-            container?: string;
-            field?: string;
-        }
-    }) => {
+    onPhoneNumberChange: (value: string) => void;
+    onPhoneChange: (value: string) => void;
+    disabled?: boolean;
+    phoneValue: string;
+    countryDefault?: string;
+    control: (children: React.ReactNode) => React.ReactNode;
+    styles?: {
+        container?: string;
+        field?: string;
+    }
+}) => {
     const [countryCode, setCountryCode] = useState<string | undefined>(countryDefault != "" ? countryDefault : undefined);
     const [inputDisabled, setInputDisabled] = useState(true);
 
@@ -35,7 +35,7 @@ export const PhoneInput = ({
         )}>
             <div className="w-full flex justify-between items-center pe-2">
                 <label className="text-sm font-medium">{"Téléphone"}</label>
-                <Toggle 
+                <Toggle
                     className="bg-transparent hover:bg-transparent [state=on]:text-black text-slate-400
                 data-[state=on]:bg-transparent"
                     onPressedChange={() => setInputDisabled(!inputDisabled)}>
@@ -70,6 +70,6 @@ export const PhoneInput = ({
                     />
                 )}
             </div>
-        </div>    
+        </div>
     );
 }
