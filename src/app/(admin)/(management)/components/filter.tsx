@@ -123,7 +123,7 @@ export const Filter = (
                 <PopoverContent>
                     <Label>{"Role"}</Label>
                     <Select defaultValue={filters.role} onValueChange={(value) => {
-                        const newFilters = { ...filters, role: getRoleMap(value) };
+                        const newFilters = { ...filters, role: getRoleMap(Number(value)) };
                         setFilters(newFilters);
                         handleFilter(newFilters);
                     }}>
