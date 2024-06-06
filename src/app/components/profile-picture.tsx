@@ -5,9 +5,33 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { VscAccount } from "react-icons/vsc";
+import { useEffect } from "react";
+import { Role } from "@/stores/user-store";
+
+function getProfile(role: Role) {
+    switch (role) {
+        case Role.haaj:
+            return "/profile/haaj";
+        case Role.drawingManager:
+            return "/profile/drawing-manager";
+        case Role.doctor:
+            return "/profile/doctor"
+        case Role.user:
+            return "/profile";
+        case Role.paymentManager:
+            return "/profile/payment-manager";
+        case Role.admin:
+            return "/profile/admin";
+    }
+}
 
 export const ProfilePicture = ({ className }: { className?: string }) => {
-    const { user } = useUser();
+    const { user, role } = useUser();
+
+    let profile = "/";
+    useEffect(() => {
+        profile = getProfile(role);
+    }, [role])
     return (
         <Button 
             className={cn(
@@ -17,7 +41,7 @@ export const ProfilePicture = ({ className }: { className?: string }) => {
             )}
             size={"icon"}
         >
-            <Link href="/profile">
+            <Link href={profile}>
                 {
                     user.image ? 
                         <Image src={user.image} fill style={{ objectFit: "cover" }} sizes="10vw" className="w-full h-full rounded-full" alt="user photo" />
