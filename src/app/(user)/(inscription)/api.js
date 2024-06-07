@@ -34,10 +34,6 @@ export const submitInscriptionData = async (data) => {
                 maahram_id: data.idMahram,
             },
             {
-                xsrfCookieName: "csrftoken",
-                xsrfHeaderName: "X-CSRFToken",
-                withXSRFToken: true,
-                withCredentials: true,
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }

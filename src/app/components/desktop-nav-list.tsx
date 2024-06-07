@@ -18,7 +18,7 @@ export const DesktopNavList = () => {
                             page.link == pathname && "text-orange-400",
                         )}>
                             {
-                                user.status?.registration && page.link == "/inscription" ?
+                                (user.status?.registration || !user.isLoggedIn) && page.link == "/inscription" ?
                                 <p className="text-slate-400">{page.display}</p>
                                 :
                                 <Link href={page.link}>{page.display}</Link>

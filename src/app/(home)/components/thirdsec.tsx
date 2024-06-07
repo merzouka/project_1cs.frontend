@@ -40,7 +40,7 @@ export default function Thirdsec() {
             <div className="flex justify-center mb-40">
                 {
                     user.isLoggedIn && (
-                        (user.status?.registration || user.status?.drawing) ?
+                        !(user.status?.registration || user.status?.drawing) ?
                             <Link 
                                 href={"/inscription"} 
                                 className="flex items-center justify-center py-5 border-orange-400  h-7 mb-10 w-full md:w-5/12 rounded-[30px] border  text-center md:font-bold font-bold text-black hover:bg-orange-400 hover:text-white transition-all hover:transition-all">
