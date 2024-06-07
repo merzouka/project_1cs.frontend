@@ -26,7 +26,8 @@ export const UsersDisplay = () => {
     // TODO uncomment
     // useValidateAccess(Pages.roles);
     const { toast } = useToast();
-    const { data, isLoading, isError, failureCount } = useQuery({
+    const { data, isLoading, isError } = useQuery({
+        retry: 0,
         queryKey: ["users", params.toString(), user.email],
         queryFn: async () => {
             try {
@@ -51,17 +52,15 @@ export const UsersDisplay = () => {
                             cities: user.cities,
                             provinces: user.provinces,
                             role: getRole(user.role),
-                    })),
+                        })),
                 }
                 return data as PaginatedResponse;
             } catch (error) {
-                if (failureCount > 3) {
-                    toast({
-                        title: "Erreur de connexion",
-                        description: "Nous ne pouvons pas récupérer les utilisateurs",
-                        variant: "destructive",
-                    });
-                }
+                toast({
+                    title: "Erreur de connexion",
+                    description: "Nous ne pouvons pas récupérer les utilisateurs",
+                    variant: "destructive",
+                });
                 throw new Error("connetion erorr");
             }
         },
