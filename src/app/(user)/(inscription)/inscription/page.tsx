@@ -10,7 +10,7 @@ import { useInscriptionStore } from "../components/Store";
 import { provinces } from "@/constants/provinces";
 
 export default function Homee() {
-    const {  useValidateAccess,  user } = useUser();
+    const { validateAccess, user } = useUser();
     const setValues = useInscriptionStore((state) => state.setValues);
     // validateAccess(Pages.submission);
     useEffect(() => {

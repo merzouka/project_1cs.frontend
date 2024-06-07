@@ -28,7 +28,6 @@ import { provinces } from "@/constants/provinces";
 export function AlertDialogDemo() {
     /////////////////////////////////////////
     const [isOpen, setIsOpen] = useState(false)
-    const [ar, setar] = useState()
     const [volData, setvolData] = useState({ name: '', framework: '', nbplace: '', calendara: '', calendarb: '', depheure: '', arheure: '' })
     const queryClient = useQueryClient()
 
@@ -112,10 +111,9 @@ export function AlertDialogDemo() {
 
                             <div className="flex flex-col space-y-1.5 mt-4 mb-4 rounded-[15px]">
                                 <label htmlFor="framework" className="ml-1">Aéroport</label>
-                                <Select onValueChange={(value) => setvolData(prev => ({ ...prev, framework: value }))} value={volData.framework}
-
-                                >
-                                    <SelectTrigger id="framework" className="rounded-[15px]"
+                                <Select >
+                                    <SelectTrigger id="framework" className="rounded-[15px]" value={volData.framework}
+                                        onChange={handleChange('framework')}
                                     >
                                         <SelectValue placeholder="Veuillez choisir l’aéroport" />
                                     </SelectTrigger>
@@ -183,7 +181,8 @@ export function AlertDialogDemo() {
                                 <Popover>
                                     <PopoverTrigger asChild>
                                         <Button
-
+                                            value={volData.calendara}
+                                            onChange={handleChange('calendara')}
 
                                             variant={"outline"}
                                             className={cn(
@@ -197,16 +196,10 @@ export function AlertDialogDemo() {
                                     </PopoverTrigger>
                                     <PopoverContent className="w-auto p-0 mr-5">
                                         <Calendar
-
                                             id="calendara"
                                             mode="single"
                                             selected={date}
-                                            onSelect={(date) => {
-                                                setDate(date);
-                                                setvolData(prev => ({ ...prev, calendara: date?.toISOString() || "" }))
-                                            }
-                                            }
-
+                                            onSelect={setDate}
                                             initialFocus
 
                                         />
@@ -215,7 +208,8 @@ export function AlertDialogDemo() {
                                 <Popover>
                                     <PopoverTrigger asChild>
                                         <Button
-
+                                            value={volData.calendarb}
+                                            onChange={handleChange('calendarb')}
                                             variant={"outline"}
                                             className={cn(
                                                 "w-[280px] justify-start  rounded-[15px] text-left font-normal",
@@ -231,11 +225,7 @@ export function AlertDialogDemo() {
                                             id="calendarb"
                                             mode="single"
                                             selected={otherDate}
-                                            onSelect={(otherDate) => {
-                                                setOtherDate(otherDate);
-                                                setvolData(prev => ({ ...prev, calendara: otherDate?.toISOString() || "" }))
-                                            }
-                                            }
+                                            onSelect={setOtherDate}
                                             initialFocus
                                         />
                                     </PopoverContent>
@@ -247,13 +237,7 @@ export function AlertDialogDemo() {
                 </Card>
                 <AlertDialogFooter className="flex justify-between">
                     <AlertDialogCancel className="w-[240px]  text-center mr-[40px]">Cancel</AlertDialogCancel>
-                    <AlertDialogAction
-                        className="w-[240px] mr-9"
-                        onClick={handleSubmit}
-                        disabled={mutation.isPending}
-                    >
-                        {mutation.isPending ? 'Enregistrement...' : 'Enregistrer'}
-                    </AlertDialogAction>
+                    <AlertDialogAction className="w-[240px]  mr-9">Enregistrer</AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
