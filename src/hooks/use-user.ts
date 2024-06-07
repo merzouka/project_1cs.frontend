@@ -104,6 +104,7 @@ export function useUser() {
                     description: "Erreur interne de serveur.",
                     variant: "destructive",
                 });
+                console.log(error);
             }
             
         }, [data, isError]);

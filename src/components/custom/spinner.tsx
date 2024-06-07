@@ -43,7 +43,7 @@ export function Spinner({
     return (
         <div className={vary({ size, text, direction, className })}>
             <Loader />
-            <p>{children || "Loading..."}</p>
+            <p>{children || "Chargement..."}</p>
         </div>
     );
 }
