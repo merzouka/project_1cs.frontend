@@ -51,7 +51,7 @@ export type vl = {
 
 export function DataTableDemo() {
     const { toast } = useToast();
-    const { data, isLoading, error } = useQuery({
+    const { data } = useQuery({
         retry: 0,
         queryKey: ["vols"],
         queryFn: async () => {
@@ -79,11 +79,6 @@ export function DataTableDemo() {
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
-
-    const handleDelete = (id: string) => {
-        const newData = data.filter((item: vl) => item.N !== id);
-        // Update the data state with the new data
-    };
 
     const columns: ColumnDef<vl>[] = [
         {
@@ -139,11 +134,13 @@ export function DataTableDemo() {
                                 Copy ID
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem
+                            {
+                                /* <DropdownMenuItem
                                 onClick={() => handleDelete(vl.N)}
                             >
                                 Delete
-                            </DropdownMenuItem>
+                            </DropdownMenuItem> */
+                            }
                         </DropdownMenuContent>
                     </DropdownMenu>
                 );
@@ -172,7 +169,7 @@ export function DataTableDemo() {
 
     return (
         <>
-            <div className="w-full mt-[60px]">
+            <div className="w-full pt-[60px] pb-5 flex flex-col h-full">
                 <div className="font-semibold ml-10 text-3xl ">
                     Vols et Hotels
                 </div>
@@ -195,55 +192,57 @@ export function DataTableDemo() {
                 <div>
                     <NavigationMenuDemo />
                 </div>
-                <div className="rounded-[25px] mr-8 ml-8 border">
-                    <Table>
-                        <TableHeader>
-                            {table.getHeaderGroups().map((headerGroup) => (
-                                <TableRow key={headerGroup.id}>
-                                    {headerGroup.headers.map((header) => {
-                                        return (
-                                            <TableHead key={header.id}>
-                                                {header.isPlaceholder
-                                                    ? null
-                                                    : flexRender(
-                                                        header.column.columnDef.header,
-                                                        header.getContext()
-                                                    )}
-                                            </TableHead>
-                                        );
-                                    })}
-                                </TableRow>
-                            ))}
-                        </TableHeader>
-                        <TableBody>
-                            {table.getRowModel().rows?.length ? (
-                                table.getRowModel().rows.map((row) => (
-                                    <TableRow
-                                        key={row.id}
-                                        data-state={row.getIsSelected() && "selected"}
-                                    >
-                                        {row.getVisibleCells().map((cell) => (
-                                            <TableCell key={cell.id}>
-                                                {flexRender(
-                                                    cell.column.columnDef.cell,
-                                                    cell.getContext()
-                                                )}
-                                            </TableCell>
-                                        ))}
+                <div className="relative overflow-y-scroll w-full flex-grow">
+                    <div className="rounded-[25px] mr-8 ml-8 border absolute top-0 right-0 left-0">
+                        <Table>
+                            <TableHeader>
+                                {table.getHeaderGroups().map((headerGroup) => (
+                                    <TableRow key={headerGroup.id}>
+                                        {headerGroup.headers.map((header) => {
+                                            return (
+                                                <TableHead key={header.id}>
+                                                    {header.isPlaceholder
+                                                        ? null
+                                                        : flexRender(
+                                                            header.column.columnDef.header,
+                                                            header.getContext()
+                                                        )}
+                                                </TableHead>
+                                            );
+                                        })}
                                     </TableRow>
-                                ))
-                            ) : (
-                                <TableRow>
-                                    <TableCell
-                                        colSpan={columns.length}
-                                        className="h-24 text-center"
-                                    >
-                                        {"Pas de résultats."}
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
+                                ))}
+                            </TableHeader>
+                            <TableBody>
+                                {table.getRowModel().rows?.length ? (
+                                    table.getRowModel().rows.map((row) => (
+                                        <TableRow
+                                            key={row.id}
+                                            data-state={row.getIsSelected() && "selected"}
+                                        >
+                                            {row.getVisibleCells().map((cell) => (
+                                                <TableCell key={cell.id}>
+                                                    {flexRender(
+                                                        cell.column.columnDef.cell,
+                                                        cell.getContext()
+                                                    )}
+                                                </TableCell>
+                                            ))}
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                        <TableRow>
+                                            <TableCell
+                                                colSpan={columns.length}
+                                                className="h-24 text-center"
+                                            >
+                                                {"Pas de résultats."}
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
+                            </TableBody>
+                        </Table>
+                    </div>
                 </div>
             </div>
         </>

@@ -39,7 +39,17 @@ const formSchema = z.object({
     arrivalTime: z.string({ required_error: "Veuillez spécifier le date d'arrivé." }).regex(new RegExp(/[0-9]{2}:[0-9]{2}/), {
         message: 'Veuillez utiliser le format 00:00.'
     }),
-});
+})
+.refine((data) => {
+    const result = new Date(`${format(data.arrivalDate, 'yyyy-MM-dd')} ${data.arrivalTime}`) 
+    > new Date(`${format(data.departureDate, 'yyyy-MM-dd')} ${data.departureTime}`)
+    console.log(result);
+    return result;
+}, 
+    {
+        message: "Temps de départ doit être antérieure au temps d'arrivée.",
+        path: ["departureDate"]
+    });
 
 
 export function AlertDialogDemo() {
@@ -62,7 +72,6 @@ export function AlertDialogDemo() {
                 heur_arrivee : values.arrivalTime,
                 nb_places: Number(values.places),
             });
-            console.log(response);
             return response.data;
         },
         onSuccess: () => {
@@ -72,15 +81,15 @@ export function AlertDialogDemo() {
             setIsOpen(false);
             queryClient.invalidateQueries({
                 queryKey: ["vols"],
-            })
+            });
+            form.reset();
         },
-        onError: (error) => {
+        onError: () => {
             toast({
                 description: "Nous ne pouvons pas créer le vol.",
                 title: "Erreur de connexions",
                 variant: "destructive",
             });
-            console.log(error);
             // setIsOpen(false);
         }
     });
