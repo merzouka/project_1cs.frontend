@@ -13,7 +13,7 @@ export default function SecondSec() {
     return (
         <>
             <div className=" mt-[20px] flex justify-center text-center mb-3">
-                <h1 className="font-bold text-4xl font-custom drop-shadow-md  ">Découvrez nos services</h1>
+                <h1 className="font-bold text-4xl font-custom">Découvrez nos services</h1>
             </div>
             <div className="flex justify-center">
                 <hr className="mb-4 mx-auto my-2 h-0.5 w-[150px] border-0 bg-[#EBA565] " />
@@ -72,7 +72,7 @@ const services: Service[] = [
 
 const ServiceCard = ({ service }: { service: Service }) => {
     return (
-        <div key={service.id} className=' h-[200px] rounded-3xl bg-white drop-shadow-xl w-[320px] px-8 py-4 flex flex-col relative group pb-6'>
+        <div key={service.id} className=' h-[200px] rounded-3xl bg-white drop-shadow-lg w-[320px] px-8 py-4 flex flex-col relative group pb-6'>
             <div className='w-full h-full flex flex-col justify-between'>
                 <h3 className='text-xl font-bold text-wrap'>
                     {service.title}
