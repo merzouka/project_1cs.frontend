@@ -29,4 +29,7 @@ export const endpoints = {
     // roles
     users: (params: URLSearchParams) => `administrateur/list?${params.toString()}`,
     assignPrivilege: "",
+    // flights
+    flights: 'administrateur/voles-list',
+    createFlight: 'administrateur/add-vole',
 }

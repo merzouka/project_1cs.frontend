@@ -35,6 +35,10 @@ import {
 import { AlertDialogDemo } from "./Cardvol";
 import { NavigationMenuDemo } from "./page slider";
 import { useQuery } from "@tanstack/react-query";
+import { useToast } from "@/components/ui/use-toast";
+import { AxiosInstance } from "@/config/axios";
+import { getUrl } from "@/constants/api";
+import { endpoints } from "@/constants/endpoints";
 
 export type vl = {
     N: string;
@@ -45,35 +49,36 @@ export type vl = {
     Nombre_de_place: number;
 };
 
-const fetchData = async () => {
-    const response = await fetch("http://localhost:8000/administrateur/voles-list");
-    if (!response.ok) {
-        throw new Error("Network response was not ok");
-    }
-    return response.json();
-};
-
 export function DataTableDemo() {
+    const { toast } = useToast();
     const { data, isLoading, error } = useQuery({
-        queryKey: ["fetchData"],
-        queryFn: fetchData,
+        retry: 0,
+        queryKey: ["vols"],
+        queryFn: async () => {
+            try {
+                const response = await AxiosInstance.get(getUrl(endpoints.flights));
+                const data = response.data.map((flight: any, index: number) => ({
+                    N: index,
+                    Vols: flight.nom,
+                    Aéroport: flight.aeroport,
+                    Date_de_départ: `${flight.date_depart} à ${flight.heure_depart}`,
+                    Date_darrivée: `${flight.date_arrivee} à ${flight.heure_arrivee}`,
+                    Nombre_de_place: flight.nombre_de_places,
+                }));
+                return data;
+            } catch (error) {
+                toast({
+                    description: "Nous ne pouvons pas récupérer les vols.",
+                    title: "Erreur de connexion",
+                    variant: "destructive",
+                });
+            }
+        },
     });
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
-
-    if (isLoading) {
-        return <div>Loading...</div>;
-    }
-
-    if (error) {
-        return <div>Error: {error.message}</div>;
-    }
-
-    if (!data) {
-        return <div>No data available</div>;
-    }
 
     const handleDelete = (id: string) => {
         const newData = data.filter((item: vl) => item.N !== id);
@@ -233,36 +238,12 @@ export function DataTableDemo() {
                                         colSpan={columns.length}
                                         className="h-24 text-center"
                                     >
-                                        No results.
+                                        {"Pas de résultats."}
                                     </TableCell>
                                 </TableRow>
                             )}
                         </TableBody>
                     </Table>
-                </div>
-                <div className="flex items-center justify-end space-x-2 py-4">
-                    <div className="flex-1 text-sm text-muted-foreground">
-                        {table.getFilteredSelectedRowModel().rows.length} of{" "}
-                        {table.getFilteredRowModel().rows.length} row(s) selected.
-                    </div>
-                    <div className="space-x-2">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => table.previousPage()}
-                            disabled={!table.getCanPreviousPage()}
-                        >
-                            Previous
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => table.nextPage()}
-                            disabled={!table.getCanNextPage()}
-                        >
-                            Next
-                        </Button>
-                    </div>
                 </div>
             </div>
         </>
