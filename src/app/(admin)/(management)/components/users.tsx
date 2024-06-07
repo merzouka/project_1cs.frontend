@@ -70,10 +70,6 @@ export const Users = (
             {isError && 
                 <ErrorDisplay text={"Nous ne pouvons pas récupérer les utilisateurs."} />
             }
-            {
-                isLoading &&
-                    <span className="text-5xl font-bold text-center w-full text-black">{"Chargement..."}</span>
-            }
         </div>
     );
 }
