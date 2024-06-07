@@ -27,8 +27,8 @@ export const pages: NavPage[] = [
     },
     {
         id: "hajj",
-        link: "/",
-        display: "Hajj",
+        link: "/inscription",
+        display: "Inscription",
         icon: <FaKaaba className={styles} />,
     },
     {
