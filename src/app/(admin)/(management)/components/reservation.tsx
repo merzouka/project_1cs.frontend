@@ -34,6 +34,8 @@ import {
 import { NavigationMenuDemo } from "./page slider";
 import { AlertDialogDemoh } from "./Cardhotel";
 import { useQuery } from "@tanstack/react-query";
+import { useToast } from "@/components/ui/use-toast";
+import { AxiosInstance } from "@/config/axios";
 
 export type htl = {
     N: string;
@@ -41,41 +43,34 @@ export type htl = {
     Adresse: string;
 };
 
-const fetchData = async () => {
-    const response = await fetch("http://localhost:8000/administrateur/voles-list");
-    if (!response.ok) {
-        throw new Error("Network response was not ok");
-    }
-    return response.json();
-};
-
 export function DataTableDemoh() {
-    const { data, isLoading, error } = useQuery({
-        queryKey: ["fetchData"],
-        queryFn: fetchData,
+    const { toast } = useToast();
+    const { data } = useQuery({
+        queryKey: ["hotels"],
+        queryFn: async () => {
+            try {
+                const response = await AxiosInstance.get("http://localhost:8000/administrateur/hotels-list");
+                return response.data.map((hotel: {
+                    nom: string;
+                    address: string;
+                }, index: number) => ({
+                        N: index,
+                        Hotel: hotel.nom,
+                        Adresse: hotel.address,
+                }));
+            } catch {
+                toast({
+                    description: "Nous ne pouvons pas récupérer les vols.",
+                    title: "Erreur de connexion",
+                    variant: "destructive",
+                });
+            }
+        },
     });
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
-    const [filteredData, setFilteredData] = React.useState<htl[]>(data || []);
-
-    if (isLoading) {
-        return <div>Loading...</div>;
-    }
-
-    if (error) {
-        return <div>Error: {error.message}</div>;
-    }
-
-    if (!data) {
-        return <div>No data available</div>;
-    }
-
-    const handleDelete = (id: string) => {
-        const newData = filteredData.filter((item: htl) => item.N !== id);
-        setFilteredData(newData);
-    };
 
     const columns: ColumnDef<htl>[] = [
         {
@@ -97,13 +92,13 @@ export function DataTableDemoh() {
             header: () => {
                 return <div className="text-black font-semibold ml-[50px]">Adresse</div>;
             },
-            cell: ({ row }) => <div className="lowercase font-medium ml-[45px] text-end">{row.getValue("Adresse")}</div>,
+            cell: ({ row }) => <div className="lowercase font-medium ml-[45px]">{row.getValue("Adresse")}</div>,
         },
         {
             id: "actions",
             accessorKey: "actions",
             header: () => {
-                return <div className="text-black font-semibold ml-[550px]">actions</div>;
+                return <div className="text-black font-semibold">actions</div>;
             },
             enableHiding: false,
             cell: ({ row }) => {
@@ -121,17 +116,23 @@ export function DataTableDemoh() {
                             <DropdownMenuItem onClick={() => navigator.clipboard.writeText(htl.N)}>
                                 Copy ID
                             </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => handleDelete(htl.N)}>Delete</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 );
             },
         },
     ];
+    const [term, setTerm] = React.useState("");
+    const filteredData = React.useMemo(() => {
+        return data?.filter((hotel: {
+            N: number;
+            Hotel: string;
+            Adresse: string;
+        }) => hotel.Hotel.toLowerCase().includes(term)) || []
+    }, [term, data])
 
     const table = useReactTable({
-        data: filteredData || [], // Use the filtered data or an empty array if filteredData is falsy
+        data: filteredData,
         columns,
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
@@ -150,7 +151,7 @@ export function DataTableDemoh() {
     });
 
     return (
-        <div className="w-full mt-[60px]">
+        <div className="w-full pt-[60px] pb-5 h-full flex flex-col">
             <div className="font-semibold ml-10 text-3xl ">Vols et Hotels</div>
             <div className="flex items-center py-4 ">
                 <div className="relative text-[#656565] ml-4">
@@ -158,7 +159,7 @@ export function DataTableDemoh() {
                     <Input
                         placeholder="Search"
                         value={(table.getColumn("Hotel")?.getFilterValue() as string) ?? ""}
-                        onChange={(event) => table.getColumn("Hotel")?.setFilterValue(event.target.value)}
+                        onChange={(e) => setTerm(e.target.value)}
                         className=" pr-3 pl-12 rounded-[30px] w-[900px] ml-5 mr-7"
                     />
                 </div>
@@ -169,64 +170,42 @@ export function DataTableDemoh() {
             <div>
                 <NavigationMenuDemo />
             </div>
-            <div className="rounded-[25px] mr-8 ml-8 border">
-                <Table>
-                    <TableHeader>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => {
-                                    return (
-                                        <TableHead key={header.id}>
-                                            {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                                        </TableHead>
-                                    );
-                                })}
-                            </TableRow>
-                        ))}
-                    </TableHeader>
-                    <TableBody>
-                        {table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map((row) => (
-                                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
-                                    {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </TableCell>
-                                    ))}
+            <div className="relative overflow-y-scroll w-full flex-grow">
+                <div className="rounded-[25px] mr-8 ml-8 border absolute top-0 right-0 left-0">
+                    <Table>
+                        <TableHeader>
+                            {table.getHeaderGroups().map((headerGroup) => (
+                                <TableRow key={headerGroup.id}>
+                                    {headerGroup.headers.map((header) => {
+                                        return (
+                                            <TableHead key={header.id}>
+                                                {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                                            </TableHead>
+                                        );
+                                    })}
                                 </TableRow>
-                            ))
-                        ) : (
-                            <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    No results.
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </div>
-            <div className="flex items-center justify-end space-x-2 py-4">
-                <div className="flex-1 text-sm text-muted-foreground">
-                    {table.getFilteredSelectedRowModel().rows.length} of{" "}
-                    {table.getFilteredRowModel().rows.length} row(s) selected.
-                </div>
-                <div className="space-x-2">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => table.previousPage()}
-                        disabled={!table.getCanPreviousPage()}
-                    >
-                        Previous
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => table.nextPage()}
-                        disabled={!table.getCanNextPage()}
-                    >
-                        Next
-                    </Button>
+                            ))}
+                        </TableHeader>
+                        <TableBody>
+                            {table.getRowModel().rows?.length ? (
+                                table.getRowModel().rows.map((row) => (
+                                    <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                                        {row.getVisibleCells().map((cell) => (
+                                            <TableCell key={cell.id}>
+                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            </TableCell>
+                                        ))}
+                                    </TableRow>
+                                ))
+                            ) : (
+                                    <TableRow>
+                                        <TableCell colSpan={columns.length} className="h-24 text-center">
+                                            No results.
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                        </TableBody>
+                    </Table>
                 </div>
             </div>
         </div>

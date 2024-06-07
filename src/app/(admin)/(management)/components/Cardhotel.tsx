@@ -1,52 +1,46 @@
 "use client"
-
 import * as React from "react"
 import {
     AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
     AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import { useState } from "react"
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { AxiosInstance } from '@/config/axios';
+import { useToast } from "@/components/ui/use-toast"
 
 export function AlertDialogDemoh() {
     const [isOpen, setIsOpen] = useState(false)
     const [hotelData, setHotelData] = useState({ nameHotel: '', adrsHotel: '' })
-    const queryClient = useQueryClient()
-
-
-
-
-
+    const queryClient = useQueryClient();
     const addHotel = async (hotelData: any) => {
         try {
             const response = await AxiosInstance.post('http://localhost:8000/administrateur/add-hotel', {
                 nom: hotelData.nameHotel,
                 adress: hotelData.adrsHotel,
-
             });
             return response;  // Already just the data due to our interceptor
         } catch (error) {
             throw error;  // Rethrow for React Query to catch
         }
     };
-
-
-
-
+    const { toast } = useToast();
     const mutation = useMutation({
         mutationFn: addHotel,
-        onSuccess: (data) => {
+        onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['hotels'] })
             setIsOpen(false)
             setHotelData({ nameHotel: '', adrsHotel: '' })
-            // Nice success toast
+            toast({
+                description: "Creation d'hotel avec succès.",
+            });
         },
-        onError: (error) => {
-            console.error('Failed to add hotel:', error.message)
-            // Show error in a toast
+        onError: () => {
+            toast({
+                description: "Creation d'hotel échoué.",
+                variant: "destructive",
+            });
         }
     })
 
@@ -56,10 +50,6 @@ export function AlertDialogDemoh() {
 
     const handleSubmit = (e: any) => {
         e.preventDefault()
-        if (!hotelData.nameHotel || !hotelData.adrsHotel) {
-
-            return
-        }
         mutation.mutate(hotelData)
     }
 
@@ -74,40 +64,36 @@ export function AlertDialogDemoh() {
                     Ajouter
                 </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent className="rounded-[24px] border-transparent h-[320px] w-[590px]">
+            <AlertDialogContent className="rounded-[24px] border-transparent h-[320px] min-w-[590px]">
                 <AlertDialogHeader>
                     <AlertDialogTitle>Ajouter un Hôtel</AlertDialogTitle>
                 </AlertDialogHeader>
-                <Card className="w-[528px] bg-transparent border-transparent">
-                    <CardContent>
-                        <form onSubmit={handleSubmit}>
-                            <div className="grid w-full items-center gap-4">
-                                <div className="flex flex-col space-y-1.5">
-                                    <label htmlFor="nameHotel">Nom</label>
-                                    <input
-                                        className="flex h-10 w-full rounded-[15px] border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-950"
-                                        id="nameHotel"
-                                        placeholder="Entrer le nom de l'hôtel"
-                                        value={hotelData.nameHotel}
-                                        onChange={handleChange('nameHotel')}
-                                        required
-                                    />
-                                </div>
-                                <div className="flex flex-col space-y-1.5 mt-5">
-                                    <label htmlFor="adrsHotel">Adresse</label>
-                                    <input
-                                        className="flex h-10 w-full rounded-[15px] border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-950"
-                                        id="adrsHotel"
-                                        placeholder="Entrer l'adresse de l'hôtel"
-                                        value={hotelData.adrsHotel}
-                                        onChange={handleChange('adrsHotel')}
-                                        required
-                                    />
-                                </div>
-                            </div>
-                        </form>
-                    </CardContent>
-                </Card>
+                <form onSubmit={handleSubmit}>
+                    <div className="grid w-full items-center gap-4 mb-2">
+                        <div className="flex flex-col space-y-1.5">
+                            <label htmlFor="nameHotel">Nom</label>
+                            <input
+                                className="flex h-10 w-full rounded-[15px] border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-950"
+                                id="nameHotel"
+                                placeholder="Entrer le nom de l'hôtel"
+                                value={hotelData.nameHotel}
+                                onChange={handleChange('nameHotel')}
+                                required
+                            />
+                        </div>
+                        <div className="flex flex-col space-y-1.5">
+                            <label htmlFor="adrsHotel">Adresse</label>
+                            <input
+                                className="flex h-10 w-full rounded-[15px] border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-950"
+                                id="adrsHotel"
+                                placeholder="Entrer l'adresse de l'hôtel"
+                                value={hotelData.adrsHotel}
+                                onChange={handleChange('adrsHotel')}
+                                required
+                            />
+                        </div>
+                    </div>
+                </form>
                 {mutation.isError && (
                     <p className="text-red-500 text-sm mt-2">{mutation.error.message}</p>
                 )}
