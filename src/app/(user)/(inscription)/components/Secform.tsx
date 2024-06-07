@@ -7,7 +7,7 @@ import { useUser } from '@/hooks/use-user';
 
 
 const InscriptionPage2 = () => {
-    const { numeroPortable, numeroPassport, dateExpirationPassport, sexe, idMahram } = useInscriptionStore()
+    const { numeroPortable, numeroPassport, dateExpirationPassport, sexe, idMahram } = useInscriptionStore((state) => state.form)
     const setField = useInscriptionStore((state) => state.setField)
     const handleInputChange = (e: { target: { name: any; value: any } }) => {
         setField(e.target.name, e.target.value)
@@ -23,7 +23,6 @@ const InscriptionPage2 = () => {
         e.preventDefault();
         try {
             formData.photoPersonnelle = photo[0];
-
             await submitInscriptionData(formData);
         } catch (error) {
             console.error('Error submitting inscription data:', error);
@@ -101,11 +100,8 @@ const InscriptionPage2 = () => {
                     </div>
                 </div>
                 <div className="flex justify-center ">
-
                     <button type="submit" className="border-orange-400 shadow-md h-15 mb-5 block w-[340px] rounded-lg border px-4 py-2 text-center font-bold text-black" >
-
                         Confirmer
-
                     </button>
                 </div>
 

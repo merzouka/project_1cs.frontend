@@ -2,7 +2,7 @@ import { UserInfo, Role } from "@/stores/user-store";
 
 export const pageValidators = {
     "open": (_: UserInfo) => true,
-    "inscription": (user: UserInfo) => user.isLoggedIn,
+    "submission": (user: UserInfo) => user.isLoggedIn,
     "profile": (user: UserInfo) => user.role == Role.user,
     "profile/haaj": (user: UserInfo) => user.role ==  Role.haaj,
     "profile/drawing-manager": (user: UserInfo) => user.role ==  Role.drawingManager,
