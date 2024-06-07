@@ -28,5 +28,5 @@ export const endpoints = {
     paymentStatusUpdate: "payment_status/",
     // roles
     users: (params: URLSearchParams) => `users?${params.toString()}`,
-    assignPrivilege: "",
+    assignPrivilege: "user/privilege",
 }

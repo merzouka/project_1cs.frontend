@@ -9,7 +9,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { useEffect } from "react";
 import { ErrorDisplay } from "@/app/components/error-display";
-import { UserRow, User } from "./user-row";
+import { UserRow, User, UserRowSkeleton } from "./user-row";
 import { Spinner } from "@/components/custom/spinner";
 
 export const Users = (
@@ -51,11 +51,20 @@ export const Users = (
                             <TableHead className="text-black">{"Action"}</TableHead>
                         </TableRow>
                     </TableHeader>
-                    <TableBody>
-                        {
-                            users?.map((user, index) => <UserRow key={user.id} info={user} index={index}/>)
-                        }
-                    </TableBody>
+                    {
+                        !isError && !isLoading && users &&
+                            <TableBody>
+                                {
+                                    users?.map((user, index) => <UserRow key={user.id} info={user} index={index}/>)
+                                }
+                            </TableBody>
+                    }
+                    {
+                        isLoading && 
+                            Array(7).fill(null).map(_ => (
+                                <UserRowSkeleton />
+                            ))
+                    }
                 </Table>
             </div>
             {isError && 

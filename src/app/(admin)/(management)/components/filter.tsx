@@ -45,7 +45,7 @@ export const Filter = (
 
     const handleSearch = useDebouncedCallback(
         (value: string) => { setParam('query', value); }
-    , 500);
+    , 700);
 
     const [filters, setFilters] = useState<{
         role?: string;

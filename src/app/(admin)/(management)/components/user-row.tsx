@@ -21,7 +21,7 @@ import {
     TooltipProvider,
 } from "@/components/ui/tooltip";
 import { Province, provinces } from "@/constants/provinces";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { City, mappedCities } from "@/constants/mapped-cities";
 import { FiPlusCircle } from "react-icons/fi";
@@ -32,6 +32,10 @@ import { endpoints } from "@/constants/endpoints";
 import { cities } from "@/constants/cities";
 import { motion } from "framer-motion";
 import { useQueryClient } from "@tanstack/react-query";
+import { useSearchParams } from "next/navigation";
+import { getRoleMap } from "@/stores/user-store";
+import { useToast } from "@/components/ui/use-toast"
+import { Skeleton } from "@/components/ui/skeleton";
 
 export interface User {
     id: number;
@@ -51,17 +55,7 @@ function getCityName(city: City | undefined): string {
 }
 
 function getRole(value: string): Role {
-    const roles = [
-        Role.user,
-        Role.haaj,
-        Role.drawingManager,
-        Role.superAdmin,
-        Role.doctor,
-        Role.paymentManager,
-        Role.admin,
-    ];
-    const index = Number(value);
-    return index >= 0 && index < roles.length ? roles[index] : roles[0];
+    return Number(value) as Role;
 }
 
 export enum PlaceType {
@@ -127,10 +121,8 @@ function updatePlaces(places: Place[], cityId: number): Place[] {
             type: PlaceType.province,
             province: city?.province,
         });
-    } else {
-        places = [...places]
     }
-    return places;
+    return [...places];
 }
 
 export const UserRow = (
@@ -143,9 +135,15 @@ export const UserRow = (
     }
 ) => {
     const [selectedProvinces, setSelectedProvinces] = useState<number[]>(info.provinces || []);
-    const [selectedPlaces, setSelectedPlaces] = useState<Place[]>(processCities(info.provinces, info.cities) || [])
+    const [selectedPlaces, setSelectedPlaces] = useState<Place[]>(processCities(info.provinces || [], info.cities || []) || [])
     const selectedCityIds = useMemo(
-        () => selectedPlaces.filter(place => place.type == PlaceType.city).map(place => place.city?.id)
+        () => {
+            const cityIds = selectedPlaces.filter(place => place.type == PlaceType.city).map(place => place.city?.id || 0)
+            for (const place of selectedPlaces.filter(place => place.type == PlaceType.province)) {
+                cityIds.push(...(mappedCities.filter(city => city.province.number == place.province?.number).map(city => city.id) || []));
+            }
+            return cityIds;
+        }
     , [selectedPlaces])
     const [role, setRole] = useState<Role>(info.role || Role.user);
 
@@ -171,32 +169,48 @@ export const UserRow = (
         setSelectedPlaces(newPlaces);
     }
 
+    useEffect(() => {
+        setRole(info.role || Role.user);
+        setSelectedProvinces(info.provinces || []);
+        setSelectedPlaces(processCities(info.provinces || [], info.cities || []) || [])
+    }, [info, info.cities])
+
     const params = useSearchParams();
-    const [disabled, setDisabled] = useState(false);
     const queryClient = useQueryClient();
+    const { toast } = useToast();
     const { isPending, mutate } = useMutation({
         mutationKey: ["assign privilege", info.id],
-        mutationFn: async () => {
-            const response = await AxiosInstance.patch(getUrl(endpoints.assignPrivilege));
+        mutationFn: async (values: {
+            id: number,
+            role: string;
+            cities: number[];
+        }) => {
+            const response = await AxiosInstance.patch(getUrl(endpoints.assignPrivilege), values);
             return response.data;
         },
-        onMutate: () => {
-            setDisabled(true);
-        },
         onSuccess: () => {
-            setDisabled(false);
             queryClient.invalidateQueries({
                 queryKey: ["users", params.toString()],
             });
+            toast({
+                description: "opération effectué avec succés.",
+            })
         },
         onError: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["users", params.toString()],
-            });
+            toast({
+                description: "opération échoué.",
+                variant: "destructive",
+            })
         }
     });
+    const disabled = isPending;
 
     function handleSave() {
+        mutate({
+            id: info.id,
+            role: getRoleMap(role),
+            cities: selectedCityIds || [],
+        });
     }
 
     const overlay = <div className="absolute right-0 bottom-0 left-0 top-0 bg-slate-100/50 z-[10]"></div>;
@@ -207,7 +221,7 @@ export const UserRow = (
                 .map((province) => (
                     <SelectItem key={province.number} value={`${province.number}`} className={cn(
                         "p-1 text-slate-600",
-                        selectedProvinces.includes(province.number) &&"[&>span>span>svg]:hidden",
+                        "[&>span>span>svg]:hidden",
                     )}>
                         <span className={cn(
                             selectedProvinces.includes(province.number) && "font-semibold text-black",
@@ -244,11 +258,20 @@ export const UserRow = (
                                 type: PlaceType.province,
                                 province: province
                             }}
-                            onClick={() => setSelectedProvinces(selectedProvinces.filter(selected => selected != province?.number))}
+                            onClick={() => {
+                                setSelectedProvinces(selectedProvinces.filter(selected => selected != province?.number));
+                                setSelectedPlaces(selectedPlaces.filter(place => 
+                                    !(
+                                        (place.type == PlaceType.city && place.city?.province.number == Number(province?.number)) ||
+                                            (place.type == PlaceType.province && place.province?.number == Number(province?.number)) 
+                                    )
+                                ))
+                            }}
                         />
                     );
                 })
     }, [selectedProvinces])
+
     return (
         <TooltipProvider>
             <TableRow className="relative">
@@ -285,7 +308,14 @@ export const UserRow = (
                         disabled &&
                             overlay
                     }
-                    <Select onValueChange={(value) => setRole(getRole(value))} value={`${role}`}>
+                    <Select onValueChange={(value) => {
+                        const role = getRole(value)
+                        setRole(role);
+                        if (role == Role.user) {
+                            setSelectedPlaces([]);
+                            setSelectedProvinces([]);
+                        }
+                    }} value={`${role}`}>
                         <SelectTrigger className="shadow-md rounded-2xl">
                             <SelectValue placeholder={"Sélectionner"} defaultValue={role}/>
                         </SelectTrigger>
@@ -304,7 +334,7 @@ export const UserRow = (
                             overlay
                     }
                     <Tooltip>
-                        <Select onValueChange={handleProvinceSelect}>
+                        <Select onValueChange={handleProvinceSelect} disabled={role == Role.user}>
                             {
                                 selectedProvinces.length == 0 ?
                                     <SelectTrigger className="rounded-2xl shadow-md flex item-center justify-center">
@@ -323,10 +353,12 @@ export const UserRow = (
                                 }
                             </SelectContent>
                         </Select>
-                        <TooltipContent className="flex flex-wrap max-w-96">
-                            {
-                                selectedProvinceTags
-                            }
+                        <TooltipContent className="max-w-96 max-h-[24rem] overflow-y-scroll">
+                            <div className="flex flex-wrap justify-start items-start">
+                                {
+                                    selectedProvinceTags
+                                }
+                            </div>
                         </TooltipContent>
                     </Tooltip>
                 </TableCell>
@@ -348,20 +380,22 @@ export const UserRow = (
                                 <TooltipTrigger className="border-0 hover:bg-transparent bg-transparent hover:text-slate-400 font-bold text-xl px-2">
                                     ...
                                 </TooltipTrigger>
-                                <TooltipContent className="flex flex-wrap max-w-60 gap-2 items-center justify-center">
-                                    {selectedPlaces.slice(3).map((selected) => (
-                                        <PlaceTag 
-                                            className="m-1"
-                                            onClick={() => handlePlaceRemove(selected)}
-                                            key={selected.city?.id || selected.province?.number} 
-                                            place={selected} 
-                                        />
-                                    ))}
+                                <TooltipContent className="max-w-60 max-h-[24rem] overflow-y-scroll">
+                                    <div className="flex flex-wrap justify-start items-start">
+                                        {selectedPlaces.slice(3).map((selected) => (
+                                            <PlaceTag 
+                                                className="m-1"
+                                                onClick={() => handlePlaceRemove(selected)}
+                                                key={selected.city?.id || selected.province?.number} 
+                                                place={selected} 
+                                            />
+                                        ))}
+                                    </div>
                                 </TooltipContent>
                             </Tooltip>
                         }
                         <motion.div layout>
-                            <Select onValueChange={handleCitySelect} value={undefined} disabled={citiesSelectItems.length == 0}>
+                            <Select onValueChange={handleCitySelect} value={undefined} disabled={citiesSelectItems.length == 0 || role == Role.user}>
                                 <SelectTrigger className={cn(
                                     "[&>svg]:hidden border-0 w-fit shadow-md rounded-xl text-slate-400 ",
                                     "bg-white hover:bg-white hover:text-slate-500 aspect-square flex items-center justify-center",
@@ -385,12 +419,46 @@ export const UserRow = (
                         disabled &&
                             overlay
                     }
-                    <Button className="rounded-full bg-orange-100 text-black font-semibold text-xs hover:bg-orange-200" size={"sm"}>
+                    <Button 
+                        onClick={handleSave}
+                        className="rounded-full bg-orange-100 text-black font-semibold text-xs hover:bg-orange-200" 
+                        size={"sm"}>
                         {"Sauvegarder"}
                     </Button>
                 </TableCell>
             </TableRow>
         </TooltipProvider>    
+    );
+}
+
+export function UserRowSkeleton() {
+    return (
+        <TableRow>
+            <TableCell>
+                <Skeleton className="h-3 w-5" />
+            </TableCell>
+            <TableCell>
+                <Skeleton className="h-3 w-16" />
+            </TableCell>
+            <TableCell>
+                <Skeleton className="h-3 w-16" />
+            </TableCell>
+            <TableCell>
+                <Skeleton className="h-3 w-36" />
+            </TableCell>
+            <TableCell>
+                <Skeleton className="h-9 w-36 rounded-xl" />
+            </TableCell>
+            <TableCell>
+                <Skeleton className="h-9 w-36 rounded-xl" />
+            </TableCell>
+            <TableCell className="flex items-center justify-center">
+                <Skeleton className="h-9 w-9 rounded-xl" />
+            </TableCell>
+            <TableCell>
+                <Skeleton className="h-7 rounded-full w-24" />
+            </TableCell>
+        </TableRow>
     );
 }
 
