@@ -4,6 +4,18 @@ import { useInscriptionStore } from '../components/Store'
 import Link from 'next/link'
 import { submitInscriptionData } from '../api';
 import { useUser } from '@/hooks/use-user';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Button } from '@/components/ui/button';
 
 
 const InscriptionPage2 = () => {
@@ -124,11 +136,24 @@ const InscriptionPage2 = () => {
                 </div>
                 <div className="flex justify-center ">
 
-                    <button type="submit" className="border-orange-400 shadow-md h-15 mb-5 block w-[340px] rounded-lg border px-4 py-2 text-center font-bold text-black" >
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button type="submit" className="border-orange-400 shadow-md h-15 mb-10 block w-[340px] rounded-lg border px-4 py-2 text-center font-bold text-black" variant="outline">Confirmer</Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle className='text-center'>Vous avez été ajouté à la liste des inscripteures </AlertDialogTitle>
 
-                        Confirmer
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
 
-                    </button>
+                                <AlertDialogAction>
+
+                                    <Link href={'/'}> accueil </Link>
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
                 </div>
 
 
