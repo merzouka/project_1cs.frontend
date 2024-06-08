@@ -27,6 +27,11 @@ export const endpoints = {
     paymentWinners: "winners_accepted/",
     paymentStatusUpdate: "payment_status/",
     // roles
+    users: (params: URLSearchParams) => `administrateur/list?${params.toString()}`,
+    assignPrivilege: "",
+    // flights
+    flights: 'administrateur/voles-list',
+    createFlight: 'administrateur/add-vole',
     users: (params: URLSearchParams) => `users?${params.toString()}`,
     assignPrivilege: "user/privilege",
 }

@@ -1,5 +1,6 @@
 "use client";
 import * as React from "react";
+
 import {
     ColumnDef,
     ColumnFiltersState,
@@ -16,7 +17,6 @@ import { MoreHorizontal, SearchIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
-
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
@@ -34,6 +34,13 @@ import {
 } from "@/components/ui/table";
 import { AlertDialogDemo } from "./Cardvol";
 import { NavigationMenuDemo } from "./page slider";
+import { useQuery } from "@tanstack/react-query";
+import { useToast } from "@/components/ui/use-toast";
+import { AxiosInstance } from "@/config/axios";
+import { getUrl } from "@/constants/api";
+import { endpoints } from "@/constants/endpoints";
+import { useUser } from "@/hooks/use-user";
+import { Pages } from "@/constants/pages";
 
 export type vl = {
     N: string;
@@ -44,66 +51,38 @@ export type vl = {
     Nombre_de_place: number;
 };
 
-const initialData: vl[] = [
-    {
-        N: "1",
-        Vols: "alger",
-        Date_de_départ: "10-09-2024 a 16:00 h",
-        Date_darrivée: "10-09-2024 a 16:00 h",
-        Aéroport: "Houari boumadien",
-        Nombre_de_place: 200,
-    },
-    {
-        N: "2",
-        Vols: "tlemcen",
-        Date_de_départ: "10-09-2024 a 16:00 h",
-        Date_darrivée: "10-09-2024 a 16:00 h",
-        Aéroport: "Houari boumadien",
-        Nombre_de_place: 200,
-    },
-    {
-        N: "3",
-        Vols: "oran",
-        Date_de_départ: "10-09-2024 a 16:00 h",
-        Date_darrivée: "10-09-2024 a 16:00 h",
-        Aéroport: "Houari boumadien",
-        Nombre_de_place: 200,
-    },
-    {
-        N: "4",
-        Vols: "annaba",
-        Date_de_départ: "10-09-2024 a 16:00 h",
-        Date_darrivée: "10-09-2024 a 16:00 h",
-        Aéroport: "Houari boumadien",
-        Nombre_de_place: 200,
-    },
-    {
-        N: "5",
-        Vols: "oran",
-        Date_de_départ: "10-09-2024 a 16:00 h",
-        Date_darrivée: "10-09-2024 a 16:00 h",
-        Aéroport: "Houari boumadien",
-        Nombre_de_place: 200,
-    },
-];
-function getData(): vl[] {
-    return initialData;
-}
-
-const datav = getData();
-console.log(datav);
-
 export function DataTableDemo() {
-    const [data, setData] = React.useState<vl[]>(initialData);
+    const { toast } = useToast();
+    const { user, useValidateAccess } = useUser();
+    useValidateAccess(Pages.bookings);
+    const { data } = useQuery({
+        retry: 0,
+        queryKey: ["vols"],
+        queryFn: async () => {
+            try {
+                const response = await AxiosInstance.get(getUrl(endpoints.flights));
+                const data = response.data.map((flight: any, index: number) => ({
+                    N: index,
+                    Vols: flight.nom,
+                    Aéroport: flight.aeroport,
+                    Date_de_départ: `${flight.date_depart} à ${flight.heure_depart}`,
+                    Date_darrivée: `${flight.date_arrivee} à ${flight.heure_arrivee}`,
+                    Nombre_de_place: flight.nombre_de_places,
+                }));
+                return data;
+            } catch (error) {
+                toast({
+                    description: "Nous ne pouvons pas récupérer les vols.",
+                    title: "Erreur de connexion",
+                    variant: "destructive",
+                });
+            }
+        },
+    });
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
-
-    const handleDelete = (id: string) => {
-        const newData = data.filter(item => item.N !== id);
-        setData(newData);
-    };
 
     const columns: ColumnDef<vl>[] = [
         {
@@ -159,20 +138,22 @@ export function DataTableDemo() {
                                 Copy ID
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem
+                            {
+                                /* <DropdownMenuItem
                                 onClick={() => handleDelete(vl.N)}
                             >
                                 Delete
-                            </DropdownMenuItem>
+                            </DropdownMenuItem> */
+                            }
                         </DropdownMenuContent>
                     </DropdownMenu>
                 );
             },
         },
-    ];
+    ];;
 
     const table = useReactTable({
-        data,
+        data: data || [],
         columns,
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
@@ -192,7 +173,7 @@ export function DataTableDemo() {
 
     return (
         <>
-            <div className="w-full mt-[60px]">
+            <div className="w-full pt-[60px] pb-5 flex flex-col h-full">
                 <div className="font-semibold ml-10 text-3xl ">
                     Vols et Hotels
                 </div>
@@ -215,78 +196,56 @@ export function DataTableDemo() {
                 <div>
                     <NavigationMenuDemo />
                 </div>
-                <div className="rounded-[25px] mr-8 ml-8 border">
-                    <Table>
-                        <TableHeader>
-                            {table.getHeaderGroups().map((headerGroup) => (
-                                <TableRow key={headerGroup.id}>
-                                    {headerGroup.headers.map((header) => {
-                                        return (
-                                            <TableHead key={header.id}>
-                                                {header.isPlaceholder
-                                                    ? null
-                                                    : flexRender(
-                                                        header.column.columnDef.header,
-                                                        header.getContext()
-                                                    )}
-                                            </TableHead>
-                                        );
-                                    })}
-                                </TableRow>
-                            ))}
-                        </TableHeader>
-                        <TableBody>
-                            {table.getRowModel().rows?.length ? (
-                                table.getRowModel().rows.map((row) => (
-                                    <TableRow
-                                        key={row.id}
-                                        data-state={row.getIsSelected() && "selected"}
-                                    >
-                                        {row.getVisibleCells().map((cell) => (
-                                            <TableCell key={cell.id}>
-                                                {flexRender(
-                                                    cell.column.columnDef.cell,
-                                                    cell.getContext()
-                                                )}
-                                            </TableCell>
-                                        ))}
+                <div className="relative overflow-y-scroll w-full flex-grow">
+                    <div className="rounded-[25px] mr-8 ml-8 border absolute top-0 right-0 left-0">
+                        <Table>
+                            <TableHeader>
+                                {table.getHeaderGroups().map((headerGroup) => (
+                                    <TableRow key={headerGroup.id}>
+                                        {headerGroup.headers.map((header) => {
+                                            return (
+                                                <TableHead key={header.id}>
+                                                    {header.isPlaceholder
+                                                        ? null
+                                                        : flexRender(
+                                                            header.column.columnDef.header,
+                                                            header.getContext()
+                                                        )}
+                                                </TableHead>
+                                            );
+                                        })}
                                     </TableRow>
-                                ))
-                            ) : (
-                                <TableRow>
-                                    <TableCell
-                                        colSpan={columns.length}
-                                        className="h-24 text-center"
-                                    >
-                                        No results.
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
-                </div>
-                <div className="flex items-center justify-end space-x-2 py-4">
-                    <div className="flex-1 text-sm text-muted-foreground">
-                        {table.getFilteredSelectedRowModel().rows.length} of{" "}
-                        {table.getFilteredRowModel().rows.length} row(s) selected.
-                    </div>
-                    <div className="space-x-2">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => table.previousPage()}
-                            disabled={!table.getCanPreviousPage()}
-                        >
-                            Previous
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => table.nextPage()}
-                            disabled={!table.getCanNextPage()}
-                        >
-                            Next
-                        </Button>
+                                ))}
+                            </TableHeader>
+                            <TableBody>
+                                {table.getRowModel().rows?.length ? (
+                                    table.getRowModel().rows.map((row) => (
+                                        <TableRow
+                                            key={row.id}
+                                            data-state={row.getIsSelected() && "selected"}
+                                        >
+                                            {row.getVisibleCells().map((cell) => (
+                                                <TableCell key={cell.id}>
+                                                    {flexRender(
+                                                        cell.column.columnDef.cell,
+                                                        cell.getContext()
+                                                    )}
+                                                </TableCell>
+                                            ))}
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                        <TableRow>
+                                            <TableCell
+                                                colSpan={columns.length}
+                                                className="h-24 text-center"
+                                            >
+                                                {"Pas de résultats."}
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
+                            </TableBody>
+                        </Table>
                     </div>
                 </div>
             </div>

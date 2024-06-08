@@ -8,7 +8,7 @@ export interface Tab {
     icon: (className?: string) => React.ReactNode,
     display: string,
     id: string,
-    link: string,
+    link: string | string[],
 }
 
 export const NavTabs = ({ tabs }: { tabs: Tab[] }) => {
@@ -25,11 +25,11 @@ export const NavTabs = ({ tabs }: { tabs: Tab[] }) => {
                             aria-selected={tab.link == pathname || index == 0}
                             className={cn(
                                 "flex justify-between items-center group hover:no-underline pe-0",
-                                tab.link == pathname && "text-orange-400"
+                                (typeof tab.link == 'string' ? tab.link == pathname : tab.link.includes(pathname)) && "text-orange-400"
                             )}
                             role="tab"
                         >
-                            <Link href={tab.link} className={cn(
+                            <Link href={typeof tab.link == 'string' ? tab.link : tab.link[0]} className={cn(
                                 "flex grow justify-start items-center gap-x-4 w-full h-full underline-0 text-base ps-3 group-hover:text-color-700",
                             )}>
                                 {tab.icon("text-inherit")}
@@ -37,7 +37,7 @@ export const NavTabs = ({ tabs }: { tabs: Tab[] }) => {
                             </Link>
                             <div className={cn(
                                 "w-1 h-full bg-black group-hover:bg-orange-500 rounded-l-md hidden md:block",
-                                tab.link == pathname && "bg-orange-500",
+                                (typeof tab.link == 'string' ? tab.link == pathname : tab.link.includes(pathname)) && "bg-orange-500",
                             )}></div>
                         </Button>
                     );

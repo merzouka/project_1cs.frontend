@@ -81,22 +81,11 @@ const initialData: af[] = [
 ]
 
 export type af = {
-
     N: string,
     Nom: string,
     Prénom: string,
     Email: string,
-
-
-
 }
-function getData(): af[] {
-    return initialData;
-}
-
-const datav = getData();
-console.log(datav);
-
 
 export function DataTableDemoaf() {
     const [sorting, setSorting] = React.useState<SortingState>([])
@@ -120,8 +109,6 @@ export function DataTableDemoaf() {
             },
             cell: ({ row }) => <div className="capitalize font-medium">{row.getValue("N")}</div>,
         },
-
-        //////////////////////
         {
             accessorKey: "Nom",
             header: () => {
@@ -131,7 +118,6 @@ export function DataTableDemoaf() {
             },
             cell: ({ row }) => <div className="lowercase font-medium">{row.getValue("Nom")}</div>,
         },
-        ////////////////////////////////////
         {
             accessorKey: "Prénom",
             header: () => {
@@ -141,7 +127,6 @@ export function DataTableDemoaf() {
             },
             cell: ({ row }) => <div className="lowercase font-medium">{row.getValue("Prénom")}</div>,
         },
-        ///////////////////////////////////////
         {
             accessorKey: "Email",
             header: () => {
@@ -151,7 +136,6 @@ export function DataTableDemoaf() {
             },
             cell: ({ row }) => <div className="lowercase font-medium">{row.getValue("Email")}</div>,
         },
-        /////////////////////////////////////
         {
             id: "Vols",
             accessorKey: "Vols",
