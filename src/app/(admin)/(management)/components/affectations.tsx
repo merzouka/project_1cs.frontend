@@ -29,6 +29,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { getUrl } from "@/constants/api";
 import { endpoints } from "@/constants/endpoints";
 import { AxiosInstance } from "@/config/axios";
+import { Toaster } from "@/components/ui/toaster";
+import { Pages } from "@/constants/pages";
 
 export type af = {
     N: string,
@@ -38,20 +40,29 @@ export type af = {
 }
 
 export function DataTableDemoaf() {
+    const [selectedData, setSelectedData] = React.useState<{ flightId: string | undefined, hotelId: string | undefined }[]>([]);
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = React.useState({})
 
+    function setReserve(index: number, data: {
+    flightId: string | undefined,
+    hotelId: string | undefined,
+    }) {
+        const newData = [...selecteData];
+        newData[index] = data;
+        setSelectedData(newData);
+    }
     const columns: ColumnDef<af>[] = [
 
         {
             accessorKey: "N",
-            header: () => {
-                return (
-                    <div className="text-black font-semibold">N</div>
-                )
-            },
+        header: () => {
+            return (
+                <div className="text-black font-semibold">N</div>
+            )
+        },
             cell: ({ row }) => <div className="capitalize font-medium">{row.getValue("N")}</div>,
         },
         {
@@ -92,16 +103,17 @@ export function DataTableDemoaf() {
             enableHiding: false,
             cell: ({ row }) => {
                 const af = row.original
-
+                const index = Number(row.getValue('N'));
+                const data = selectedData[index];
                 return (
-                    <Select defaultValue={row.getValue('flight')?.id}>
+                    <Select defaultValue={row.getValue('Vols')?.id} onValueChange={(value) => setReserve(index, { ...data, flightId: value })}>
                         <SelectTrigger className="w-[100px] shadow-md" disabled={!flights}>
                             <SelectValue placeholder="Vols" />
                         </SelectTrigger>
                         <SelectContent>
-                            {flights?.map((flight) => (
-                                <SelectItem key={flight.id} value={flight.id}>{flight.nom}</SelectItem>
-                            ))}
+                            {flights?.map((flight: any) => {
+                                return <SelectItem key={flight.id} value={flight.id}>{flight.name}</SelectItem>
+                            })}
                         </SelectContent>
                     </Select>
 
@@ -119,21 +131,20 @@ export function DataTableDemoaf() {
             enableHiding: false,
             cell: ({ row }) => {
                 const af = row.original
+                const index = Number(row.getValue('N'));
+                const data = selectedData[index];
 
                 return (
-                    <Select>
-                        <SelectTrigger className="w-[100px] shadow-md">
+                    <Select defaultValue={row.getValue('Hotels')?.id} onValueChange={(value) => setReserve(index, { ...data, hotelId: value })}>
+                        <SelectTrigger className="w-[100px] shadow-md" disabled={!hotels}>
                             <SelectValue placeholder="Hotels" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectGroup>
-                                <SelectLabel>Hotels</SelectLabel>
-                                <SelectItem value="oran">oran</SelectItem>
-                                <SelectItem value="alger">alger</SelectItem>
-                                <SelectItem value="annaba">annaba</SelectItem>
-                                <SelectItem value="bechar">bechar</SelectItem>
-                                <SelectItem value="tlemcen">tlemcen</SelectItem>
-                            </SelectGroup>
+                            {
+                                hotels.map((hotel: any) => {
+                                    return <SelectItem key={hotel.id} value={hotel.id}>{hotel.name}</SelectItem>
+                                })
+                            }
                         </SelectContent>
                     </Select>
                 )
@@ -150,11 +161,11 @@ export function DataTableDemoaf() {
             enableHiding: false,
             cell: ({ row }) => {
                 const af = row.original
-
+                const index = Number(row.getValue('N'));
                 return (
                     <div className="flex space-x-2">
                         <button
-
+                            onClick={() => mutate(index)}
                             className="px-2 py-1 bg-[#FFE9D5] text-black rounded-[30px] font-semibold"
                         >
                             Sauvegarde
@@ -165,7 +176,8 @@ export function DataTableDemoaf() {
         },
     ]
 
-    const { user } = useUser();
+    const { user, useValidateAccess } = useUser();
+    useValidateAccess(Pages.hodjadj);
     const { toast } = useToast();
     const { data: hodjadj, isLoading: isHadjFetching } = useQuery({
         retry: 0,
@@ -173,7 +185,8 @@ export function DataTableDemoaf() {
         queryFn: async () => {
             try {
                 const response = await AxiosInstance.get(getUrl(endpoints.getHodjadj));
-                return response.data.map((hadj: {
+                const ids: {flightId: string | undefined; hotelId: string | undefined} = [];
+                const data = response.data.map((hadj: {
                     id: number;
                     email: string;
                     firstName: string;
@@ -186,14 +199,22 @@ export function DataTableDemoaf() {
                         id: number;
                         name: string;
                     },
-                }, index: number) => ({
-                    N: index,
-                    Nom: hadj.lastName,
-                    Prénom: hadj.firstName,
-                    Email: hadj.email,
-                    flight: hadj.flight ? { id: hadj.flight.id, name: hadj.flight.name, } : undefined,
-                    hotel: hadj.hotel ? { id: hadj.hotel.id, name: hadj.hotel.name, } : undefined,
-                }));
+                }, index: number) => { 
+                        ids.push({
+                            flighId: flight?.id || undefined,
+                            hotelId: hotel?.id || undefined,
+                        });
+                        return {
+                            N: index,
+                            Nom: hadj.lastName,
+                            Prénom: hadj.firstName,
+                            Email: hadj.email,
+                            flight: hadj.flight ? { id: hadj.flight.id, name: hadj.flight.name, } : undefined,
+                            hotel: hadj.hotel ? { id: hadj.hotel.id, name: hadj.hotel.name, } : undefined,
+                        }
+                    });
+                setSelectedData(ids);
+                return data;
             } catch (error) {
                 toast({
                     title: "Erreur de connexion",
@@ -204,7 +225,32 @@ export function DataTableDemoaf() {
         }
     });
 
-    console.log(hodjadj);
+    const queryClient = useQueryClient();
+    const { mutate } = useMutation({
+        mutationFn: async (index: number) => {
+            const data = selectedData[index];
+            const hadj = hodjadj[index];
+            const respnose = await AxiosInstance.post(getUrl(endpoints.assignHadj), {
+                winner_id: hadj.id,
+                hotel_id: data.hotelId ? Number(data.hoteId): undefined,
+                vol_id: data.flightId ? Number(data.flightId): undefined,
+            });
+            return response.data;
+        },
+        onSucces: () => {
+            toast({
+                description: "succés",
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["bookings", "hodjadj", user.email],
+            });
+        },
+        onError: () => {
+            toast({
+                description: "échec"
+            })
+        }})
+
     const { data: flights, isLoading: isFlightsFetching } = useQuery({
         retry: 0,
         queryKey: ["bookings", "flights"],
@@ -343,6 +389,7 @@ export function DataTableDemoaf() {
                     </div>
                 </div>
             </div>
+            <Toaster />
         </>
     )
 }

@@ -46,7 +46,7 @@ export type htl = {
 
 export function DataTableDemoh() {
     const { user, useValidateAccess } = useUser();
-    // useValidateAccess(Pages.bookings);
+    useValidateAccess(Pages.bookings);
     const { toast } = useToast();
     const { data } = useQuery({
         queryKey: ["hotels"],
