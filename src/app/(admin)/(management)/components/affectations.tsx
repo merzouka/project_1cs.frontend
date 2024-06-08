@@ -12,19 +12,15 @@ import {
     getSortedRowModel,
     useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal, SearchIcon } from "lucide-react"
-
+import { MoreHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
     DropdownMenu,
-    DropdownMenuCheckboxItem,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
 import {
     Table,
     TableBody,
@@ -33,52 +29,14 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { number } from "zod"
-import { Label } from "@radix-ui/react-label"
-import { AlertDialogDemo } from "./Cardvol"
-import { NavigationMenuDemo } from "./page slider"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
-
-
-
-
-const initialData: af[] = [
-    {
-        N: "1",
-        Nom: "chelal",
-        Prénom: "aicha",
-        Email: "chellal2003@gmail.com",
-
-    },
-    {
-        N: "2",
-        Nom: "chelal",
-        Prénom: "aicha",
-        Email: "chellal2003@gmail.com",
-
-    },
-    {
-        N: "1",
-        Nom: "chelal",
-        Prénom: "aicha",
-        Email: "chellal2003@gmail.com",
-
-    },
-    {
-        N: "3",
-        Nom: "chelal",
-        Prénom: "aicha",
-        Email: "chellal2003@gmail.com",
-
-    },
-    {
-        N: "4",
-        Nom: "chelal",
-        Prénom: "aicha",
-        Email: "chellal2003@gmail.com",
-
-    },
-]
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
+import { useUser } from "@/hooks/use-user";
+import { useToast } from "@/components/ui/use-toast";
+import { getUrl } from "@/constants/api";
+import { endpoints } from "@/constants/endpoints";
+import { AxiosInstance } from "@/config/axios";
 
 export type af = {
     N: string,
@@ -92,12 +50,7 @@ export function DataTableDemoaf() {
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = React.useState({})
-    const [data, setData] = React.useState<af[]>(initialData);
 
-    const handleDelete = (id: string) => {
-        const newData = data.filter(item => item.N !== id);
-        setData(newData);
-    };
     const columns: ColumnDef<af>[] = [
 
         {
@@ -168,7 +121,6 @@ export function DataTableDemoaf() {
                 )
             },
         },
-        /////////////////////////////////////
         {
             id: "Hotels",
             accessorKey: "Hotels",
@@ -200,8 +152,6 @@ export function DataTableDemoaf() {
                 )
             },
         },
-        /////////////////////////////////////////////
-
         {
             id: "actions",
             accessorKey: "actions",
@@ -229,20 +179,73 @@ export function DataTableDemoaf() {
                             >
                                 Copy  ID
                             </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                                onClick={() => handleDelete(af.N)}
-                            >
-                                Delete
-                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 )
             },
         },
     ]
+
+    const { user } = useUser();
+    const { toast } = useToast();
+    const { data: hodjadj, isLoading: isHadjFetching } = useQuery({
+        retry: 0,
+        queryKey: ["bookings", "hodjadj", user.email],
+        queryFn: async () => {
+            try {
+                const response = await AxiosInstance.get(getUrl(endpoints.getHodjadj));
+                return response.data;
+            } catch (error) {
+                toast({
+                    title: "Erreur de connexion",
+                    description: "Nous ne pouvons pas récupérer les pélèrins.",
+                    variant: "destructive",
+                });
+            }
+        }
+    });
+
+    const { data: flights, isLoading: isFlightsFetching } = useQuery({
+        retry: 0,
+        queryKey: ["bookings", "flights"],
+        queryFn: async () => {
+            try {
+                const response = await AxiosInstance.get(getUrl(endpoints.flights));
+                return response.data.map(flight => ({
+                    id: flight.id,
+                    name: flight.nom,
+                }));
+            } catch (error) {
+                toast({
+                    title: "Erreur de connexion",
+                    description: "Nous ne pouvons pas récupérer les pélèrins.",
+                    variant: "destructive",
+                });
+            }
+        }
+    });
+
+    const { data: hotels, isLoading: isHotelsFetching } = useQuery({
+        retry: 0,
+        queryKey: ["bookings", "flights"],
+        queryFn: async () => {
+            try {
+                const response = await AxiosInstance.get(getUrl(endpoints.hotels));
+                return response.data.map(hotel => ({
+                    id: hotel.id,
+                    name: hotel.nom,
+                }));
+            } catch (error) {
+                toast({
+                    title: "Erreur de connexion",
+                    description: "Nous ne pouvons pas récupérer les pélèrins.",
+                    variant: "destructive",
+                });
+            }
+        }
+    });
     const table = useReactTable({
-        data,
+        data: hodjadj || [],
         columns,
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
@@ -318,30 +321,6 @@ export function DataTableDemoaf() {
                             )}
                         </TableBody>
                     </Table>
-                </div>
-                <div className="flex items-center justify-end space-x-2 py-4">
-                    <div className="flex-1 text-sm text-muted-foreground">
-                        {table.getFilteredSelectedRowModel().rows.length} of{" "}
-                        {table.getFilteredRowModel().rows.length} row(s) selected.
-                    </div>
-                    <div className="space-x-2">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => table.previousPage()}
-                            disabled={!table.getCanPreviousPage()}
-                        >
-                            Previous
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => table.nextPage()}
-                            disabled={!table.getCanNextPage()}
-                        >
-                            Next
-                        </Button>
-                    </div>
                 </div>
             </div>
         </>
