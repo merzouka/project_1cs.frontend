@@ -102,19 +102,14 @@ export function DataTableDemoaf() {
                 const af = row.original
 
                 return (
-                    <Select>
-                        <SelectTrigger className="w-[100px] shadow-md">
+                    <Select defaultValue={row.getValue('flight')?.id}>
+                        <SelectTrigger className="w-[100px] shadow-md" disabled={!flights}>
                             <SelectValue placeholder="Vols" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectGroup>
-                                <SelectLabel>Vols</SelectLabel>
-                                <SelectItem value="oran">oran</SelectItem>
-                                <SelectItem value="alger">alger</SelectItem>
-                                <SelectItem value="annaba">annaba</SelectItem>
-                                <SelectItem value="bechar">bechar</SelectItem>
-                                <SelectItem value="tlemcen">tlemcen</SelectItem>
-                            </SelectGroup>
+                            {flights?.map((flight) => (
+                                <SelectItem key={flight.id} value={flight.id}>{flight.nom}</SelectItem>
+                            ))}
                         </SelectContent>
                     </Select>
 
@@ -194,7 +189,27 @@ export function DataTableDemoaf() {
         queryFn: async () => {
             try {
                 const response = await AxiosInstance.get(getUrl(endpoints.getHodjadj));
-                return response.data;
+                return response.data.map((hadj: {
+                    id: number;
+                    email: string;
+                    firstName: string;
+                    lastName: string;
+                    flight?: {
+                        id: number;
+                        name: string;
+                    },
+                    hotel?: {
+                        id: number;
+                        name: string;
+                    },
+                }, index: number) => ({
+                    N: index,
+                    Nom: hadj.lastName,
+                    Prénom: hadj.firstName,
+                    Email: hadj.email,
+                    flight: hadj.flight ? { id: hadj.flight.id, name: hadj.flight.name, } : undefined,
+                    hotel: hadj.hotel ? { id: hadj.hotel.id, name: hadj.hotel.name, } : undefined,
+                }));
             } catch (error) {
                 toast({
                     title: "Erreur de connexion",

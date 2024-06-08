@@ -35,6 +35,6 @@ export const endpoints = {
     // hotels
     hotels: "administrateur/hotels-list",
     // hodjadj
-    getHodjadj: 'bookings/haaj',
+    getHodjadj: 'bookings/hodjadj',
     assignHadj: 'bookings/haaj',
 }
