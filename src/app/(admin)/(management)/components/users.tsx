@@ -9,15 +9,17 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { useEffect } from "react";
 import { ErrorDisplay } from "@/app/components/error-display";
-import { UserRow, User } from "./user-row";
+import { UserRow, User, UserRowSkeleton } from "./user-row";
 
 export const Users = (
     {
         users,
         isError,
+        isLoading
     }: {
-        users: User[];
+        users?: User[];
         isError?: boolean;
+        isLoading?: boolean;
     }
 ) => {
 
@@ -48,11 +50,24 @@ export const Users = (
                             <TableHead className="text-black">{"Action"}</TableHead>
                         </TableRow>
                     </TableHeader>
-                    <TableBody>
-                        {
-                            users?.map((user, index) => <UserRow key={user.id} info={user} index={index}/>)
-                        }
-                    </TableBody>
+                    {
+                        !isError && !isLoading && users &&
+                            <TableBody>
+                                {
+                                    users?.map((user, index) => <UserRow key={user.id} info={user} index={index}/>)
+                                }
+                            </TableBody>
+                    }
+                    {
+                        isLoading && 
+                            <TableBody>
+                                {
+                                    Array(7).fill(null).map((_, i) => (
+                                        <UserRowSkeleton key={i}/>
+                                    ))
+                                }
+                            </TableBody>
+                    }
                 </Table>
             </div>
             {isError && 
