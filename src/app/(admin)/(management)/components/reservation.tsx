@@ -64,7 +64,7 @@ export function DataTableDemoh() {
                 }));
             } catch {
                 toast({
-                    description: "Nous ne pouvons pas récupérer les vols.",
+                    description: "Nous ne pouvons pas récupérer les hotels.",
                     title: "Erreur de connexion",
                     variant: "destructive",
                 });

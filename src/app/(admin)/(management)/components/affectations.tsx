@@ -6,21 +6,11 @@ import {
     SortingState,
     VisibilityState,
     flexRender,
-    getCoreRowModel,
     getFilteredRowModel,
-    getPaginationRowModel,
     getSortedRowModel,
     useReactTable,
 } from "@tanstack/react-table"
-import { MoreHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import {
     Table,
     TableBody,
@@ -160,22 +150,9 @@ export function DataTableDemoaf() {
                 const af = row.original
 
                 return (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                                <span className="sr-only">Open menu</span>
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem
-                                onClick={() => navigator.clipboard.writeText(af.N)}
-                            >
-                                Copy  ID
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <Button className="rounded-full">
+                        {"Sauvegarder"}
+                    </Button>
                 )
             },
         },
@@ -220,6 +197,7 @@ export function DataTableDemoaf() {
         }
     });
 
+    console.log(hodjadj);
     const { data: flights, isLoading: isFlightsFetching } = useQuery({
         retry: 0,
         queryKey: ["bookings", "flights"],
@@ -264,8 +242,6 @@ export function DataTableDemoaf() {
         columns,
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
-        getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         onColumnVisibilityChange: setColumnVisibility,
@@ -283,7 +259,7 @@ export function DataTableDemoaf() {
 
             <div className="w-full  mt-[60px]">
                 <div className="font-semibold ml-10 text-3xl mt-10 mb-[50px]">
-                    Les Utilisateurs
+                    Les pélèrins
                 </div>
 
 
