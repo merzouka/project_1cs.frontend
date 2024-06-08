@@ -226,7 +226,7 @@ export function DataTableDemoaf() {
         queryFn: async () => {
             try {
                 const response = await AxiosInstance.get(getUrl(endpoints.flights));
-                return response.data.map(flight => ({
+                return response.data.map((flight: any) => ({
                     id: flight.id,
                     name: flight.nom,
                 }));
@@ -246,7 +246,7 @@ export function DataTableDemoaf() {
         queryFn: async () => {
             try {
                 const response = await AxiosInstance.get(getUrl(endpoints.hotels));
-                return response.data.map(hotel => ({
+                return response.data.map((hotel: any) => ({
                     id: hotel.id,
                     name: hotel.nom,
                 }));
