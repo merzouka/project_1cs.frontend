@@ -79,21 +79,21 @@ export const Settings = () => {
                     percentage: response.data.tranche_age,
                 };
             } catch (error) {
-                if (isAxiosError(error) && failureCount == 2) {
-                    if (error.status == 404) {
-                        setDisableForm(false);
-                        return {
-                            message: 'no drawing found',
-                        }
+                if (isAxiosError(error) && error.response?.status == 404) {
+                    setDisableForm(false);
+                    return {
+                        message: 'no drawing found',
                     }
+                }
+                if (failureCount > 3) {
                     toast({
                         title: "Erreur de connexion",
                         description: "Nous ne pouvons pas connecter au serveur.",
                         variant: "destructive",
                     });
                     setDisableForm(true);
-                    throw new Error("connection error");
                 }
+                throw new Error("connection error");
             }
         }
     });
@@ -158,6 +158,7 @@ export const Settings = () => {
     const [drawingType, setDrawingType] = useState<string>(DrawingType.Random);
     const formDisabled = disableForm || isStateLoading || isSettingLoading 
         || isCitiesFetching || isCitiesFetchError || cities.length == 0;
+    console.log(disableForm);
     return (
         <div className="p-2 md:p-4 rounded-xl md:border md:border-slate-200 grow md:max-w-[65%]">
             <Form {...form}>

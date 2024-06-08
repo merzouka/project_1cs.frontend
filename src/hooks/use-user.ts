@@ -10,6 +10,25 @@ import { AxiosInstance } from "@/config/axios";
 import { useEffect } from "react";
 import { getCityNameId } from "@/constants/cities";
 
+function getProfile(role: Role) {
+    switch (role) {
+        case Role.haaj:
+            return "/profile/haaj";
+        case Role.drawingManager:
+            return "/profile/drawing-manager";
+        case Role.doctor:
+            return "/profile/doctor"
+        case Role.user:
+            return "/profile";
+        case Role.paymentManager:
+            return "/profile/payment-manager";
+        case Role.admin:
+            return "/profile/admin";
+        default:
+            return "/";
+    }
+}
+
 export function useUser() {
     const user = useUserStore((state) => state.user);
     const setUser = useUserStore((state) => state.setUser);
@@ -61,6 +80,12 @@ export function useUser() {
                         image: data?.personal_picture || undefined,
                         emailVerified: data?.is_email_verified || false,
                         isLoggedIn: true,
+                        status: data.status === null ? undefined: {
+                            registration: data.status.registration,
+                            drawing: data.status.drawing,
+                            appointment: data.status.appointment,
+                            payment: data.status.payment,
+                        },
                     };
 
                     /* @ts-ignore impossible invalid values */
@@ -79,6 +104,7 @@ export function useUser() {
                     description: "Erreur interne de serveur.",
                     variant: "destructive",
                 });
+                console.log(error);
             }
             
         }, [data, isError]);
@@ -96,5 +122,6 @@ export function useUser() {
         role,
         hasRole,
         useValidateAccess,
+        profile: getProfile(role),
     }
 }

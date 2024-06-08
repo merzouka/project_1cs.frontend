@@ -10,21 +10,20 @@ import { useInscriptionStore } from "../components/Store";
 import { provinces } from "@/constants/provinces";
 
 export default function Homee() {
-    const { validateAccess, user } = useUser();
+    const { useValidateAccess, user } = useUser();
     const setValues = useInscriptionStore((state) => state.setValues);
-    // validateAccess(Pages.submission);
+    useValidateAccess(Pages.submission);
     useEffect(() => {
         setValues({
             nom: user.lastName,
             prenom: user.firstName,
             sexe: user.gender == "male" ? "HM" : "FM",
             dateNaissance: user.dateOfBirth,
-
             email: user.email,
             wilaya: provinces.find((province) => province.number == user.province)?.name,
             commune: user.city,
         });
-    }, [user])
+    }, [user]);
 
     return (
         <>

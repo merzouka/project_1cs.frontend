@@ -4,10 +4,16 @@ import { useInscriptionStore } from '../components/Store'
 import Link from 'next/link'
 import { submitInscriptionData } from '../api';
 import { useUser } from '@/hooks/use-user';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Spinner } from "@/components/custom/spinner";
+import { Button } from "@/components/ui/button";
+import { IoIosCheckmarkCircle } from "react-icons/io";
+import { Toaster } from "@/components/ui/toaster";
+import { useToast } from "@/components/ui/use-toast"
 
 
 const InscriptionPage2 = () => {
-    const { numeroPortable, numeroPassport, dateExpirationPassport, sexe, idMahram } = useInscriptionStore()
+    const { numeroPortable, numeroPassport, dateExpirationPassport, sexe, idMahram } = useInscriptionStore((state) => state.form)
     const setField = useInscriptionStore((state) => state.setField)
     const handleInputChange = (e: { target: { name: any; value: any } }) => {
         setField(e.target.name, e.target.value)
@@ -18,16 +24,34 @@ const InscriptionPage2 = () => {
         setPhoto([e.target.files[0]])
     }
 
-    const formData = useInscriptionStore((state => state.form))
+    const formData = useInscriptionStore((state => state.form));
+    const [popup, setPopup] = useState(false);
+    const { toast } = useToast();
+    const queryClient = useQueryClient();
+    const { isPending, mutate } = useMutation({
+        mutationFn: submitInscriptionData,
+        onMutate: () => {
+            setPopup(true);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+            queryKey: ["profile"],
+            })
+        },
+        onError: (error) => {
+            toast({
+                description: "inscription échoué.",
+                variant: "destructive",
+            });
+            console.log(error);
+            setPopup(false);
+        }
+    });
+
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        try {
-            formData.photoPersonnelle = photo[0];
-
-            await submitInscriptionData(formData);
-        } catch (error) {
-            console.error('Error submitting inscription data:', error);
-        }
+        formData.photoPersonnelle = photo[0];
+        mutate(formData);
     };
 
     const { user } = useUser();
@@ -35,7 +59,6 @@ const InscriptionPage2 = () => {
         <>
 
             <form className="mb-1" onSubmit={handleSubmit}>
-
                 <div className="flex justify-center space-x-[400px] mr-[260px]">
                     <div className="mb-5 w-10">
                         <label htmlFor="number" className="mb-1.5 block  w-40 text-sm text-left" >  Numéro de portable</label>
@@ -101,23 +124,51 @@ const InscriptionPage2 = () => {
                     </div>
                 </div>
                 <div className="flex justify-center ">
-
                     <button type="submit" className="border-orange-400 shadow-md h-15 mb-5 block w-[340px] rounded-lg border px-4 py-2 text-center font-bold text-black" >
-
                         Confirmer
-
                     </button>
                 </div>
-
-
             </form >
             <div className="flex justify-center ">
                 <Link href={"/inscription"} className="font-bold">
                     Cliquez pour aller à la page précédente</Link>
             </div>
+            <Toaster />
+            {
+                popup &&
+                    <Popup isLoading={isPending}/>
+            }
         </>
 
     )
+}
+
+function Popup({ isLoading }: { isLoading: boolean }) {
+    return (
+        <div className="absolute top-0 right-0 left-0 bottom-0 bg-black/45 flex justify-center items-center">
+            <div className="min-h-[55%] min-w-[50%] rounded-[4rem] bg-white flex flex-col items-center justify-center">
+                {
+                    isLoading ?
+                        <Spinner direction={"col"} size={"xl"} text={"show"} className="text-slate-500" />
+                    :
+                        <div className="flex flex-col items-center justify-center w-full flex-grow p-5 relative">
+                            <div className="relative text-orange-400 mb-20 mt-16">
+                                <div className="-translate-x-1/2 -translate-y-1/2 top-0 left-0 size-32 bg-orange-50 absolute rounded-full z-[2]"></div>
+                                <div className="-translate-x-1/2 -translate-y-1/2 top-0 left-0 size-28 bg-orange-100 absolute rounded-full z-[3]"></div>
+                                <IoIosCheckmarkCircle className="-translate-x-1/2 -translate-y-1/2 top-0 left-0 size-28 absolute z-[4] text-orange-400"/>
+                            </div>
+                            <h2 className="text-3xl font-bold mb-20">
+                                {"Inscription avec succés"}
+                            </h2>
+                            <Button variant={"outline"} 
+                                className="border-2 border-orange-400 hover:bg-orange-400 hover:text-white font-bold text-xl w-8/12 rounded-xl py-6 absolute bottom-10">
+                                <Link href="/">{"Revenir à l'acceuil"}</Link>
+                            </Button>
+                        </div>
+                }
+            </div>
+        </div>
+    );
 }
 
 export default InscriptionPage2

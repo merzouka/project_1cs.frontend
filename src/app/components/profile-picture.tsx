@@ -6,8 +6,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { VscAccount } from "react-icons/vsc";
 
+
 export const ProfilePicture = ({ className }: { className?: string }) => {
-    const { user } = useUser();
+    const { user, profile } = useUser();
+
     return (
         <Button 
             className={cn(
@@ -17,7 +19,7 @@ export const ProfilePicture = ({ className }: { className?: string }) => {
             )}
             size={"icon"}
         >
-            <Link href="/profile">
+            <Link href={profile}>
                 {
                     user.image ? 
                         <Image src={user.image} fill style={{ objectFit: "cover" }} sizes="10vw" className="w-full h-full rounded-full" alt="user photo" />

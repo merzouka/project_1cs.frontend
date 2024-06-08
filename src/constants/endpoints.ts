@@ -12,7 +12,7 @@ export const endpoints = {
     logout: "auth/logout",
     profileCitites: "baladiya_names_by_utilisateur",
     // drawing
-    getDrawing: "tirage_défini",
+    getDrawing: "drawing",
     participants: "participants_tirage",
     drawingSettings: "associate-tirage",
     drawingResult: "fetch-winners",

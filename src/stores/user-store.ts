@@ -44,6 +44,14 @@ export interface UserInfo {
     image?: string | undefined;
     emailVerified?: boolean;
     isLoggedIn: boolean;
+    status?: {
+        registration: boolean;
+        drawing: boolean;
+        appointment: boolean;
+        payment: boolean;
+        booking: boolean;
+        done: boolean;
+    }
 }
 
 export interface User {
@@ -65,6 +73,14 @@ interface Actions {
         image?: string | undefined;
         emailVerified?: boolean;
         isLoggedIn: boolean;
+        status?: {
+            registration: boolean;
+            drawing: boolean;
+            appointment: boolean;
+            payment: boolean;
+            booking: boolean;
+            done: boolean;
+        }
     }) => void;
     emptyUser: () => void;
 }
@@ -84,6 +100,7 @@ export const useUserStore = create<User & Actions>((set) => ({
         image: undefined,
         emailVerified: false,
         isLoggedIn: false,
+        status: undefined
     },
     setUser: (user) => set({ user: {
         ...user,
@@ -103,6 +120,7 @@ export const useUserStore = create<User & Actions>((set) => ({
         image: undefined,
         emailVerified: false,
         isLoggedIn: false,
+        status: undefined,
     }})
 }));
 
