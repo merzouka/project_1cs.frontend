@@ -33,7 +33,6 @@ interface LogoProps {
 
 export default function Logo({ size, className }: LogoProps) {
     return (
-
         <Image
             className={className}
             src="/logo.svg" 

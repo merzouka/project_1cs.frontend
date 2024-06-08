@@ -22,22 +22,28 @@ export const TablePagination = (
     const params = useSearchParams();
 
     return (
-            <Pagination>
-                <PaginationContent>
-                    <PaginationItem>
-                        <PaginationPrevious className={cn(
-                            previous === null && "hover:bg-transparent hover:text-slate-300 text-slate-300 hover:cursor-default"
-                        )} href={previous || undefined} />
-                    </PaginationItem>
-                    <PaginationItem>
-                        <PaginationLink>{params.get('page') || "1"}</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                        <PaginationNext className={cn(
-                            next === null && "hover:bg-transparent hover:text-slate-300 text-slate-300 hover:cursor-default"
-                        )} href={next || undefined} />
-                    </PaginationItem>
-                </PaginationContent>
-            </Pagination>
+        <Pagination>
+            <PaginationContent>
+                <PaginationItem>
+                    {
+                        previous !== null &&
+                            <PaginationPrevious className={cn(
+                                previous === null && "hover:bg-transparent hover:text-slate-300 text-slate-300 hover:cursor-default"
+                            )} href={`/roles?${(new URL(previous || 'http://localhost:8000')).searchParams.toString()}` || undefined} />
+                    }
+                </PaginationItem>
+                <PaginationItem>
+                    <PaginationLink>{params.get('page') || "1"}</PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                    {
+                        next !== null &&
+                            <PaginationNext className={cn(
+                                next === null && "hover:bg-transparent hover:text-slate-300 text-slate-300 hover:cursor-default"
+                            )} href={`/roles?${(new URL(next || 'http://localhost:8000')).searchParams.toString()}` || undefined} />
+                    }
+                </PaginationItem>
+            </PaginationContent>
+        </Pagination>
     );
 }

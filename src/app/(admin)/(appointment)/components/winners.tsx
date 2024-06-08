@@ -34,7 +34,7 @@ export const Winners = (
         updateEndpoint: string;
         page: Pages
     }) => {
-    const { useValidateAccess: validateAccess } = useUser();
+    const { useValidateAccess: validateAccess, user } = useUser();
     validateAccess(page);
 
     const [term, setTerm] = useState("");
@@ -42,7 +42,7 @@ export const Winners = (
     const [modalOpen, setModalOpen] = useState(false);
     const { toast } = useToast();
     const { isLoading, isError, data: winners, failureCount} = useQuery({
-        queryKey: ["winners", itemsEndpoint],
+        queryKey: ["winners", itemsEndpoint, user.email],
         queryFn: async () => {
             try {
                 const response = await AxiosInstance.get(getUrl(itemsEndpoint));
@@ -87,7 +87,7 @@ export const Winners = (
                 disabled: true,
             };
             newWinners[index] = newWinner;
-            queryClient.setQueryData(["winners", itemsEndpoint], newWinners);
+            queryClient.setQueryData(["winners", itemsEndpoint, user.email], newWinners);
 
             return {
                 winner,
@@ -95,23 +95,23 @@ export const Winners = (
             };
         },
         onSuccess: (_, __, context) => {
-            const newWinners = [...(queryClient.getQueryData(["winners", itemsEndpoint]) as (WinnerInfo & { disabled: boolean })[])];
+            const newWinners = [...(queryClient.getQueryData(["winners", itemsEndpoint, user.email]) as (WinnerInfo & { disabled: boolean })[])];
             newWinners[context?.index] = {
                 ...newWinners[context?.index],
                 disabled: false,
             };
-            queryClient.setQueryData(["winners", itemsEndpoint], newWinners);
+            queryClient.setQueryData(["winners", itemsEndpoint, user.email], newWinners);
         },
         onError: (_, __, context) => {
             if (!context) {
                 return;
             }
-            const winners = [...(queryClient.getQueryData(["winners", itemsEndpoint]) as (WinnerInfo & { disabled: boolean })[])];
+            const winners = [...(queryClient.getQueryData(["winners", itemsEndpoint, user.email]) as (WinnerInfo & { disabled: boolean })[])];
             winners[context?.index] = {
                 ...context?.winner,
                 disabled: false,
             };
-            queryClient.setQueryData(["winners", itemsEndpoint], winners);
+            queryClient.setQueryData(["winners", itemsEndpoint, user.email], winners);
             toast({
                 variant: "destructive",
                 title: "Erreur de connexion",
@@ -119,7 +119,7 @@ export const Winners = (
             });
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: ["winners", itemsEndpoint] });
+            queryClient.invalidateQueries({ queryKey: ["winners", itemsEndpoint, user.email] });
         }
     });
 

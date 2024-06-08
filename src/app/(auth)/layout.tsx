@@ -60,7 +60,7 @@ export default function AuthLayout({
     setResetPasswordMax(resetPasswordSteps);
 
     const verifyEmailSteps = 2
-    const { step: verifyEmailStep, setMax: setVerifyEmailMax } = useMultiStep(MultiStepKeys.resetPassword);
+    const { step: verifyEmailStep, setMax: setVerifyEmailMax } = useMultiStep(MultiStepKeys.verifyEmail);
     setVerifyEmailMax(verifyEmailSteps);
 
     return (

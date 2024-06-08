@@ -9,15 +9,17 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { useEffect } from "react";
 import { ErrorDisplay } from "@/app/components/error-display";
-import { UserRow, User } from "./user-row";
+import { UserRow, User, UserRowSkeleton } from "./user-row";
 
 export const Users = (
     {
         users,
         isError,
+        isLoading
     }: {
-        users: User[];
+        users?: User[];
         isError?: boolean;
+        isLoading?: boolean;
     }
 ) => {
 
@@ -33,26 +35,41 @@ export const Users = (
     }, [isError]);
 
     return (
-        <div className="p-3 border border-slate-100 rounded-xl flex-grow flex flex-col items-center justify-between">
-            <Table className="h-full">
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>{"N"}</TableHead>
-                        <TableHead>{"Nom"}</TableHead>
-                        <TableHead>{"Prénom"}</TableHead>
-                        <TableHead>{"Email"}</TableHead>
-                        <TableHead>{"Role"}</TableHead>
-                        <TableHead>{"Wilaya"}</TableHead>
-                        <TableHead>{"Communes"}</TableHead>
-                        <TableHead>{"Action"}</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
+        <div className="p-3 border border-slate-100 rounded-xl flex-grow flex flex-col items-center justify-between relative overflow-clip">
+            <div className="top-0 right-0 bottom-0 left-0 absolute overflow-scroll p-2">
+                <Table className="h-full">
+                    <TableHeader className="sticky">
+                        <TableRow>
+                            <TableHead className="text-black">{"N"}</TableHead>
+                            <TableHead className="text-black">{"Nom"}</TableHead>
+                            <TableHead className="text-black">{"Prénom"}</TableHead>
+                            <TableHead className="text-black">{"Email"}</TableHead>
+                            <TableHead className="text-black">{"Role"}</TableHead>
+                            <TableHead className="text-black">{"Wilaya"}</TableHead>
+                            <TableHead className="text-black">{"Communes"}</TableHead>
+                            <TableHead className="text-black">{"Action"}</TableHead>
+                        </TableRow>
+                    </TableHeader>
                     {
-                        users?.map((user, index) => <UserRow key={user.id} info={user} index={index}/>)
+                        !isError && !isLoading && users &&
+                            <TableBody>
+                                {
+                                    users?.map((user, index) => <UserRow key={user.id} info={user} index={index}/>)
+                                }
+                            </TableBody>
                     }
-                </TableBody>
-            </Table>
+                    {
+                        isLoading && 
+                            <TableBody>
+                                {
+                                    Array(7).fill(null).map((_, i) => (
+                                        <UserRowSkeleton key={i}/>
+                                    ))
+                                }
+                            </TableBody>
+                    }
+                </Table>
+            </div>
             {isError && 
                 <ErrorDisplay text={"Nous ne pouvons pas récupérer les utilisateurs."} />
             }

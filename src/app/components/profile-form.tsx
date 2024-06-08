@@ -163,7 +163,7 @@ export const ProfileForm = ({ page }: { page: Pages }) => {
                     <div className="p-5 overflow-y-scroll">
                         <ImagePicker 
                             className="mx-5 mb-2"
-                            imageSrc={user.image}
+                            imageSrc={user.image || imageSrc}
                             onImageSrcChange={setImageSrc}
                             onImageChange={(image) => {
                                 setHasChanged(true);

@@ -1,13 +1,9 @@
 "use client"
 import React, { FormEvent, useState } from 'react'
 import { useInscriptionStore } from '../components/Store'
-import Link from "next/link";
 import { useRouter } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-import { submitInscriptionData } from '../api';
 import { useUser } from '@/hooks/use-user';
-import { format } from 'date-fns';
+import { format } from "date-fns";
 
 const InscriptionPage1 = () => {
     const { nomArabe, prenomArabe, prenomPere, prenomMere, sexe, paysResidence, nin, dateExpirationNin } = useInscriptionStore((state) => state.form);
@@ -45,11 +41,10 @@ const InscriptionPage1 = () => {
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault()
         router.push("/inscription/Secpage")
-
-        router.push("/inscription/Secpage")
     }
     const { user } = useUser();
 
+    console.log(user.dateOfBirth);
     return (
         <>
             <div className="flex justify-center">
@@ -102,7 +97,7 @@ const InscriptionPage1 = () => {
                         </div>
                         <div className="w-10 my-1">
                             <label htmlFor="DN" className="mb-1.5 block w-40 text-left text-sm">Date de nainaissance </label>
-                            <input id="DN" type="date" name="dateNaissance" disabled value={user.dateOfBirth?.toString()} onChange={handleInputChange} className="py-4 border-gray-100 shadow-md w-[340px] focus:border-blue h-7 rounded-lg border p-2 text-left text-slate-500 focus:outline-[#EBA565]" placeholder="Date de nainaissance" required />
+                            <input id="DN" type="date" name="dateNaissance" disabled value={user.dateOfBirth && format(user.dateOfBirth?.toString(), "yyyy-MM-dd")} onChange={handleInputChange} className="py-4 border-gray-100 shadow-md w-[340px] focus:border-blue h-7 rounded-lg border p-2 text-left text-slate-500 focus:outline-[#EBA565]" placeholder="Date de nainaissance" required />
                         </div>
                     </div>
 

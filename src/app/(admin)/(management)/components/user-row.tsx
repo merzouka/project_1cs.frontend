@@ -20,16 +20,24 @@ import {
     TooltipTrigger,
     TooltipProvider,
 } from "@/components/ui/tooltip";
-import { provinces } from "@/constants/provinces";
-import { useState } from "react";
+import { Province, provinces } from "@/constants/provinces";
+import { useMemo, useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { City, mappedCities } from "@/constants/mapped-cities";
-import { SearchBar } from "@/app/components/search-bar";
 import { FiPlusCircle } from "react-icons/fi";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosInstance } from "@/config/axios";
 import { getUrl } from "@/constants/api";
 import { endpoints } from "@/constants/endpoints";
+import { cities } from "@/constants/cities";
+import { motion } from "framer-motion";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSearchParams } from "next/navigation";
+import { getRoleMap } from "@/stores/user-store";
+import { useToast } from "@/components/ui/use-toast"
+import { Skeleton } from "@/components/ui/skeleton";
+import { isAxiosError } from "axios";
+import { useUser } from "@/hooks/use-user";
 
 export interface User {
     id: number;
@@ -49,17 +57,74 @@ function getCityName(city: City | undefined): string {
 }
 
 function getRole(value: string): Role {
-    const roles = [
-        Role.user,
-        Role.haaj,
-        Role.drawingManager,
-        Role.superAdmin,
-        Role.doctor,
-        Role.paymentManager,
-        Role.admin,
-    ];
-    const index = Number(value);
-    return index >= 0 && index < roles.length ? roles[index] : roles[0];
+    return Number(value) as Role;
+}
+
+export enum PlaceType {
+    province,
+    city
+}
+
+export interface Place {
+    type: PlaceType,
+    city?: City,
+    province?: Province,
+}
+
+function processCities(userProvinces: number[], userCities: number[]) {
+    let result: Place[] = [];
+    for (const province of userProvinces) {
+        let canAggregate = true;
+        const provinceCities = mappedCities.filter(city => city.province.number === province);
+        for (const city of provinceCities) {
+            if (!userCities.includes(city.id)) {
+                canAggregate = false
+                break;
+            }
+        }
+        if (canAggregate) {
+            result.push({
+                type: PlaceType.province,
+                province: provinceCities[0]?.province,
+            });
+            const provinceCityIds = provinceCities.map(city => city.id);
+            userCities = userCities.filter(city => !provinceCityIds.includes(city));
+        }
+    }
+    for (const cityId of userCities) {
+        result.push({
+            type: PlaceType.city,
+            city: mappedCities.find(city => city.id == cityId),
+        });
+    }
+    return result;
+}
+
+function updatePlaces(places: Place[], cityId: number): Place[] {
+    const city = mappedCities.find(city => city.id == cityId);
+    places.push({
+        type: PlaceType.city,
+        city: city,
+    });
+    const provinceCityIds = cities.filter(c => c.province === city?.province.number).map(city => city.id);
+    const placesCityIds = places.filter(place => place.type === PlaceType.city).map(place => place.city?.id);
+    let canAggregate = true;
+    for (const provinceCity of provinceCityIds) {
+        if (!placesCityIds.includes(provinceCity)) {
+            canAggregate = false;
+            break;
+        }
+    }
+    if (canAggregate) {
+        places = places.filter(place => place.type != PlaceType.city || (
+            place.type == PlaceType.city && !provinceCityIds.includes(place.city?.id || 0)
+        ));
+        places.push({
+            type: PlaceType.province,
+            province: city?.province,
+        });
+    }
+    return [...places];
 }
 
 export const UserRow = (
@@ -72,46 +137,150 @@ export const UserRow = (
     }
 ) => {
     const [selectedProvinces, setSelectedProvinces] = useState<number[]>(info.provinces || []);
-    const [selectedCities, setSelectedCities] = useState<number[]>(info.cities || []);
-    const [role, setRole] = useState(info.role || undefined);
-    const [cityTerm, setCityTerm] = useState<string>("");
-    const [provinceTerm, setProvinceTerm] = useState<string>("");
+    const [selectedPlaces, setSelectedPlaces] = useState<Place[]>(processCities(info.provinces || [], info.cities || []) || [])
+    const selectedCityIds = useMemo(
+        () => {
+            const cityIds = selectedPlaces.filter(place => place.type == PlaceType.city).map(place => place.city?.id || 0)
+            for (const place of selectedPlaces.filter(place => place.type == PlaceType.province)) {
+                cityIds.push(...(mappedCities.filter(city => city.province.number == place.province?.number).map(city => city.id) || []));
+            }
+            return cityIds;
+        }
+    , [selectedPlaces])
+    const [role, setRole] = useState<Role>(info.role || Role.user);
 
     function handleProvinceSelect(value: string) {
         setSelectedProvinces([...selectedProvinces, Number(value)]);
     }
 
     function handleCitySelect(value: string) {
-        setSelectedCities([...selectedCities, Number(value)]);
+        setSelectedPlaces(updatePlaces(selectedPlaces, Number(value)));
     }
 
-    function handleCityRemove(value: number) {
-        const newCities = [...selectedCities].filter(id => id != value);
-        setSelectedCities(newCities);
+    function handlePlaceRemove(place: Place) {
+        const newPlaces = selectedPlaces.filter(
+            p => !(
+                p.type == place.type 
+                    && (
+                        p.type == PlaceType.province ?
+                            p.province?.number == place.province?.number :
+                            p.city?.id == place.city?.id
+                    )
+            )
+        );
+        setSelectedPlaces(newPlaces);
     }
 
+    useEffect(() => {
+        setRole(info.role || Role.user);
+        setSelectedProvinces(info.provinces || []);
+        setSelectedPlaces(processCities(info.provinces || [], info.cities || []) || [])
+    }, [info, info.cities])
+
+    const params = useSearchParams();
+    const queryClient = useQueryClient();
+    const { toast } = useToast();
+    const { user } = useUser();
     const { isPending, mutate } = useMutation({
         mutationKey: ["assign privilege", info.id],
-        mutationFn: async () => {
-            const response = await AxiosInstance.patch(getUrl(endpoints.assignPrivilege));
+        mutationFn: async (values: {
+            id: number,
+            role: string;
+            cities: number[];
+        }) => {
+            const response = await AxiosInstance.patch(getUrl(endpoints.assignPrivilege), values);
             return response.data;
         },
-        onMutate: () => {
-
-        },
         onSuccess: () => {
-
+            queryClient.invalidateQueries({
+                queryKey: ["users", params.toString(), user.email],
+            });
+            toast({
+                description: "opération effectué avec succés.",
+            })
         },
-        onError: () => {
-
+        onError: (error) => {
+            if (isAxiosError(error) && error.response?.status == 400) {
+                toast({
+                    description: `La résponsabilité spécifié coïncide avec "${error.response?.data.responsable}"`,
+                    variant: "destructive",
+                });
+                return;
+            }
+            toast({
+                description: "opération échoué.",
+                variant: "destructive",
+            })
         }
     });
+    const disabled = isPending;
 
     function handleSave() {
+        mutate({
+            id: info.id,
+            role: getRoleMap(role),
+            cities: selectedCityIds || [],
+        });
     }
 
-    const disabled = true;
     const overlay = <div className="absolute right-0 bottom-0 left-0 top-0 bg-slate-100/50 z-[10]"></div>;
+
+    const provinceSelectItems = useMemo(
+        () => {
+            return provinces
+                .map((province) => (
+                    <SelectItem key={province.number} value={`${province.number}`} className={cn(
+                        "p-1 text-slate-600",
+                        "[&>span>span>svg]:hidden",
+                    )}>
+                        <span className={cn(
+                            selectedProvinces.includes(province.number) && "font-semibold text-black",
+                        )}>{province.name}</span> 
+                    </SelectItem>
+                ))
+
+    }, [selectedProvinces])
+    const citiesSelectItems = useMemo(
+        () => {
+            return selectedProvinces
+                .filter(province => !selectedPlaces.find(place => place.type == PlaceType.province && place.province?.number == province))
+                .map(selected => (
+                    <SelectGroup key={selected}>
+                        <SelectLabel>{provinces.find(province => province.number == selected)?.name || null}</SelectLabel>
+                        {
+                            mappedCities
+                            .filter(city => city.province.number == selected && !selectedCityIds.includes(city.id))
+                            .map(city => <SelectItem key={city.id} value={`${city.id}`}>{city.name}</SelectItem>)
+                        }
+                    </SelectGroup>
+                ))
+        }
+    , [selectedProvinces, selectedPlaces])
+    const selectedProvinceTags = useMemo(
+        () => {
+            return selectedProvinces
+                .map(selected => {
+                    const province = provinces.find(province => province.number == selected);
+                    return (
+                        <PlaceTag 
+                            className="m-1"
+                            place={{
+                                type: PlaceType.province,
+                                province: province
+                            }}
+                            onClick={() => {
+                                setSelectedProvinces(selectedProvinces.filter(selected => selected != province?.number));
+                                setSelectedPlaces(selectedPlaces.filter(place => 
+                                    !(
+                                        (place.type == PlaceType.city && place.city?.province.number == Number(province?.number)) ||
+                                            (place.type == PlaceType.province && place.province?.number == Number(province?.number)) 
+                                    )
+                                ))
+                            }}
+                        />
+                    );
+                })
+    }, [selectedProvinces])
 
     return (
         <TooltipProvider>
@@ -149,7 +318,14 @@ export const UserRow = (
                         disabled &&
                             overlay
                     }
-                    <Select onValueChange={(value) => setRole(getRole(value))}>
+                    <Select onValueChange={(value) => {
+                        const role = getRole(value)
+                        setRole(role);
+                        if (role == Role.user) {
+                            setSelectedPlaces([]);
+                            setSelectedProvinces([]);
+                        }
+                    }} value={`${role}`}>
                         <SelectTrigger className="shadow-md rounded-2xl">
                             <SelectValue placeholder={"Sélectionner"} defaultValue={role}/>
                         </SelectTrigger>
@@ -168,7 +344,7 @@ export const UserRow = (
                             overlay
                     }
                     <Tooltip>
-                        <Select onValueChange={handleProvinceSelect}>
+                        <Select onValueChange={handleProvinceSelect} disabled={role == Role.user}>
                             {
                                 selectedProvinces.length == 0 ?
                                     <SelectTrigger className="rounded-2xl shadow-md flex item-center justify-center">
@@ -182,38 +358,17 @@ export const UserRow = (
                                     </TooltipTrigger>
                             }
                             <SelectContent className="shadow-lg p-2 max-w-52 rounded-2xl max-h-72">
-                                <SearchBar
-                                    className="py-0"
-                                    onChange={(value) => setProvinceTerm(value)}
-                                />
                                 {
-                                    provinces
-                                    .filter(province => `${province.name.toLowerCase()}`.includes(provinceTerm))
-                                    .map((province) => (
-                                        <SelectItem key={province.number} value={`${province.number}`} className={cn(
-                                            "p-1 text-slate-600",
-                                            selectedProvinces.includes(province.number) &&"[&>span>span>svg]:hidden",
-                                        )}>
-                                            <span className={cn(
-                                                selectedProvinces.includes(province.number) && "font-semibold text-black",
-                                            )}>{province.name}</span> 
-                                        </SelectItem>
-                                    ))
+                                    provinceSelectItems
                                 }
                             </SelectContent>
                         </Select>
-                        <TooltipContent>
-                            {
-                                selectedProvinces
-                                .map(selected => {
-                                    const province = provinces.find(province => province.number == selected);
-                                    return (
-                                        <>
-                                            { province ? <p key={province?.number}>{province?.name}</p> : null }
-                                        </>
-                                    );
-                                })
-                            }
+                        <TooltipContent className="max-w-96 max-h-[24rem] overflow-y-scroll">
+                            <div className="flex flex-wrap justify-start items-start">
+                                {
+                                    selectedProvinceTags
+                                }
+                            </div>
                         </TooltipContent>
                     </Tooltip>
                 </TableCell>
@@ -222,64 +377,62 @@ export const UserRow = (
                         disabled &&
                             overlay
                     }
-                    <div className="flex flex-wrap gap-1">
+                    <motion.div layout className="flex flex-wrap gap-1">
                         {
-                            selectedCities.length > 0 && selectedCities.slice(0, 3).map((selected) => <CityTag 
-                                key={selected} 
-                                cityId={selected} 
-                                onClick={() => handleCityRemove(selected)}
+                            selectedPlaces.length > 0 && selectedPlaces.slice(0, 3).map((selected) => <PlaceTag 
+                                key={selected.city?.id || selected.province?.number} 
+                                place={selected} 
+                                onClick={() => handlePlaceRemove(selected)}
                             />)
                         }
-                        {selectedCities.length > 3 && 
+                        {selectedPlaces.length > 3 && 
                             <Tooltip>
                                 <TooltipTrigger className="border-0 hover:bg-transparent bg-transparent hover:text-slate-400 font-bold text-xl px-2">
                                     ...
                                 </TooltipTrigger>
-                                <TooltipContent className="flex flex-wrap max-w-60 gap-2 items-center justify-center">
-                                    {selectedCities.slice(3).map((selected) => (
-                                        <CityTag 
-                                            className="m-1"
-                                            onClick={() => handleCityRemove(selected)}
-                                            key={selected} 
-                                            cityId={selected} 
-                                        />
-                                    ))}
+                                <TooltipContent className="max-w-60 max-h-[24rem] overflow-y-scroll">
+                                    <div className="flex flex-wrap justify-start items-start">
+                                        {selectedPlaces.slice(3).map((selected) => (
+                                            <PlaceTag 
+                                                className="m-1"
+                                                onClick={() => handlePlaceRemove(selected)}
+                                                key={selected.city?.id || selected.province?.number} 
+                                                place={selected} 
+                                            />
+                                        ))}
+                                    </div>
                                 </TooltipContent>
                             </Tooltip>
                         }
-                        <Select onValueChange={handleCitySelect}>
-                            <SelectTrigger className={"[&>svg]:hidden border-0 w-fit shadow-md rounded-xl text-slate-400 bg-white hover:bg-white hover:text-slate-500 aspect-square flex items-center justify-center"}>
-                                <div>
-                                    <FiPlusCircle className="size-5"/>
-                                </div>
-                            </SelectTrigger>
-                            <SelectContent className="shadow-lg">
-                                <SearchBar 
-                                    onChange={(value) => setCityTerm(value)}
-                                />
-                                {
-                                    selectedProvinces
-                                    .map(selected => (
-                                        <SelectGroup key={selected}>
-                                            <SelectLabel>{provinces.find(province => province.number == selected)?.name || null}</SelectLabel>
-                                            {
-                                                mappedCities
-                                                .filter(city => city.province.number == selected && !selectedCities.includes(city.id) && `${city.name.toLowerCase()}`.includes(cityTerm))
-                                                .map(city => <SelectItem key={city.id} value={`${city.id}`}>{city.name}</SelectItem>)
-                                            }
-                                        </SelectGroup>
-                                    ))
-                                }
-                            </SelectContent>
-                        </Select>
-                    </div>
+                        <motion.div layout>
+                            <Select onValueChange={handleCitySelect} value={undefined} disabled={citiesSelectItems.length == 0 || role == Role.user}>
+                                <SelectTrigger className={cn(
+                                    "[&>svg]:hidden border-0 w-fit shadow-md rounded-xl text-slate-400 ",
+                                    "bg-white hover:bg-white hover:text-slate-500 aspect-square flex items-center justify-center",
+                                    "disabled:hover:text-slate-400"
+                                )}>
+                                    <div>
+                                        <FiPlusCircle className="size-5"/>
+                                    </div>
+                                </SelectTrigger>
+                                <SelectContent className="shadow-lg">
+                                    {
+                                        citiesSelectItems
+                                    }
+                                </SelectContent>
+                            </Select>
+                        </motion.div>
+                    </motion.div>
                 </TableCell>
                 <TableCell className="relative">
                     {
                         disabled &&
                             overlay
                     }
-                    <Button className="rounded-full bg-pink-300 text-black font-semibold" size={"sm"}>
+                    <Button 
+                        onClick={handleSave}
+                        className="rounded-full bg-orange-100 text-black font-semibold text-xs hover:bg-orange-200" 
+                        size={"sm"}>
                         {"Sauvegarder"}
                     </Button>
                 </TableCell>
@@ -288,16 +441,53 @@ export const UserRow = (
     );
 }
 
-function CityTag({ cityId, onClick, className }: { cityId: number; onClick: () => void; className?: string; }) {
+export function UserRowSkeleton() {
     return (
-        <Button 
-            onClick={onClick}
-            className={cn(
-                "text-black bg-white hover:text-white hover:bg-red-400 rounded-xl shadow-md font-semibold",
-                className,
-            )}
-        >
-            {getCityName(mappedCities.find(city => city.id == cityId))}
-        </Button>
+        <TableRow>
+            <TableCell>
+                <Skeleton className="h-3 w-5" />
+            </TableCell>
+            <TableCell>
+                <Skeleton className="h-3 w-16" />
+            </TableCell>
+            <TableCell>
+                <Skeleton className="h-3 w-16" />
+            </TableCell>
+            <TableCell>
+                <Skeleton className="h-3 w-36" />
+            </TableCell>
+            <TableCell>
+                <Skeleton className="h-9 w-36 rounded-xl" />
+            </TableCell>
+            <TableCell>
+                <Skeleton className="h-9 w-36 rounded-xl" />
+            </TableCell>
+            <TableCell className="flex items-center justify-center">
+                <Skeleton className="h-9 w-9 rounded-xl" />
+            </TableCell>
+            <TableCell>
+                <Skeleton className="h-7 rounded-full w-24" />
+            </TableCell>
+        </TableRow>
+    );
+}
+
+function PlaceTag({ place, onClick, className }: { place: Place; onClick: () => void; className?: string; }) {
+    return (
+        <motion.div layout>
+            <Button 
+                onClick={onClick}
+                className={cn(
+                    "text-black bg-white hover:text-white hover:bg-red-400 rounded-xl shadow-md font-semibold",
+                    className,
+                )}
+            >
+                {
+                    place.type === PlaceType.city ?
+                        getCityName(place.city):
+                        place.province?.name
+                }
+            </Button>
+        </motion.div>
     );
 }

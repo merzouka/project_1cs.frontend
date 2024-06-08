@@ -12,7 +12,7 @@ export const endpoints = {
     logout: "auth/logout",
     profileCitites: "baladiya_names_by_utilisateur",
     // drawing
-    drawingDefined: "check-tirage",
+    getDrawing: "drawing",
     participants: "participants_tirage",
     drawingSettings: "associate-tirage",
     drawingResult: "fetch-winners",
@@ -32,4 +32,6 @@ export const endpoints = {
     // flights
     flights: 'administrateur/voles-list',
     createFlight: 'administrateur/add-vole',
+    users: (params: URLSearchParams) => `users?${params.toString()}`,
+    assignPrivilege: "user/privilege",
 }

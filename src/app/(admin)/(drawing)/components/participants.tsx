@@ -15,11 +15,12 @@ import { SearchBar } from "@/app/components/search-bar";
 
 
 export const Participants = () => {
-    const { useValidateAccess: validateAccess } = useUser();
+    const { useValidateAccess: validateAccess, user } = useUser();
+    // TODO: uncomment
     // validateAccess(Pages.drawing);
     const { toast } = useToast();
     const { isLoading, data, isError, failureCount } = useQuery({
-        queryKey: ["participants"],
+        queryKey: ["participants", user.email],
         staleTime: 5 * 60 * 1000,
         queryFn: async () => {
             try {
@@ -68,11 +69,12 @@ export const Participants = () => {
                         }
                         {
                             !isLoading && !isError &&
-                                participants?.map((participant: any) => <Participant key={participant.id} participant={{
+                                participants?.map((participant: any, index: number) => <Participant key={index} participant={{
                                     image: participant.personal_picture,
                                     firstName: participant.first_name,
                                     lastName: participant.last_name,
-                                    nin: participant.NIN,
+                                    city: participant.city,
+                                    nin: participant.nin,
                                 }}/>)
                         }
                     </div>
