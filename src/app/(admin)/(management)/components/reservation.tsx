@@ -36,6 +36,8 @@ import { AlertDialogDemoh } from "./Cardhotel";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import { AxiosInstance } from "@/config/axios";
+import { useUser } from "@/hooks/use-user";
+import { Pages } from "@/constants/pages";
 
 export type htl = {
     N: string;
@@ -44,6 +46,8 @@ export type htl = {
 };
 
 export function DataTableDemoh() {
+    const { user, useValidateAccess } = useUser();
+    useValidateAccess(Pages.bookings);
     const { toast } = useToast();
     const { data } = useQuery({
         queryKey: ["hotels"],

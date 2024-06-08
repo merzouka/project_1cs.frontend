@@ -39,6 +39,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { AxiosInstance } from "@/config/axios";
 import { getUrl } from "@/constants/api";
 import { endpoints } from "@/constants/endpoints";
+import { useUser } from "@/hooks/use-user";
+import { Pages } from "@/constants/pages";
 
 export type vl = {
     N: string;
@@ -51,6 +53,8 @@ export type vl = {
 
 export function DataTableDemo() {
     const { toast } = useToast();
+    const { user, useValidateAccess } = useUser();
+    useValidateAccess(Pages.bookings);
     const { data } = useQuery({
         retry: 0,
         queryKey: ["vols"],
