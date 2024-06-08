@@ -103,7 +103,7 @@ export default function LoginPage() {
                 image: data?.personal_picture || undefined,
                 emailVerified: data?.is_email_verified || false,
                 isLoggedIn: true,
-                status: data.status === null ? undefined: {
+                status: !data.status ? undefined : {
                     registration: data.status.registration,
                     drawing: data.status.drawing,
                     appointment: data.status.appointment,
