@@ -36,6 +36,8 @@ import { useSearchParams } from "next/navigation";
 import { getRoleMap } from "@/stores/user-store";
 import { useToast } from "@/components/ui/use-toast"
 import { Skeleton } from "@/components/ui/skeleton";
+import { isAxiosError } from "axios";
+import { useUser } from "@/hooks/use-user";
 
 export interface User {
     id: number;
@@ -178,6 +180,7 @@ export const UserRow = (
     const params = useSearchParams();
     const queryClient = useQueryClient();
     const { toast } = useToast();
+    const { user } = useUser();
     const { isPending, mutate } = useMutation({
         mutationKey: ["assign privilege", info.id],
         mutationFn: async (values: {
@@ -190,13 +193,20 @@ export const UserRow = (
         },
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["users", params.toString()],
+                queryKey: ["users", params.toString(), user.email],
             });
             toast({
                 description: "opération effectué avec succés.",
             })
         },
-        onError: () => {
+        onError: (error) => {
+            if (isAxiosError(error) && error.response?.status == 400) {
+                toast({
+                    description: `La résponsabilité spécifié coïncide avec "${error.response?.data.responsable}"`,
+                    variant: "destructive",
+                });
+                return;
+            }
             toast({
                 description: "opération échoué.",
                 variant: "destructive",

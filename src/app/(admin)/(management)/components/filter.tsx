@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce";
 import { useRef, useState } from "react";
-import { getRoleMap } from "@/stores/user-store";
+import { getRoleMap, getRole } from "@/stores/user-store";
 
 export const Filter = (
     {
@@ -40,6 +40,7 @@ export const Filter = (
         } else {
             newParams.delete(key);
         }
+        newParams.delete('page');
         replace(`roles?${newParams.toString()}`);
     }
 
@@ -57,8 +58,7 @@ export const Filter = (
         cityId: params.get('city') || undefined,
     });
 
-    const handleFilter = useDebouncedCallback(
-        (
+    const setFiltersUrl = (
             {
                 role,
                 provinceId,
@@ -69,26 +69,27 @@ export const Filter = (
                 provinceId?: string;
                 cityId?: string;
             }
-        ) => {
-            const newParams = new URLSearchParams(params);
-            if (role) {
-                newParams.set('role', role);
-            } else {
-                newParams.delete('role');
-            }
-            if (provinceId) {
-                newParams.set('province', provinceId);
-            } else {
-                newParams.delete('province');
-            }
-            if (cityId) {
-                newParams.set('city', cityId);
-            } else {
-                newParams.delete('city');
-            }
-            replace(`roles?${newParams.toString()}`)
+    ) => {
+        const newParams = new URLSearchParams(params);
+        if (role) {
+            newParams.set('role', role);
+        } else {
+            newParams.delete('role');
         }
-    , 600)
+        if (provinceId) {
+            newParams.set('province', provinceId);
+        } else {
+            newParams.delete('province');
+        }
+        if (cityId) {
+            newParams.set('city', cityId);
+        } else {
+            newParams.delete('city');
+        }
+        newParams.delete('page');
+        replace(`roles?${newParams.toString()}`)
+    }
+    const handleFilter = useDebouncedCallback(setFiltersUrl , 600)
     const inputRef = useRef<HTMLInputElement>(null);
 
     return (
@@ -122,7 +123,7 @@ export const Filter = (
                 </PopoverTrigger>
                 <PopoverContent>
                     <Label>{"Role"}</Label>
-                    <Select defaultValue={filters.role} onValueChange={(value) => {
+                    <Select defaultValue={filters.role ? getRole(filters.role).toString() : undefined} onValueChange={(value) => {
                         const newFilters = { ...filters, role: getRoleMap(Number(value)) };
                         setFilters(newFilters);
                         handleFilter(newFilters);
@@ -166,7 +167,7 @@ export const Filter = (
                         }}
                         disabled={!filters.provinceId}
                     >
-                        <SelectTrigger className="shadow-md rounded-2xl">
+                        <SelectTrigger className="shadow-md rounded-2xl mb-2">
                             <SelectValue placeholder={"Sélectionner"} />
                         </SelectTrigger>
                         <SelectContent>
@@ -181,6 +182,22 @@ export const Filter = (
                             }
                         </SelectContent>
                     </Select>
+                    <Button 
+                        onClick={() => {
+                            const newFilters = {
+                                role: undefined,
+                                provinceId: undefined,
+                                cityId: undefined,
+                            };
+                            setFilters(newFilters);
+                            setFiltersUrl(newFilters);
+                        }}
+                        className="w-full font-bold rounded-2xl border-2 border-orange-400 hover:text-white hover:bg-orange-400" 
+                        variant={"outline"}
+                        disabled={!filters.role && !filters.provinceId && !filters.cityId}
+                    >
+                        {"Réinitialiser"}
+                    </Button>
                 </PopoverContent>
             </Popover>
         </div>

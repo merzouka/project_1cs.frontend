@@ -10,7 +10,6 @@ import { useToast } from "@/components/ui/use-toast";
 import { useEffect } from "react";
 import { ErrorDisplay } from "@/app/components/error-display";
 import { UserRow, User, UserRowSkeleton } from "./user-row";
-import { Spinner } from "@/components/custom/spinner";
 
 export const Users = (
     {
@@ -61,9 +60,13 @@ export const Users = (
                     }
                     {
                         isLoading && 
-                            Array(7).fill(null).map(_ => (
-                                <UserRowSkeleton />
-                            ))
+                            <TableBody>
+                                {
+                                    Array(7).fill(null).map((_, i) => (
+                                        <UserRowSkeleton key={i}/>
+                                    ))
+                                }
+                            </TableBody>
                     }
                 </Table>
             </div>

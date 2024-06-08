@@ -10,7 +10,7 @@ import { User } from "./user-row";
 import { getUrl } from "@/constants/api";
 import { useToast } from "@/components/ui/use-toast";
 import { useUser } from "@/hooks/use-user";
-// import { Pages } from "@/constants/pages";
+import { Pages } from "@/constants/pages";
 import { getRole } from "@/stores/user-store";
 
 interface PaginatedResponse {
@@ -23,8 +23,7 @@ interface PaginatedResponse {
 export const UsersDisplay = () => {
     const params = useSearchParams();
     const { user, useValidateAccess } = useUser();
-    // TODO uncomment
-    // useValidateAccess(Pages.roles);
+    useValidateAccess(Pages.roles);
     const { toast } = useToast();
     const { data, isLoading, isError } = useQuery({
         retry: 0,
