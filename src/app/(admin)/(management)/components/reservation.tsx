@@ -46,7 +46,7 @@ export type htl = {
 
 export function DataTableDemoh() {
     const { user, useValidateAccess } = useUser();
-    useValidateAccess(Pages.bookings);
+    // useValidateAccess(Pages.bookings);
     const { toast } = useToast();
     const { data } = useQuery({
         queryKey: ["hotels"],
@@ -161,7 +161,7 @@ export function DataTableDemoh() {
                     <SearchIcon className="absolute ml-9 mt-2 font-thin" />
                     <Input
                         placeholder="Search"
-                        value={(table.getColumn("Hotel")?.getFilterValue() as string) ?? ""}
+                        value={term}
                         onChange={(e) => setTerm(e.target.value)}
                         className=" pr-3 pl-12 rounded-[30px] w-[900px] ml-5 mr-7"
                     />

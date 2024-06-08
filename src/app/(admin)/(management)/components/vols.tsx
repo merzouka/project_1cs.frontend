@@ -138,13 +138,6 @@ export function DataTableDemo() {
                                 Copy ID
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            {
-                                /* <DropdownMenuItem
-                                onClick={() => handleDelete(vl.N)}
-                            >
-                                Delete
-                            </DropdownMenuItem> */
-                            }
                         </DropdownMenuContent>
                     </DropdownMenu>
                 );
@@ -152,8 +145,16 @@ export function DataTableDemo() {
         },
     ];;
 
+    const [term, setTerm] = React.useState("");
+    const filteredData = React.useMemo(() => {
+        return data?.filter((flight: {
+            N: number;
+            Vols: string;
+        }) => flight.Vols.toLowerCase().includes(term)) || []
+    }, [term, data]);
+
     const table = useReactTable({
-        data: data || [],
+        data: filteredData || [],
         columns,
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
@@ -182,9 +183,9 @@ export function DataTableDemo() {
                         <SearchIcon className="absolute ml-9 mt-2 font-thin" />
                         <Input
                             placeholder="Search"
-                            value={(table.getColumn("Vols")?.getFilterValue() as string) ?? ""}
-                            onChange={(event) =>
-                                table.getColumn("Vols")?.setFilterValue(event.target.value)
+                            value={term}
+                            onChange={(e) =>
+                                setTerm(e.target.value)
                             }
                             className="pr-3 pl-12 rounded-[30px] w-[900px] ml-5 mr-7"
                         />
