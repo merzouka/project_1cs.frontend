@@ -50,7 +50,7 @@ export function DataTableDemoaf() {
     flightId: string | undefined,
     hotelId: string | undefined,
     }) {
-        const newData = [...selecteData];
+        const newData = [...selectedData];
         newData[index] = data;
         setSelectedData(newData);
     }
@@ -106,7 +106,7 @@ export function DataTableDemoaf() {
                 const index = Number(row.getValue('N'));
                 const data = selectedData[index];
                 return (
-                    <Select defaultValue={row.getValue('Vols')?.id} onValueChange={(value) => setReserve(index, { ...data, flightId: value })}>
+                    <Select defaultValue={row.getValue('Vols')} onValueChange={(value) => setReserve(index, { ...data, flightId: value })}>
                         <SelectTrigger className="w-[100px] shadow-md" disabled={!flights}>
                             <SelectValue placeholder="Vols" />
                         </SelectTrigger>
@@ -135,7 +135,7 @@ export function DataTableDemoaf() {
                 const data = selectedData[index];
 
                 return (
-                    <Select defaultValue={row.getValue('Hotels')?.id} onValueChange={(value) => setReserve(index, { ...data, hotelId: value })}>
+                    <Select defaultValue={row.getValue('Hotels')} onValueChange={(value) => setReserve(index, { ...data, hotelId: value })}>
                         <SelectTrigger className="w-[100px] shadow-md" disabled={!hotels}>
                             <SelectValue placeholder="Hotels" />
                         </SelectTrigger>
@@ -185,7 +185,7 @@ export function DataTableDemoaf() {
         queryFn: async () => {
             try {
                 const response = await AxiosInstance.get(getUrl(endpoints.getHodjadj));
-                const ids: {flightId: string | undefined; hotelId: string | undefined} = [];
+                const ids: any[] = [];
                 const data = response.data.map((hadj: {
                     id: number;
                     email: string;
@@ -201,8 +201,8 @@ export function DataTableDemoaf() {
                     },
                 }, index: number) => { 
                         ids.push({
-                            flighId: flight?.id || undefined,
-                            hotelId: hotel?.id || undefined,
+                            flighId: hadj.flight?.id || undefined,
+                            hotelId: hadj.hotel?.id || undefined,
                         });
                         return {
                             N: index,
@@ -230,14 +230,14 @@ export function DataTableDemoaf() {
         mutationFn: async (index: number) => {
             const data = selectedData[index];
             const hadj = hodjadj[index];
-            const respnose = await AxiosInstance.post(getUrl(endpoints.assignHadj), {
+            const response = await AxiosInstance.post(getUrl(endpoints.assignHadj), {
                 winner_id: hadj.id,
-                hotel_id: data.hotelId ? Number(data.hoteId): undefined,
+                hotel_id: data.hotelId ? Number(data.hotelId): undefined,
                 vol_id: data.flightId ? Number(data.flightId): undefined,
             });
             return response.data;
         },
-        onSucces: () => {
+        onSuccess: () => {
             toast({
                 description: "succés",
             });
