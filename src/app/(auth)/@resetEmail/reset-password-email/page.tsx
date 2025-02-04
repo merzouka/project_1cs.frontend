@@ -48,7 +48,6 @@ export default function ResetEmailPage() {
                 className={cn(
                 "text-3xl font-bold mb-4 lg:mb-7",
                 "text-center",
-                rokkitt.className
             )}
                 key="reset-password-email-header"
                 {...slideInRightExitLeft}
